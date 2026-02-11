@@ -1,0 +1,12 @@
+pacman
+python-lxml python-cssselect python-requests
+    gtk3 \
+    libxtst \
+    alsa-lib \
+    libxscrnsaver \
+    nss \
+    xdg-utils \
+    dbus \
+    at-spi2-core
+yay
+playwright
