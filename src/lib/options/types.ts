@@ -1,18 +1,12 @@
 import { Opt } from './opt';
 
-export interface OptProps {
-    runtime?: boolean;
-    scss?: boolean;
-    hyprland?: boolean;
-    derive?: (opts: any) => any;
-    deps?: string[];
-}
+export type Derive<T> = (ctx: Record<string, any>) => T;
 
-export interface OptProps {
+export interface OptProps<T = unknown> {
     runtime?: boolean;
     scss?: boolean;
     hyprland?: boolean;
-    derive?: (opts: any) => any;
+    derive?: Derive<T>;
     deps?: string[];
 }
 

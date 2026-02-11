@@ -10,7 +10,7 @@ const configManager = new ConfigManager(CONFIG_PATH);
 /**
  * Creates an option with the specified initial value
  */
-export function opt<T>(initial: T, props?: OptProps): Opt<T> {
+export function opt<T>(initial: T, props?: OptProps<T>): Opt<T> {
     return new Opt(initial, configManager, props);
 }
 

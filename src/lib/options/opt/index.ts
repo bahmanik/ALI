@@ -1,6 +1,6 @@
 import { createState } from 'gnim';
 import { ConfigManager } from '../configManager';
-import { OptExports, OptProps } from '../types';
+import { Derive, OptExports, OptProps } from '../types';
 
 type WriteOptions = {
     writeDisk?: boolean;
@@ -10,7 +10,7 @@ export class Opt<T = unknown> {
     public readonly initial: T;
     public readonly runtime: boolean;
     public readonly exports: OptExports;
-    public readonly derive?: (opts: any) => T;
+    public readonly derive?: Derive<T>;
 
     private _id = '';
     private _configManager: ConfigManager;
@@ -63,14 +63,14 @@ export class Opt<T = unknown> {
 
     // Standard methods
     public get(): T {
-        return this._accessor.get();
+        return this._accessor.peek();
     }
 
     public set(value: T, writeOptions: WriteOptions = {}): void {
         const requestedWriteDisk = writeOptions.writeDisk ?? true;
         const writeDisk = this.derive ? false : requestedWriteDisk;
 
-        if (value === this._accessor.get()) return;
+        if (value === this._accessor.peek()) return;
         this._setter(value);
 
         if (writeDisk && !this.runtime) {
@@ -107,7 +107,7 @@ export class Opt<T = unknown> {
     public reset(writeOptions: WriteOptions = {}): string | undefined {
         if (this.runtime || this.derive) return;
 
-        const current = JSON.stringify(this._accessor.get());
+        const current = JSON.stringify(this._accessor.peek());
         const initial = JSON.stringify(this.initial);
         if (current !== initial) {
             this.set(this.initial, writeOptions);

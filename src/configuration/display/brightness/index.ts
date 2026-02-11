@@ -10,8 +10,8 @@ export default {
             "osd.enable",
             "display.brightness.heartbeatPollUser",
         ],
-        derive: (o: any) =>
-            Boolean(o.osd.enable) && Boolean(o.display.brightness.heartbeatPollUser),
+        derive: (o) =>
+            o.osd.enable.get() && o.display.brightness.heartbeatPollUser.get(),
     }),
 
     heartbeatPollMs: opt(1000),
