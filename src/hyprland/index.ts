@@ -189,10 +189,7 @@ class HyprlandManager {
    * @param byId - map of all options by id for quick lookup
    */
   private _isSettingEnabled(valueId: string, byId: Map<string, Opt>): boolean {
-    const a = `${valueId}_enable`;
-    const b = `${valueId}_enabled`;
-
-    const enableOpt = (byId.get(a) ?? byId.get(b)) as Opt | undefined;
+    const enableOpt = (byId.get(`${valueId}_enable`)) as Opt | undefined;
 
     if (!enableOpt) return true;
     return Boolean(enableOpt.get());
