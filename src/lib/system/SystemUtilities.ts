@@ -1,31 +1,16 @@
 import icons from '../icons/icons';
 import { distroIcons } from './distroIcons';
 import { distro } from './osInfo';
-import { CommandResult, NotificationArgs, ServiceStatus } from './types';
+import { CommandResult, ServiceStatus } from './types';
 import GLib from 'gi://GLib?version=2.0';
 import { exec, execAsync } from 'ags/process';
+import { notify } from '../notiofication';
 
 
 export class SystemUtilities {
   /*******************************************
-   *                 Notify                  *
-   *******************************************/
-  /**
-   * Sends a notification using the `notify-send` command.
-   *
-   * This function constructs a notification command based on the provided notification arguments and executes it asynchronously.
-   * It logs an error if the notification fails to send.
-   *
-   * @param notifPayload The notification arguments containing summary, body, appName, iconName, urgency, timeout, category, transient, and id.
-   */
-  public static notify(notifPayload: NotificationArgs): void {
-    SystemUtilities._notify(notifPayload);
-  }
-
-  /*******************************************
    *           Depndency Checking            *
    *******************************************/
-
   /**
    * Checks if all specified dependencies are available
    * @param bins - The list of binaries to check
@@ -44,7 +29,7 @@ export class SystemUtilities {
 
     if (missing.length > 0) {
       console.warn(Error(`missing dependencies: ${missing.join(', ')}`));
-      this._notify({
+      notify({
         summary: 'Dependencies not found!',
         body: `The following dependencies are missing: ${missing.join(', ')}`,
         iconName: icons.ui.warning,
@@ -201,24 +186,5 @@ export class SystemUtilities {
       stdout,
       stderr,
     };
-  }
-
-  private static _notify(notifPayload: NotificationArgs): void {
-    let command = 'notify-send';
-
-    command += ` "${notifPayload.summary} "`;
-
-    if (notifPayload.body !== undefined) command += ` "${notifPayload.body}" `;
-    if (notifPayload.appName !== undefined) command += ` -a "${notifPayload.appName}"`;
-    if (notifPayload.iconName !== undefined) command += ` -i "${notifPayload.iconName}"`;
-    if (notifPayload.urgency !== undefined) command += ` -u "${notifPayload.urgency}"`;
-    if (notifPayload.timeout !== undefined) command += ` -t ${notifPayload.timeout}`;
-    if (notifPayload.category !== undefined) command += ` -c "${notifPayload.category}"`;
-    if (notifPayload.transient !== undefined) command += ' -e';
-    if (notifPayload.id !== undefined) command += ` -r ${notifPayload.id}`;
-
-    execAsync(command).catch((err) => {
-      console.error(`Failed to send notification: ${err.message}`);
-    });
   }
 }
