@@ -1,15 +1,31 @@
-import { Gtk } from "ags/gtk4";
+import { Gdk, Gtk } from "ags/gtk4";
 
 /**
  * Looks up an icon by name and size
  * @param name - The name of the icon to look up
  * @param size - The size of the icon to look up. Defaults to 16
+ * @param scale - The scale of the icon to look up. Defaults to 1
  * @returns The Gtk.IconInfo object if the icon is found, or null if not found
  */
-export function lookUpIcon(name?: string, size = 16): Gtk.IconInfo | null {
-    if (name === undefined) return null;
+/**
+ * Looks up an icon by name and size (GTK4)
+ * @returns Gtk.IconPaintable if found, otherwise null
+ */
+export function lookUpIcon(
+    name?: string,
+    size = 16,
+    scale = 1,
+): Gtk.IconPaintable | null {
+    if (!name) return null;
 
-    return Gtk.IconTheme.get_default().lookup_icon(name, size, Gtk.IconLookupFlags.USE_BUILTIN);
+    const display = Gdk.Display.get_default();
+    if (!display) return null;
+
+    const theme = Gtk.IconTheme.get_for_display(display);
+
+    if (!theme.has_icon(name)) return null;
+
+    return theme.lookup_icon(name, null, size, scale, Gtk.TextDirection.NONE, Gtk.IconLookupFlags.NONE);
 }
 
 /**
