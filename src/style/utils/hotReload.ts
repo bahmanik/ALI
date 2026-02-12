@@ -1,6 +1,6 @@
 import { monitorFile } from 'ags/file';
-import { timeout, Timer } from 'ags/time';
 import { themeManager } from '..';
+import { createDebouncer } from '../../lib/time/debounce';
 
 export const initializeHotReload = async (): Promise<void> => {
     const monitorList = [
@@ -10,7 +10,7 @@ export const initializeHotReload = async (): Promise<void> => {
         `${SRC_DIR}/style/scss/notification.scss`,
     ];
 
-    let debounce: Timer | undefined
+    const debounce = createDebouncer(150)
     let running = false
     let rerun = false
 
@@ -33,10 +33,9 @@ export const initializeHotReload = async (): Promise<void> => {
     }
 
     const schedule = () => {
-        debounce?.cancel()
-        debounce = timeout(150, () => {
+        debounce.schedule(() => {
             // make sure we don't create unhandled promises
-            void applyOnce()
+            void applyOnce().catch(() => { })
         })
     }
 

@@ -4,12 +4,12 @@ import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 
 import { monitorFile, writeFile } from "ags/file";
-import { Timer, timeout } from "ags/time";
 
 import { WallpaperService } from "./wallpaper/WallpaperService";
 import { SystemUtilities } from "../lib/system/SystemUtilities";
 import { isHexColor } from "../lib/valisation/colors";
 import { ensureDirectory } from "../lib/session";
+import { createDebouncer } from "../lib/time/debounce";
 
 type MatugenJson = Record<string, unknown>;
 
@@ -54,7 +54,7 @@ function hasUsableFile(path: string): boolean {
 export class MatugenPaletteService {
   private static _instance: MatugenPaletteService;
 
-  private _debounce?: Timer;
+  private _debounce = createDebouncer(150);
   private _monitor?: Gio.FileMonitor;
   private _managedFile = WallpaperService.getInstance().managedFile;
 
@@ -122,8 +122,7 @@ export class MatugenPaletteService {
   }
 
   private scheduleGenerate(ms = 150): void {
-    this._debounce?.cancel();
-    this._debounce = timeout(ms, () => this.generate().catch(() => { }));
+    this._debounce.schedule(() => this.generate().catch(() => { }), ms);
   }
 
   private buildMatugenCommand(imagePath: string): string[] {

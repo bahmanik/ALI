@@ -4,10 +4,10 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1"
 
 import { monitorFile, writeFile } from "ags/file"
 import { execAsync } from "ags/process"
-import { Timer, timeout } from "ags/time"
 
 import options from "../../configuration"
 import { SwwwDaemon } from "./SwwwDaemon"
+import { createDebouncer } from "../../lib/time/debounce"
 
 const hyprland = AstalHyprland.get_default()
 
@@ -25,7 +25,7 @@ export class WallpaperService {
   private _daemon = new SwwwDaemon()
   private _blockMonitor = false
   private _monitor: Gio.FileMonitor | undefined
-  private _applyDebounce: Timer | undefined
+  private _applyDebounce = createDebouncer(80)
 
   private _managedFile = wallpaper.file.get()
 
@@ -80,8 +80,7 @@ export class WallpaperService {
 
   /** Apply current wallpaper (debounced). */
   public scheduleApply(): void {
-    this._applyDebounce?.cancel()
-    this._applyDebounce = timeout(80, () => this.apply())
+    this._applyDebounce.schedule(() => void this.apply())
   }
 
   /** Apply current wallpaper immediately. */
