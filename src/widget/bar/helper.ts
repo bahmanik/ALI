@@ -12,3 +12,6 @@ export function getBarPos(pos: BarLocation) {
   }
 }
 
+export function getVertical(pos: BarLocation) {
+  return pos === "top" || pos === "bottom"
+}

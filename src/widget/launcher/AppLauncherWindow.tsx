@@ -1,7 +1,7 @@
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import { createState, For, onCleanup } from "gnim"
-import { timeout } from "ags/time"
+import { timeout, type Timer } from "ags/time"
 
 import options from "../../configuration"
 import AstalApps from "gi://AstalApps?version=0.1"
@@ -51,7 +51,7 @@ function AnimatedAppRow({ app, query }: { app: AstalApps.Application; query: str
    const [revealed, setRevealed] = createState<boolean>(!animEnabled)
 
    // reveal on mount (only affects new rows)
-   let tmr: any
+   let tmr: Timer
    if (animEnabled) {
       tmr = timeout(animDelay, () => setRevealed(true))
    }
