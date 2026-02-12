@@ -5,7 +5,7 @@ export default {
     heartbeatPollUser: opt(true),
 
     // Derived runtime flag (DO NOT persist)
-    heartbeatPoll: opt(true, {
+    heartbeatPoll: opt<boolean>(true, {
         deps: [
             "osd.enable",
             "display.brightness.heartbeatPollUser",

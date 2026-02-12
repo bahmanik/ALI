@@ -2,8 +2,8 @@ import Gio from 'gi://Gio?version=2.0';
 import { ensureDirectory } from 'src/lib/session';
 import { errorHandler } from 'src/lib/errors/handler';
 import { monitorFile, readFile, writeFile } from 'ags/file';
-import { SystemUtilities } from 'src/lib/system/SystemUtilities';
 import icons from 'src/lib/icons/icons';
+import { notify } from 'src/lib/notiofication';
 
 /**
  * Manages configuration file operations including reading, writing, and change monitoring
@@ -252,7 +252,7 @@ export class ConfigManager {
 
         console.error(errorMessage);
 
-        SystemUtilities.notify({
+        notify({
             summary: 'Configuration Error',
             body: errorMessage,
             iconName: icons.ui.warning,

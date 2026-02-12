@@ -33,7 +33,7 @@ export class Opt<T = unknown> {
             hyprland = false,
             derive,
             deps = [],
-        }: OptProps = {},
+        }: OptProps<T> = {},
     ) {
         this.initial = initial;
 
