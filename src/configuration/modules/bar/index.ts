@@ -1,28 +1,38 @@
-import { opt } from "src/lib/options";
+import { graft, stem, twig } from "src/configuration/helper";
+import type { BarLocation } from "src/lib/options/types";
 import { overrideScale } from "src/lib/options/factories/overrideScale";
 import { overridePattern } from "src/lib/options/factories/overridePattern";
-import { BarLocation } from "src/lib/options/types";
+
 import corner from "./corner";
 import secondaryBar from "./secondaryBar";
 
-export default {
-    position: opt<BarLocation>("top", { scss: true, hyprland: true }),
+const bar = stem((opt) =>
+  graft(
+    {
+      position: opt<BarLocation>("top", { scss: true, hyprland: true }),
+      margin: opt<number[]>([0, 0, 0, 0]),
 
-    margin: opt<number[]>([0, 0, 0, 0]),
-
-    ...overrideScale({
-        widgetId: "bar",
-        defaultLocal: 12,
-        exports: { scss: true },
+      secondaryBar: secondaryBar(twig(opt)),
+      corner: corner(twig(opt)),
+    },
+    overrideScale(opt, {
+      widgetId: "bar",
+      defaultLocal: 12,
+      exports: { scss: true },
     }),
-
-    ...overridePattern({
-        widgetId: "bar",
-        defaultLocal: { path: "none", size: 12 },
+    overridePattern(opt, {
+      widgetId: "bar",
+      defaultLocal: { path: "none", size: 12 },
     }),
+  )
+);
 
-    /** Optional second bar that can be created/destroyed via `enable` */
-    secondaryBar,
-    /** Outer wallpaper frame / corner cutout */
-    corner,
-};
+export type BarOptions = ReturnType<typeof bar>;
+
+declare module "src/lib/options/root" {
+  interface OptionsRoot {
+    bar: BarOptions;
+  }
+}
+
+export default bar;

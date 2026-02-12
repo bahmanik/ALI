@@ -1,18 +1,16 @@
-import { opt } from "src/lib/options"
+import { stem } from "src/configuration/helper";
 
-export default {
-    // Heartbeat polling for external changes (terminal / binds / other daemons)
-    heartbeatPollUser: opt(true),
+const brightness = stem((opt) => ({
+  heartbeatPollUser: opt(true),
 
-    // Derived runtime flag (DO NOT persist)
-    heartbeatPoll: opt<boolean>(true, {
-        deps: [
-            "osd.enable",
-            "display.brightness.heartbeatPollUser",
-        ],
-        derive: (o) =>
-            o.osd.enable.get() && o.display.brightness.heartbeatPollUser.get(),
-    }),
+  heartbeatPoll: opt(true, {
+    deps: ["osd.enable", "display.brightness.heartbeatPollUser"],
+    derive: ({ root, self }) => root.osd.enable.get() && self.heartbeatPollUser.get(),
+  }),
 
-    heartbeatPollMs: opt(1000),
-}
+  heartbeatPollMs: opt(1000),
+}));
+
+export type OsdBrightnessOptions = ReturnType<typeof brightness>;
+
+export default brightness;

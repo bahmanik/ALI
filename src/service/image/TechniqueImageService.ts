@@ -137,7 +137,7 @@ export class TechniqueImageService {
     if (existing) return existing;
 
     // folder isolates collisions; filename keeps “same name + technique”
-    const pathHash = GLib.compute_checksum_for_string(GLib.ChecksumType.SHA256, src, -1).slice(0, 10);
+    const pathHash = GLib.compute_checksum_for_string(GLib.ChecksumType.SHA256, src, -1)?.slice(0, 10) ?? "basic"
 
     const base = GLib.path_get_basename(src);
     const stem = base.replace(/\.[^.]+$/, "");

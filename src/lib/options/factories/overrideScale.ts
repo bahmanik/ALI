@@ -1,41 +1,36 @@
-import { opt } from "..";
-import type { OptExports } from "../types";
+import type { Opt, OptFactory } from "..";
 
-const at = (o: any, path: string) =>
-    path.split('.').reduce((acc: any, key: string) => acc?.[key], o);
+export interface OverrideScale<Root, Self> {
+    useLocalScale: Opt<boolean, Root, Self>;
+    localScale: Opt<number, Root, Self>;
+    scale: Opt<number, Root, Self>;
+}
 
-export function overrideScale(params: {
-    widgetId: string;              // "bar", "launcher", ...
-    defaultUseLocal?: boolean;
-    defaultLocal?: number;
-    exports?: OptExports;          // typically { scss: true }
-}) {
-    const {
-        widgetId,
-        defaultUseLocal = false,
-        defaultLocal,
-        exports = {},
-    } = params;
+type HasGlobalScale<Root> = Root extends {
+    global: { scale: Opt<number, Root, unknown> };
+} ? Root : never;
 
-    return {
-        useLocalScale: opt(defaultUseLocal),
-        localScale: opt(defaultLocal),
+export function overrideScale<Root, Self>(
+    opt: OptFactory<HasGlobalScale<Root>, Self>,
+    params: {
+        widgetId: string;
+        defaultUseLocal?: boolean;
+        defaultLocal: number;
+        exports?: { scss?: boolean; hyprland?: boolean };
+    }
+): OverrideScale<HasGlobalScale<Root>, Self> {
+    const { widgetId, defaultUseLocal = false, defaultLocal, exports = {} } = params;
 
-        // Effective (derived) scale used by the widget
-        scale: opt(defaultLocal, {
-            ...exports,
-            runtime: true, // derived/runtime-only in your engine semantics
-            deps: [
-                "global.scale",
-                `${widgetId}.useLocalScale`,
-                `${widgetId}.localScale`,
-            ],
-            derive: (o: any) => {
-                const w = at(o, widgetId);
-                return w.useLocalScale.value
-                    ? w.localScale.value
-                    : o.global.scale.value;
-            },
-        }),
-    };
+    const useLocalScale = opt(defaultUseLocal);
+    const localScale = opt(defaultLocal);
+
+    const scale = opt(defaultLocal, {
+        ...exports,
+        runtime: true,
+        deps: ["global.scale", `${widgetId}.useLocalScale`, `${widgetId}.localScale`],
+        derive: ({ root }) =>
+            useLocalScale.get() ? localScale.get() : root.global.scale.get(),
+    });
+
+    return { useLocalScale, localScale, scale };
 }

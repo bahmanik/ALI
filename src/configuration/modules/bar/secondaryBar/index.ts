@@ -1,21 +1,26 @@
-import { opt } from "src/lib/options";
-import { overridePattern } from "src/lib/options/factories/overridePattern";
+import { stem, graft } from "src/configuration/helper";
 import { overrideScale } from "src/lib/options/factories/overrideScale";
-import { BarLocation } from "src/lib/options/types";
+import { overridePattern } from "src/lib/options/factories/overridePattern";
+import type { BarLocation } from "src/lib/options/types";
 
-export default {
-    enable: opt(true),
-    position: opt<BarLocation>("left", { scss: true, hyprland: true }),
-    margin: opt<number[]>([0, 0, 0, 0]),
-
-    ...overrideScale({
-        widgetId: "bar.secondaryBar",
-        defaultLocal: 12,
-        exports: { scss: true },
+const secondaryBar = stem((opt) =>
+  graft(
+    {
+      enable: opt(true),
+      position: opt<BarLocation>("left", { scss: true, hyprland: true }),
+      margin: opt<number[]>([0, 0, 0, 0]),
+    },
+    overrideScale(opt, {
+      widgetId: "bar.secondaryBar",
+      defaultLocal: 12,
+      exports: { scss: true },
     }),
-
-    ...overridePattern({
-        widgetId: "bar.secondaryBar",
-        defaultLocal: { path: "none", size: 12 },
+    overridePattern(opt, {
+      widgetId: "bar.secondaryBar",
+      defaultLocal: { path: "none", size: 12 },
     }),
-}
+  )
+);
+
+export type SecondaryBarOptions = ReturnType<typeof secondaryBar>;
+export default secondaryBar;

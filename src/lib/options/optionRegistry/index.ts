@@ -1,77 +1,45 @@
-import { Opt } from '../opt';
-import { ConfigManager } from '../configManager';
-import { MkOptionsResult, OptionsObject } from '../types';
-import { errorHandler } from 'src/lib/errors/handler';
+import { Opt } from "../opt";
+import { ConfigManager } from "../configManager";
+import { MkOptionsResult, OptionsObject } from "../types";
+import { errorHandler } from "src/lib/errors/handler";
 
-/**
- * Creates and manages a registry of application options
- *
- * Provides functionality to collect, initialize, reset, and track options throughout
- * the application. Handles configuration synchronization and dependency-based subscriptions.
- */
 export class OptionRegistry<T extends OptionsObject> {
-    private _options: Opt[] = [];
+    private _options: Opt<unknown, T, unknown>[] = [];
     private _optionsObj: T;
     private _configManager: ConfigManager;
 
-    // Derived (computed) options
-    private _derived: Opt[] = [];
-    private _derivedOrder: Opt[] = [];
+    private _derived: Opt<unknown, T, unknown>[] = [];
+    private _derivedOrder: Opt<unknown, T, unknown>[] = [];
     private _derivedRecomputeScheduled = false;
 
-    /**
-     * Creates a new option registry
-     *
-     * @param optionsObj - The object containing option definitions
-     * @param configManager - The configuration manager to handle persistence
-     */
     constructor(optionsObj: T, configManager: ConfigManager) {
         this._optionsObj = optionsObj;
         this._configManager = configManager;
         this._initializeOptions();
     }
 
-    /**
-     * Returns all registered options as an array
-     */
     public toArray(): Opt[] {
         return this._options;
     }
 
-    /**
-     * Resets all options to their initial values
-     *
-     * @returns Newline-separated list of IDs for options that were reset
-     */
     public async reset(): Promise<string> {
         const results = await this._resetAllOptions(this._options);
-        return results.join('\n');
+        return results.join("\n");
     }
 
-    /**
-     * Registers a callback for options matching the provided dependency prefixes
-     *
-     * @param optionsToWatch - Array of option ID prefixes to watch
-     * @param callback - Function to call when matching options change
-     */
     public handler(optionsToWatch: string[], callback: () => void): void {
         optionsToWatch.forEach((prefix) => {
-            const matchingOptions = this._options.filter((opt) => opt.id.startsWith(prefix));
-
+            const matchingOptions = this._options.filter((opt) =>
+                opt.id.startsWith(prefix)
+            );
             matchingOptions.forEach((opt) => opt.subscribe(callback));
         });
     }
 
-    /**
-     * Updates options based on changes to the config file
-     *
-     * Synchronizes in-memory option values with the current state of the config file
-     */
     public handleConfigFileChange(): void {
         const newConfig = this._configManager.readConfig();
 
         for (const opt of this._options) {
-            // Derived options are runtime-computed; config changes only affect their inputs.
             if (opt.derive) continue;
 
             const newVal = this._configManager.getNestedValue(newConfig, opt.id);
@@ -83,18 +51,14 @@ export class OptionRegistry<T extends OptionsObject> {
 
             const oldVal = opt.get();
             if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
-                opt.set(newVal as any, { writeDisk: false });
+                // config JSON is untyped — keep runtime the same, no `any`.
+                opt.set(newVal as unknown, { writeDisk: false });
             }
         }
 
         this._scheduleDerivedRecompute();
     }
 
-    /**
-     * Creates the enhanced options object with additional methods
-     *
-     * @returns The original options object enhanced with registry methods
-     */
     public createEnhancedOptions(): T & MkOptionsResult {
         return Object.assign(this._optionsObj, {
             toArray: this.toArray.bind(this),
@@ -104,23 +68,20 @@ export class OptionRegistry<T extends OptionsObject> {
     }
 
     private _setupDerivedOptions(): void {
-        this._derived = this._options.filter((o) => typeof o.derive === 'function');
+        this._derived = this._options.filter((o) => typeof o.derive === "function");
         if (this._derived.length === 0) return;
 
         for (const opt of this._derived) {
             if (!opt.deps || opt.deps.length === 0) {
                 console.error(
-                    `[options] Derived option '${opt.id}' is missing 'deps'. ` +
-                    `It will not update reactively until you add deps: [...]`,
+                    `[options] Derived option '${opt.id}' is missing 'deps'. It will not update reactively until you add deps: [...]`
                 );
             }
         }
 
         this._derivedOrder = this._topoSortDerivedOptions(this._derived);
 
-        // Subscribe to all dependency options (excluding derived options themselves).
         const depOptIds = new Set<string>();
-
         for (const derivedOpt of this._derived) {
             for (const prefix of derivedOpt.deps ?? []) {
                 for (const opt of this._options) {
@@ -136,7 +97,6 @@ export class OptionRegistry<T extends OptionsObject> {
             opt?.subscribe(schedule);
         }
 
-        // Initial compute
         this._recomputeDerivedOptions();
     }
 
@@ -146,7 +106,6 @@ export class OptionRegistry<T extends OptionsObject> {
 
         this._derivedRecomputeScheduled = true;
 
-        // Microtask batching: multiple option updates in the same tick only recompute once.
         Promise.resolve().then(() => {
             this._derivedRecomputeScheduled = false;
             this._recomputeDerivedOptions();
@@ -158,16 +117,24 @@ export class OptionRegistry<T extends OptionsObject> {
 
         for (const opt of this._derivedOrder) {
             try {
-                const next = opt.derive!(this._optionsObj);
-                opt.set(next as any, { writeDisk: false });
+                const next = opt.derive!({
+                    root: this._optionsObj,
+                    self: opt.selfRef,
+                });
+
+                opt.set(next as unknown, { writeDisk: false });
             } catch (error) {
                 errorHandler(error);
             }
         }
     }
 
-    private _topoSortDerivedOptions(derived: Opt[]): Opt[] {
-        const byId = new Map<string, Opt>(derived.map((o) => [o.id, o]));
+    private _topoSortDerivedOptions(
+        derived: Opt<unknown, T, unknown>[]
+    ): Opt<unknown, T, unknown>[] {
+        const byId = new Map<string, Opt<unknown, T, unknown>>(
+            derived.map((o) => [o.id, o])
+        );
 
         const indegree = new Map<string, number>();
         const edges = new Map<string, Set<string>>();
@@ -185,7 +152,6 @@ export class OptionRegistry<T extends OptionsObject> {
             indegree.set(toId, (indegree.get(toId) ?? 0) + 1);
         };
 
-        // Build edges: depDerived -> derived
         for (const target of derived) {
             for (const prefix of target.deps ?? []) {
                 for (const candidate of derived) {
@@ -196,13 +162,12 @@ export class OptionRegistry<T extends OptionsObject> {
             }
         }
 
-        // Kahn
         const queue: string[] = [];
         for (const [id, deg] of indegree.entries()) {
             if (deg === 0) queue.push(id);
         }
 
-        const ordered: Opt[] = [];
+        const ordered: Opt<unknown, T, unknown>[] = [];
         while (queue.length > 0) {
             const id = queue.shift()!;
             const opt = byId.get(id);
@@ -216,7 +181,7 @@ export class OptionRegistry<T extends OptionsObject> {
 
         if (ordered.length !== derived.length) {
             console.error(
-                `[options] Derived option dependency cycle detected. Falling back to declaration order.`,
+                `[options] Derived option dependency cycle detected. Falling back to declaration order.`
             );
             return derived;
         }
@@ -224,14 +189,12 @@ export class OptionRegistry<T extends OptionsObject> {
         return ordered;
     }
 
-    /**
-     * Initializes the option registry by collecting options and setting up monitoring
-     */
     private _initializeOptions(): void {
-        this._options = this._collectOptions(this._optionsObj);
+        // IMPORTANT:
+        // We collect options *per top-level module* so `self` can be the module subtree,
+        // not the immediate nested object that contains the option.
+        this._options = this._collectTopLevelModules(this._optionsObj as unknown as Record<string, unknown>);
         this._initializeFromConfig();
-
-        // After base options load from disk, wire up derived options and compute them once.
         this._setupDerivedOptions();
 
         this._configManager.onConfigChanged(() => {
@@ -239,26 +202,32 @@ export class OptionRegistry<T extends OptionsObject> {
         });
     }
 
-    /**
-     * Initializes option values from the saved configuration
-     */
-    private _initializeFromConfig(): void {
-        const config = this._configManager.readConfig();
+    private _collectTopLevelModules(root: Record<string, unknown>): Opt<unknown, T, unknown>[] {
+        const result: Opt<unknown, T, unknown>[] = [];
 
-        for (const opt of this._options) {
-            opt.init(config);
+        for (const key of Object.keys(root)) {
+            const subtree = root[key];
+            if (this._isNestedObject(subtree)) {
+                result.push(
+                    ...this._collectOptions(subtree, key, subtree)
+                );
+            }
         }
+
+        return result;
     }
 
-    /**
-     * Recursively collects all option instances from an object structure
-     *
-     * @param sourceObject - The object to search for options
-     * @param path - Current path in the object hierarchy
-     * @returns Array of found option instances
-     */
-    private _collectOptions(sourceObject: Record<string, unknown>, path = ''): Opt[] {
-        const result: Opt[] = [];
+    private _initializeFromConfig(): void {
+        const config = this._configManager.readConfig();
+        for (const opt of this._options) opt.init(config);
+    }
+
+    private _collectOptions(
+        sourceObject: Record<string, unknown>,
+        path = "",
+        moduleRoot: unknown
+    ): Opt<unknown, T, unknown>[] {
+        const result: Opt<unknown, T, unknown>[] = [];
 
         try {
             for (const key in sourceObject) {
@@ -266,10 +235,17 @@ export class OptionRegistry<T extends OptionsObject> {
                 const id = path ? `${path}.${key}` : key;
 
                 if (value instanceof Opt) {
-                    value.id = id;
-                    result.push(value);
+                    const opt = value as Opt<unknown, T, unknown>;
+                    opt.id = id;
+
+                    // IMPORTANT:
+                    // self must be the *host object that owns this opt property*,
+                    // so derive can safely do self.<prop>.get().
+                    opt.selfRef = sourceObject as unknown;
+
+                    result.push(opt);
                 } else if (this._isNestedObject(value)) {
-                    result.push(...this._collectOptions(value, id));
+                    result.push(...this._collectOptions(value, id, moduleRoot));
                 }
             }
         } catch (error) {
@@ -279,42 +255,23 @@ export class OptionRegistry<T extends OptionsObject> {
         return result;
     }
 
-    /**
-     * Resets all options to their initial values with a delay between operations
-     *
-     * @param opts - Array of options to reset
-     * @returns Array of IDs for options that were reset
-     */
     private async _resetAllOptions(opts: Opt[]): Promise<string[]> {
         const results: string[] = [];
-
         for (const opt of opts) {
             const id = opt.reset();
-
             if (id !== undefined) {
                 results.push(id);
                 await this._sleep(50);
             }
         }
-
         return results;
     }
 
-    /**
-     * Simple promise-based sleep function
-     *
-     * @param ms - Milliseconds to sleep
-     */
     private _sleep(ms = 0): Promise<void> {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    /**
-     * Type guard to check if a value is a non-null object that can be traversed
-     *
-     * @param value - The value to check
-     */
     private _isNestedObject(value: unknown): value is Record<string, unknown> {
-        return typeof value === 'object' && value !== null;
+        return typeof value === "object" && value !== null;
     }
 }

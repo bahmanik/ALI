@@ -1,17 +1,25 @@
-import { opt } from "src/lib/options";
+import { stem } from "src/configuration/helper";
 import { hyprOpt } from "src/lib/options/factories/hypeOpt";
 
-export default {
-    enable: opt(false),
+const hyprland = stem((opt) => ({
+  enable: opt(false),
 
-    // Hyprland section: general { ... }
-    general: {
-        ...hyprOpt("gaps_in", 15),
-        ...hyprOpt("gaps_out", 20),
-    },
+  general: {
+    ...hyprOpt(opt, "gaps_in", 15),
+    ...hyprOpt(opt, "gaps_out", 20),
+  },
 
-    // Hyprland section: decoration { ... }
-    decoration: {
-        ...hyprOpt("rounding", 10),
-    },
-};
+  decoration: {
+    ...hyprOpt(opt, "rounding", 10),
+  },
+}));
+
+export type HyprlandOptions = ReturnType<typeof hyprland>;
+
+declare module "src/lib/options/root" {
+  interface OptionsRoot {
+    hyprland: HyprlandOptions;
+  }
+}
+
+export default hyprland;

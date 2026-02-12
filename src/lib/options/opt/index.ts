@@ -1,18 +1,18 @@
-import { createState } from 'gnim';
-import { ConfigManager } from '../configManager';
-import { Derive, OptExports, OptProps } from '../types';
+import { Accessor, createState } from "gnim";
+import { ConfigManager } from "../configManager";
+import { Derive, OptExports, OptProps } from "../types";
 
-type WriteOptions = {
-    writeDisk?: boolean;
-}
+type WriteOptions = { writeDisk?: boolean };
 
-export class Opt<T = unknown> {
+export class Opt<T = unknown, Root = unknown, Self = unknown> {
     public readonly initial: T;
     public readonly runtime: boolean;
     public readonly exports: OptExports;
-    public readonly derive?: Derive<T>;
+    public readonly derive?: Derive<Root, Self, T>;
 
-    private _id = '';
+    private _id = "";
+    private _selfRef: Self | undefined;
+
     private _configManager: ConfigManager;
     private _accessor: ReturnType<typeof createState<T>>[0];
     private _setter: ReturnType<typeof createState<T>>[1];
@@ -21,9 +21,9 @@ export class Opt<T = unknown> {
      * Dependency prefixes for derived options.
      * When any option whose id starts with one of these prefixes changes,
      * the registry recomputes this option.
-
      */
     public readonly deps: string[];
+
     constructor(
         initial: T,
         configManager: ConfigManager,
@@ -33,13 +33,11 @@ export class Opt<T = unknown> {
             hyprland = false,
             derive,
             deps = [],
-        }: OptProps<T> = {},
+        }: OptProps<Root, Self, T> = {}
     ) {
         this.initial = initial;
 
-        const isDerived = typeof derive === 'function';
-
-        // Derived options are runtime-computed; never persist to disk.
+        const isDerived = typeof derive === "function";
         this.runtime = isDerived ? true : runtime;
 
         this.derive = derive;
@@ -56,12 +54,11 @@ export class Opt<T = unknown> {
         };
     }
 
-    // Make Opt work like Accessor in JSX
-    public as<R>(transform: (value: T) => R): any {
+    // Make Opt work like Accessor in JSX (no any)
+    public as<R>(transform: (value: T) => R): Accessor<R> {
         return this._accessor(transform);
     }
 
-    // Standard methods
     public get(): T {
         return this._accessor.peek();
     }
@@ -94,15 +91,23 @@ export class Opt<T = unknown> {
         this._id = newId;
     }
 
+    /** Internal: set by OptionRegistry during collection (used for derive({ self })). */
+    public set selfRef(ref: Self | undefined) {
+        this._selfRef = ref;
+    }
+
+    /** Internal: read by OptionRegistry. */
+    public get selfRef(): Self | undefined {
+        return this._selfRef;
+    }
 
     public init(config: Record<string, unknown>): void {
         // Derived options never read from disk.
         if (this.derive) return;
 
         const value = this._configManager.getNestedValue(config, this._id);
-        if (value !== undefined) this._setter(value as T);
+        if (value !== undefined) this._setter(value as unknown as T);
     }
-
 
     public reset(writeOptions: WriteOptions = {}): string | undefined {
         if (this.runtime || this.derive) return;
@@ -116,7 +121,6 @@ export class Opt<T = unknown> {
         return;
     }
 
-    // Delegate to real accessor for full compatibility
     public subscribe(callback: () => void) {
         return this._accessor.subscribe(callback);
     }
