@@ -1,4 +1,5 @@
 import type { Opt, OptFactory } from "..";
+import { dep } from "..";
 import type { ImageTechnique, OptExports } from "../types";
 
 export interface OverrideImage<Root, Self> {
@@ -27,7 +28,6 @@ export function overrideImage<Root, Self>(
     }
 ): OverrideImage<HasDisplayWallpaperFile<Root>, Self> {
     const {
-        widgetId,
         defaultUseLocal = false,
         defaultLocal = "",
         defaultEnableTechnique = false,
@@ -44,9 +44,9 @@ export function overrideImage<Root, Self>(
     const outerImage = opt<string>("", {
         ...(exports.outerImage ?? {}),
         deps: [
-            "display.wallpaper.file",
-            `${widgetId}.useLocalOuterImage`,
-            `${widgetId}.localOuterImage`,
+            dep.root((r) => r.display.wallpaper.file),
+            dep.opt(useLocalOuterImage),
+            dep.opt(localOuterImage),
         ],
         derive: ({ root }) =>
             useLocalOuterImage.get()

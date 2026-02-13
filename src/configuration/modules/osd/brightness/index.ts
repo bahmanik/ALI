@@ -1,10 +1,11 @@
 import { stem } from "src/configuration/helper";
+import { dep } from "src/lib/options";
 
 const brightness = stem((opt) => ({
   heartbeatPollUser: opt(true),
 
   heartbeatPoll: opt(true, {
-    deps: ["osd.enable", "display.brightness.heartbeatPollUser"],
+    deps: [dep.root((r) => r.osd.enable), dep.self((s) => s.heartbeatPollUser)],
     derive: ({ root, self }) => root.osd.enable.get() && self.heartbeatPollUser.get(),
   }),
 

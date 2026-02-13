@@ -1,6 +1,6 @@
 import { Accessor, createState } from "gnim";
 import { ConfigManager } from "../configManager";
-import { Derive, OptExports, OptProps } from "../types";
+import type { DepRef, Derive, OptExports, OptProps } from "../types";
 
 type WriteOptions = { writeDisk?: boolean };
 
@@ -22,7 +22,7 @@ export class Opt<T = unknown, Root = unknown, Self = unknown> {
      * When any option whose id starts with one of these prefixes changes,
      * the registry recomputes this option.
      */
-    public readonly deps: string[];
+    public readonly deps: DepRef<Root, Self>[];
 
     constructor(
         initial: T,

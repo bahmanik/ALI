@@ -1,4 +1,5 @@
 import type { Opt, OptFactory } from "..";
+import { dep } from "..";
 
 export interface OverrideScale<Root, Self> {
     useLocalScale: Opt<boolean, Root, Self>;
@@ -19,7 +20,7 @@ export function overrideScale<Root, Self>(
         exports?: { scss?: boolean; hyprland?: boolean };
     }
 ): OverrideScale<HasGlobalScale<Root>, Self> {
-    const { widgetId, defaultUseLocal = false, defaultLocal, exports = {} } = params;
+    const { defaultUseLocal = false, defaultLocal, exports = {} } = params;
 
     const useLocalScale = opt(defaultUseLocal);
     const localScale = opt(defaultLocal);
@@ -27,7 +28,11 @@ export function overrideScale<Root, Self>(
     const scale = opt(defaultLocal, {
         ...exports,
         runtime: true,
-        deps: ["global.scale", `${widgetId}.useLocalScale`, `${widgetId}.localScale`],
+        deps: [
+            dep.root((r) => r.global.scale),
+            dep.opt(useLocalScale),
+            dep.opt(localScale),
+        ],
         derive: ({ root }) =>
             useLocalScale.get() ? localScale.get() : root.global.scale.get(),
     });

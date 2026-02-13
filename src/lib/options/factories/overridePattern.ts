@@ -1,4 +1,5 @@
 import type { Opt, OptFactory } from "..";
+import { dep } from "..";
 import type { OptExports, Pattern } from "../types";
 
 export interface OverridePattern<Root, Self> {
@@ -25,7 +26,6 @@ export function overridePattern<Root, Self>(
     }
 ): OverridePattern<HasGlobalPattern<Root>, Self> {
     const {
-        widgetId,
         defaultEnable = false,
         defaultUseLocal = false,
         defaultLocal = { path: "", size: 1 },
@@ -39,10 +39,10 @@ export function overridePattern<Root, Self>(
     const patternPath = opt<string>("", {
         ...(exports.path ?? {}),
         deps: [
-            "global.pattern",
-            `${widgetId}.patternEnable`,
-            `${widgetId}.useLocalPattern`,
-            `${widgetId}.localPattern`,
+            dep.root((r) => r.global.pattern),
+            dep.opt(patternEnable),
+            dep.opt(useLocalPattern),
+            dep.opt(localPattern),
         ],
         derive: ({ root }) => {
             if (!patternEnable.get()) return "none";
@@ -53,7 +53,11 @@ export function overridePattern<Root, Self>(
 
     const patternSize = opt<number>(defaultLocal.size, {
         ...(exports.size ?? {}),
-        deps: ["global.pattern", `${widgetId}.useLocalPattern`, `${widgetId}.localPattern`],
+        deps: [
+            dep.root((r) => r.global.pattern),
+            dep.opt(useLocalPattern),
+            dep.opt(localPattern),
+        ],
         derive: ({ root }) => {
             const p = useLocalPattern.get() ? localPattern.get() : root.global.pattern.get();
             return p.size;

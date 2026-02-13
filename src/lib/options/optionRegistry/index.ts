@@ -67,6 +67,80 @@ export class OptionRegistry<T extends OptionsObject> {
         });
     }
 
+
+    private _expandDepsToOpts(target: Opt<unknown, T, unknown>): Opt<unknown, T, unknown>[] {
+        if (!target.deps || target.deps.length === 0) return [];
+
+        const ctx = {
+            root: this._optionsObj,
+            self: target.selfRef,
+        } as unknown as { root: T; self: unknown };
+
+        const expanded: Opt<unknown, T, unknown>[] = [];
+
+        for (const d of target.deps) {
+            try {
+                const input = (d as unknown as { resolve: (c: unknown) => unknown }).resolve(ctx as unknown);
+                expanded.push(...this._expandDepInput(input));
+            } catch (error) {
+                errorHandler(error);
+            }
+        }
+
+        // de-dupe by id
+        const uniq = new Map<string, Opt<unknown, T, unknown>>();
+        for (const opt of expanded) uniq.set(opt.id, opt);
+        return [...uniq.values()];
+    }
+
+    private _expandDepInput(input: unknown): Opt<unknown, T, unknown>[] {
+        if (input instanceof Opt) return [input as Opt<unknown, T, unknown>];
+
+        if (typeof input === "object" && input !== null) {
+            const kind = (input as { kind?: unknown }).kind;
+
+            if (kind === "prefix") {
+                const prefix = (input as { prefix?: unknown }).prefix;
+                if (typeof prefix !== "string") return [];
+                return this._options.filter((o) => o.id.startsWith(prefix));
+            }
+
+            if (kind === "subtree") {
+                const node = (input as { node?: unknown }).node;
+                return this._collectOptRefsFromObject(node);
+            }
+        }
+
+        return [];
+    }
+
+    private _collectOptRefsFromObject(node: unknown): Opt<unknown, T, unknown>[] {
+        const out: Opt<unknown, T, unknown>[] = [];
+        const seen = new WeakSet<object>();
+
+        const walk = (val: unknown) => {
+            if (val instanceof Opt) {
+                out.push(val as Opt<unknown, T, unknown>);
+                return;
+            }
+
+            if (typeof val !== "object" || val === null) return;
+            if (seen.has(val)) return;
+            seen.add(val);
+
+            for (const key of Object.keys(val as Record<string, unknown>)) {
+                walk((val as Record<string, unknown>)[key]);
+            }
+        };
+
+        walk(node);
+
+        // de-dupe
+        const uniq = new Map<string, Opt<unknown, T, unknown>>();
+        for (const opt of out) uniq.set(opt.id, opt);
+        return [...uniq.values()];
+    }
+
     private _setupDerivedOptions(): void {
         this._derived = this._options.filter((o) => typeof o.derive === "function");
         if (this._derived.length === 0) return;
@@ -83,11 +157,9 @@ export class OptionRegistry<T extends OptionsObject> {
 
         const depOptIds = new Set<string>();
         for (const derivedOpt of this._derived) {
-            for (const prefix of derivedOpt.deps ?? []) {
-                for (const opt of this._options) {
-                    if (opt.derive) continue;
-                    if (opt.id.startsWith(prefix)) depOptIds.add(opt.id);
-                }
+            for (const depOpt of this._expandDepsToOpts(derivedOpt)) {
+                if (depOpt.derive) continue;
+                depOptIds.add(depOpt.id);
             }
         }
 
@@ -153,12 +225,13 @@ export class OptionRegistry<T extends OptionsObject> {
         };
 
         for (const target of derived) {
-            for (const prefix of target.deps ?? []) {
-                for (const candidate of derived) {
-                    if (candidate.id === target.id) continue;
-                    if (!candidate.id.startsWith(prefix)) continue;
-                    addEdge(candidate.id, target.id);
-                }
+            const derivedDeps = this._expandDepsToOpts(target)
+                .filter((o) => typeof o.derive === "function")
+                .map((o) => o.id);
+
+            for (const depId of derivedDeps) {
+                if (!byId.has(depId)) continue;
+                addEdge(depId, target.id);
             }
         }
 

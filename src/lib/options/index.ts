@@ -1,6 +1,7 @@
 import { ConfigManager } from "./configManager";
 import { Opt } from "./opt";
 import { OptionRegistry } from "./optionRegistry";
+import { dep } from "./dep";
 import type { OptionsRoot } from "src/lib/options/root";
 import type {
     MkOptionsResult,
@@ -9,6 +10,9 @@ import type {
     OptProps,
     Derive,
     DeriveCtx,
+    DepCtx,
+    DepRef,
+    DepInput,
 } from "./types";
 
 const configManager = new ConfigManager(CONFIG_FILE);
@@ -55,5 +59,6 @@ export function mkOptions<Root extends OptionsRoot>(
 }
 
 export { Opt };
+export { dep };
 export type { OptionsRoot };
-export type { OptFactory, ModuleFactory, OptProps, DeriveCtx, Derive };
+export type { OptFactory, ModuleFactory, OptProps, DeriveCtx, Derive, DepCtx, DepRef, DepInput };

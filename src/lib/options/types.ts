@@ -19,13 +19,53 @@ export type Derive<Root, Self, T> = {
     bivarianceHack(ctx: DeriveCtx<Root, Self>): T;
 }["bivarianceHack"];
 
+/**
+ * A lightweight, assignment-safe reference shape for Opt instances.
+ *
+ * Why: Opt<T> is invariant in T (because it contains a private setter that
+ * consumes T). That makes Opt<boolean> not assignable to Opt<unknown>.
+ *
+ * For deps we only need to carry around an Opt *reference* at runtime. So we
+ * type deps in terms of this minimal shape, while still requiring callers to
+ * select real Opts (they have id + get()).
+ */
+export type OptRef<T = unknown> = {
+    readonly id: string;
+    get(): T;
+};
+
+export type DepCtx<Root, Self> = DeriveCtx<Root, Self>;
+
+export type DepPrefix = {
+    kind: "prefix";
+    prefix: string;
+};
+
+export type DepSubtree = {
+    kind: "subtree";
+    node: Record<string, unknown>;
+};
+
+export type DepInput = OptRef | DepPrefix | DepSubtree;
+
+/**
+ * IMPORTANT: Bivariant callback type (same reason as Derive).
+ */
+export type DepResolver<Root, Self> = {
+    bivarianceHack(ctx: DepCtx<Root, Self>): DepInput;
+}["bivarianceHack"];
+
+export type DepRef<Root, Self> = {
+    resolve: DepResolver<Root, Self>;
+};
+
 export interface OptProps<Root = unknown, Self = unknown, T = unknown> {
     runtime?: boolean;
     scss?: boolean;
     hyprland?: boolean;
 
     derive?: Derive<Root, Self, T>;
-    deps?: string[];
+    deps?: DepRef<Root, Self>[];
 }
 
 export interface OptExports {
