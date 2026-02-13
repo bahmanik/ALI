@@ -335,6 +335,7 @@ export default function Bar({ gdkmonitor, name, option, namespace = "bar", kind 
       visible
       namespace={namespace}
       name={name}
+      class={`bar ${kind === "primary" ? "bar-primary" : "bar-secondary"}`}
       gdkmonitor={gdkmonitor}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       anchor={option.position.as ? option.position.as((a: BarLocation) => getBarPos(a)) : getBarPos(option.position.get())}
@@ -398,7 +399,8 @@ export default function Bar({ gdkmonitor, name, option, namespace = "bar", kind 
             paintable = null
           })
         }}
-        css={`background: rgba(0,0,0,0.25); border-radius: 16px; padding: 6px 12px;`}>
+        class="bar-panel"
+      >
         <box $type="start">
           <Clock />
           <Mpris />

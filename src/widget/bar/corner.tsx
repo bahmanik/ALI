@@ -7,32 +7,38 @@ import { onCleanup } from "ags";
 import options from "../../configuration";
 import { barsGeometry } from "./geometry";
 import { TechniqueImageService } from "../../service/image/TechniqueImageService";
+import {
+  clearToTransparent,
+  paintCoverSurface,
+  paintSolid,
+  paintTiledPattern,
+  punchRoundedHole,
+  type Rgba,
+} from "./cornerPaint";
 
 function makeClickThrough(win: Astal.Window) {
+  // GI surfaces can appear a few ticks after window creation.
   let tries = 0;
   const tick = () => {
     const surf = win.get_native()?.get_surface();
     if (surf) {
-      // Empty region => window receives NO input => clicks pass through
+      // Empty region => window receives NO input => clicks pass through.
       surf.set_input_region(new giCairo.Region());
       return;
     }
-
     if (++tries < 60) setTimeout(tick, 16);
   };
   tick();
 }
 
-function roundedRect(ctx: any, x: number, y: number, w: number, h: number, r: number) {
-  r = Math.max(0, Math.min(r, Math.min(w, h) / 2));
-  const pi2 = Math.PI / 2;
-  ctx.newPath();
-  ctx.arc(x + w - r, y + r, r, -pi2, 0);
-  ctx.arc(x + w - r, y + h - r, r, 0, pi2);
-  ctx.arc(x + r, y + h - r, r, pi2, Math.PI);
-  ctx.arc(x + r, y + r, r, Math.PI, 1.5 * Math.PI);
-  ctx.closePath();
-}
+type Insets = {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+  radius: number;
+  rectCount: number;
+};
 
 export default function Corner(gdkmonitor: Gdk.Monitor) {
   let win: Astal.Window;
@@ -40,49 +46,53 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
 
   const monitorId = gdkmonitor.connector;
   const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor;
-
-  // Gate painting until drawingarea has a real allocation
-  const monGeo = gdkmonitor.get_geometry?.();
-  const MON_W = monGeo?.width ?? 0;
-  const MON_H = monGeo?.height ?? 0;
-  const MONITOR_ALLOC_RATIO = 0.85;
-  const MIN_W = MON_W ? Math.floor(MON_W * MONITOR_ALLOC_RATIO) : 800;
-  const MIN_H = MON_H ? Math.floor(MON_H * MONITOR_ALLOC_RATIO) : 600;
-
   const imgSvc = TechniqueImageService.getInstance();
 
-  // Outer image surface cache
-  let surface: any = null;
-  let surfaceW = 1;
-  let surfaceH = 1;
+  // --- caches ---
+  let outerSurface: any = null;
+  let outerW = 1;
+  let outerH = 1;
 
-  // Watch management (important: path can stay the same while file content changes)
-  let unwatch: (() => void) | null = null;
+  let patternSurface: any = null;
+  let patternW = 1;
+  let patternH = 1;
+
+  // --- watch management (path may remain the same while file content changes) ---
+  let unwatchOuter: (() => void) | null = null;
+  let unwatchPattern: (() => void) | null = null;
   let watchGen = 0;
 
   const queueDraw = () => {
-    try { da?.queue_draw(); } catch { }
+    try {
+      da?.queue_draw();
+    } catch { }
   };
 
-  const computeInsets = (w: number, h: number) => {
+  const parseSolid = (): Rgba => {
+    const color = options.bar.corner.solidColor.get?.() ?? "#111318";
+    const op = Number(options.bar.corner.solidOpacity.get?.() ?? 100);
+    const aMul = Math.max(0, Math.min(1, op > 1 ? op / 100 : op));
+
+    const rgba = new Gdk.RGBA();
+    const ok = rgba.parse(color);
+
+    if (!ok) return { r: 0, g: 0, b: 0, a: aMul };
+    // GI properties exist at runtime (red/green/blue/alpha)
+    // @ts-ignore
+    return { r: rgba.red, g: rgba.green, b: rgba.blue, a: rgba.alpha * aMul };
+  };
+
+  const computeInsets = (w: number, h: number): Insets => {
     const geo = barsGeometry.get()[monitorId] ?? {};
     const rects = [geo.primary, geo.secondary].filter(Boolean) as any[];
 
     let top = 0, bottom = 0, left = 0, right = 0;
     for (const r of rects) {
       switch (r.position) {
-        case "top":
-          top = Math.max(top, r.y + r.height);
-          break;
-        case "bottom":
-          bottom = Math.max(bottom, h - r.y);
-          break;
-        case "left":
-          left = Math.max(left, r.x + r.width);
-          break;
-        case "right":
-          right = Math.max(right, w - r.x);
-          break;
+        case "top": top = Math.max(top, r.y + r.height); break;
+        case "bottom": bottom = Math.max(bottom, h - r.y); break;
+        case "left": left = Math.max(left, r.x + r.width); break;
+        case "right": right = Math.max(right, w - r.x); break;
       }
     }
 
@@ -99,59 +109,98 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
     };
   };
 
-  const loadSurfaceFrom = (outPath: string, gen: number) => {
+  const loadOuterFrom = (outPath: string, gen: number) => {
     if (gen !== watchGen) return;
-
     try {
-      // Reload even if outPath string is identical (file may have been overwritten)
-      surface = giCairo.ImageSurface.createFromPNG(outPath);
-      surfaceW = surface.getWidth();
-      surfaceH = surface.getHeight();
+      outerSurface = giCairo.ImageSurface.createFromPNG(outPath);
+      outerW = outerSurface.getWidth();
+      outerH = outerSurface.getHeight();
       queueDraw();
     } catch (e) {
       console.error("corner outerImage load failed:", e);
     }
   };
 
-  const rewatchImage = () => {
-    // bump generation so late callbacks are ignored
-    const gen = ++watchGen;
-
-    // stop old watch
-    unwatch?.();
-    unwatch = null;
-
-    // clear immediately (so old wallpaper doesn't linger)
-    surface = null;
-    queueDraw();
-
-    const src = options.bar.corner.outerImage.get();
-    if (!src) return;
-
-    const enabled = options.bar.corner.enableTechnique.get();
-    const technique = options.bar.corner.technique.get();
-
-    unwatch = imgSvc.watchCornerOuterImage(src, enabled, technique, (outPath) => {
-      loadSurfaceFrom(outPath, gen);
-    });
+  const loadPatternFrom = (outPath: string, gen: number) => {
+    if (gen !== watchGen) return;
+    try {
+      patternSurface = giCairo.ImageSurface.createFromPNG(outPath);
+      patternW = patternSurface.getWidth();
+      patternH = patternSurface.getHeight();
+      queueDraw();
+    } catch (e) {
+      console.error("corner pattern load failed:", e);
+    }
   };
 
-  const wireRedraw = () => {
+  const stopWatches = () => {
+    try { unwatchOuter?.(); } catch { }
+    try { unwatchPattern?.(); } catch { }
+    unwatchOuter = null;
+    unwatchPattern = null;
+  };
+
+  const rewatchAssets = () => {
+    const gen = ++watchGen;
+    stopWatches();
+
+    // Clear old content immediately, so stale wallpaper doesn't linger.
+    outerSurface = null;
+    patternSurface = null;
+    queueDraw();
+
+    const fill = options.bar.corner.fill.get?.() ?? "image";
+    if (fill === "solid") return;
+
+    if (fill === "image") {
+      const src = options.bar.corner.outerImage.get();
+      if (!src) return;
+
+      const enabled = options.bar.corner.enableTechnique.get();
+      const technique = options.bar.corner.technique.get();
+
+      unwatchOuter = imgSvc.watchCornerOuterImage(src, enabled, technique, (outPath) => {
+        loadOuterFrom(outPath, gen);
+      });
+      return;
+    }
+
+    if (fill === "pattern") {
+      const p = options.bar.corner.patternPath?.get?.() ?? "none";
+      if (!p || p === "none") return;
+
+      // convert to png + watch file changes (no technique for patterns)
+      unwatchPattern = imgSvc.watch(p, false, "none", "corner-pattern", (outPath) => {
+        loadPatternFrom(outPath, gen);
+      });
+    }
+  };
+
+  const subscribeRedraw = () => {
     const unsubs: Array<() => void> = [];
 
-    // redraw when bar geometry changes
+    // geometry changes
     unsubs.push(barsGeometry.subscribe(queueDraw));
 
-    // redraw when corner config changes
+    // hole geometry
     unsubs.push(options.bar.corner.gap.subscribe(queueDraw));
     unsubs.push(options.bar.corner.edge.subscribe(queueDraw));
     unsubs.push(options.bar.corner.radius.subscribe(queueDraw));
 
-    // rebuild/reload image when its inputs change (path/technique/enable)
-    const reload = () => rewatchImage();
+    // solid
+    unsubs.push(options.bar.corner.solidColor.subscribe(queueDraw));
+    unsubs.push(options.bar.corner.solidOpacity.subscribe(queueDraw));
+
+    // pattern sizing
+    unsubs.push(options.bar.corner.patternSize?.subscribe?.(queueDraw) ?? (() => { }));
+
+    // rebuild when any input that affects sources changes
+    const reload = () => rewatchAssets();
+    unsubs.push(options.bar.corner.fill.subscribe(reload));
     unsubs.push(options.bar.corner.outerImage.subscribe(reload));
     unsubs.push(options.bar.corner.enableTechnique.subscribe(reload));
     unsubs.push(options.bar.corner.technique.subscribe(reload));
+    unsubs.push(options.bar.corner.patternPath?.subscribe?.(reload) ?? (() => { }));
 
     onCleanup(() => {
       for (const u of unsubs) {
@@ -161,9 +210,8 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
   };
 
   onCleanup(() => {
-    unwatch?.();
-    unwatch = null;
-    win.destroy();
+    stopWatches();
+    try { win.destroy(); } catch { }
   });
 
   return (
@@ -191,48 +239,51 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
         sensitive={false}
         $={(self: Gtk.DrawingArea) => {
           da = self;
-          wireRedraw();
-          rewatchImage();
+          subscribeRedraw();
+          rewatchAssets();
 
           da.set_draw_func((_area, ctx: any, w: number, h: number) => {
-            // Clear buffer to transparent (prevents flash/garbage frames)
-            ctx.setOperator(giCairo.Operator.CLEAR);
-            ctx.paint();
+            if (w <= 0 || h <= 0) return;
 
-            if (!surface) return;
+            clearToTransparent(ctx);
 
-            // Gate: wait for a "real" allocation
-            if (w < MIN_W || h < MIN_H) return;
+            const fill = options.bar.corner.fill.get?.() ?? "image";
+            const solid = parseSolid();
 
-            // Gate: wait until bar geometry exists
+            // --- paint outer area ---
+            if (fill === "solid") {
+              paintSolid(ctx, w, h, solid);
+            } else if (fill === "pattern") {
+              if (!patternSurface) {
+                // Fallback so you always *see something* while the pattern loads.
+                paintSolid(ctx, w, h, solid);
+              } else {
+                const size = Math.max(1, Number(options.bar.corner.patternSize?.get?.() ?? 12));
+                paintTiledPattern(ctx, w, h, patternSurface, patternW, patternH, size, null);
+              }
+            } else {
+              // image
+              if (!outerSurface) {
+                // Fallback while the image loads.
+                paintSolid(ctx, w, h, solid);
+              } else {
+                paintCoverSurface(ctx, w, h, outerSurface, outerW, outerH);
+              }
+            }
+
+            // --- punch inner hole (make the frame) ---
             const ins = computeInsets(w, h);
-            if (ins.rectCount === 0) return;
-
-            // --- draw outer image as "cover" ---
-            const scale = Math.max(w / surfaceW, h / surfaceH);
-            const drawW = surfaceW * scale;
-            const drawH = surfaceH * scale;
-            const offX = (w - drawW) / 2;
-            const offY = (h - drawH) / 2;
-
-            ctx.setOperator(giCairo.Operator.OVER);
-            ctx.save();
-            ctx.translate(offX, offY);
-            ctx.scale(scale, scale);
-            ctx.setSourceSurface(surface, 0, 0);
-            ctx.paint();
-            ctx.restore();
-
-            // --- cutout (inner hole) based on current bar geometry ---
             const x = ins.left;
             const y = ins.top;
             const iw = Math.max(0, w - ins.left - ins.right);
             const ih = Math.max(0, h - ins.top - ins.bottom);
 
-            ctx.setAntialias(giCairo.Antialias.BEST);
-            ctx.setOperator(giCairo.Operator.CLEAR);
-            roundedRect(ctx, x, y, iw, ih, ins.radius);
-            ctx.fill();
+            // Avoid the "clear everything" case (e.g. edge=0 and no bar rects yet).
+            const holeIsWholeSurface = x === 0 && y === 0 && iw === w && ih === h;
+            if (!holeIsWholeSurface) {
+              ctx.setAntialias(giCairo.Antialias.BEST);
+              punchRoundedHole(ctx, x, y, iw, ih, ins.radius);
+            }
           });
         }}
       />

@@ -18,7 +18,6 @@ type HasGlobalPattern<Root> = Root extends {
 export function overridePattern<Root, Self>(
     opt: OptFactory<HasGlobalPattern<Root>, Self>,
     params: {
-        widgetId: string;
         defaultUseLocal?: boolean;
         defaultEnable?: boolean;
         defaultLocal?: Pattern;

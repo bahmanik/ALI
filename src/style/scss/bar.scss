@@ -1,21 +1,125 @@
-$fg-color: #{"@theme_fg_color"};
-$bg-color: #{"@theme_bg_color"};
+$fg: $colors-fg;
 
-window#bar {
+// --- Panel background ---
+$bar-opacity-ratio: $bar-style-bgOpacity * 0.01;
+$bar-transparency: 1 - $bar-opacity-ratio;
+$bar-panel-bg: if($bar-style-transparent, transparent, transparentize($bar-style-bg, $bar-transparency));
+
+// --- Geometry ---
+$shadow-margin: if($bar-style-shadowEnable, $bar-style-shadowMargin, 0);
+$panel-margin-top: ($bar-style-marginTop + $shadow-margin) * 1px;
+$panel-margin-bottom: ($bar-style-marginBottom + $shadow-margin) * 1px;
+$panel-margin-sides: ($bar-style-marginSides + $shadow-margin) * 1px;
+
+$panel-radius: $bar-style-radius * 1px;
+$panel-height: $bar-style-height * 1px;
+$panel-pad-y: $bar-style-paddingY * 1px;
+$panel-pad-x: $bar-style-paddingX * 1px;
+
+// --- Shadow ---
+$panel-shadow: $bar-style-shadowX * 1px $bar-style-shadowY * 1px $bar-style-shadowBlur * 1px
+  $bar-style-shadowSpread * 1px $bar-style-shadowColor;
+
+// --- Buttons ---
+$btn-opacity-ratio: $bar-buttons-bgOpacity * 0.01;
+$btn-transparency: 1 - $btn-opacity-ratio;
+$btn-bg: transparentize($bar-buttons-bg, $btn-transparency);
+
+$btn-hover-opacity-ratio: $bar-buttons-bgHoverOpacity * 0.01;
+$btn-hover-transparency: 1 - $btn-hover-opacity-ratio;
+$btn-bg-hover: transparentize($bar-buttons-bg, $btn-hover-transparency);
+
+$btn-radius: $bar-buttons-radius * 1px;
+$btn-spacing: $bar-buttons-spacing * 1px;
+$btn-pad-y: $bar-buttons-paddingY * 1px;
+$btn-pad-x: $bar-buttons-paddingX * 1px;
+
+window.bar {
   background: transparent;
-  color: $fg-color;
-  font-weight: bold;
+  color: $fg;
 
-  > box {
-    background: $bg-color;
-    border-radius: 10px;
-    margin: 8px;
-  }
+  // keep the bar feeling "light" instead of shouty-bold by default
+  font-weight: 500;
 
-  button {
-    border-radius: 8px;
-    margin: 2px;
-    min-height: 0;
-    padding: 4px 8px;
+  .bar-panel {
+    min-height: $panel-height;
+
+    // "floating" means the panel is a pill inside a transparent window
+    margin: if(
+      $bar-style-floating,
+      $panel-margin-top $panel-margin-sides $panel-margin-bottom $panel-margin-sides,
+      0px
+    );
+
+    padding: $panel-pad-y $panel-pad-x;
+    background: $bar-panel-bg;
+    border-radius: if($bar-style-floating, $panel-radius, 0px);
+
+    // shadow + border are optional, but together they give the HyprPanel vibe
+    box-shadow: if($bar-style-shadowEnable, $panel-shadow, none);
+
+    border-top: if(
+      $bar-style-borderEnable and (
+        $bar-style-borderLocation == "top" or
+        $bar-style-borderLocation == "horizontal" or
+        $bar-style-borderLocation == "full"
+      ),
+      $bar-style-borderWidth * 1px solid,
+      none
+    );
+
+    border-bottom: if(
+      $bar-style-borderEnable and (
+        $bar-style-borderLocation == "bottom" or
+        $bar-style-borderLocation == "horizontal" or
+        $bar-style-borderLocation == "full"
+      ),
+      $bar-style-borderWidth * 1px solid,
+      none
+    );
+
+    border-left: if(
+      $bar-style-borderEnable and (
+        $bar-style-borderLocation == "left" or
+        $bar-style-borderLocation == "vertical" or
+        $bar-style-borderLocation == "full"
+      ),
+      $bar-style-borderWidth * 1px solid,
+      none
+    );
+
+    border-right: if(
+      $bar-style-borderEnable and (
+        $bar-style-borderLocation == "right" or
+        $bar-style-borderLocation == "vertical" or
+        $bar-style-borderLocation == "full"
+      ),
+      $bar-style-borderWidth * 1px solid,
+      none
+    );
+
+    border-color: $bar-style-borderColor;
+
+    // Target GTK4 MenuButtons too (they are not always styled via `menubutton` directly)
+    button,
+    menubutton,
+    menubutton > button {
+      border-radius: $btn-radius;
+      min-height: 0;
+      padding: $btn-pad-y $btn-pad-x;
+      margin-left: $btn-spacing;
+      margin-right: $btn-spacing;
+    }
+
+    button,
+    menubutton > button {
+      background-color: $btn-bg;
+    }
+
+    button:hover,
+    menubutton:hover > button,
+    menubutton > button:hover {
+      background-color: $btn-bg-hover;
+    }
   }
 }

@@ -14,7 +14,6 @@ type HasGlobalScale<Root> = Root extends {
 export function overrideScale<Root, Self>(
     opt: OptFactory<HasGlobalScale<Root>, Self>,
     params: {
-        widgetId: string;
         defaultUseLocal?: boolean;
         defaultLocal: number;
         exports?: { scss?: boolean; hyprland?: boolean };

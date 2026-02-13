@@ -19,7 +19,6 @@ type HasDisplayWallpaperFile<Root> = Root extends {
 export function overrideImage<Root, Self>(
     opt: OptFactory<HasDisplayWallpaperFile<Root>, Self>,
     params: {
-        widgetId: string;
         defaultUseLocal?: boolean;
         defaultLocal?: string;
         defaultEnableTechnique?: boolean;

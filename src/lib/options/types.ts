@@ -122,10 +122,20 @@ export type TransitionPos =
     | "bottom-right";
 
 export type BarLocation = "top" | "bottom" | "left" | "right";
+export type BarBorderLocation =
+    | "none"
+    | "top"
+    | "bottom"
+    | "left"
+    | "right"
+    | "horizontal"
+    | "vertical"
+    | "full";
 export type OverrideMode = "local" | "global";
 
 export type ImageTechnique = "none" | "negative" | "grayscale" | "sepia";
 export type HexColor = `#${string}`;
+export type CornerFill = "image" | "solid" | "pattern";
 
 export type weekDays = "Sun" | "Mon" | "Tues" | "Wed" | "thurs" | "Fri" | "Sat";
 export type calendar = "Gregorian" | "Jalali" | "Hijri";
