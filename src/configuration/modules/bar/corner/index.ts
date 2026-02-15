@@ -7,9 +7,9 @@ const corner = stem((opt) =>
   graft(
     {
       enable: opt(true, { scss: true }),
-      gap: opt(2, { scss: true }),
+      gap: opt(0, { scss: true }),
       edge: opt(0, { scss: true }),
-      radius: opt(18, { scss: true }),
+      radius: opt(12, { scss: true }),
 
       /**
        * How the outer area is painted.
