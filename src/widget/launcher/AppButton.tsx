@@ -39,16 +39,22 @@ function underlineMatches(text: string, query: string): string {
 export function AppButton({
    app,
    query,
+   iconPx,
+   itemGap,
+   showDescription,
 }: {
    app: AstalApps.Application
    query: Accessor<string>
+   iconPx: number
+   itemGap: number
+   showDescription: boolean
 }) {
    const q = query
 
    return (
-      <button hexpand onClicked={() => app.launch()} focusOnClick={false}>
-         <box spacing={16}>
-            <image iconName={app.iconName} iconSize={Gtk.IconSize.LARGE} />
+      <button hexpand cssClasses={["launcher-item"]} onClicked={() => app.launch()} focusOnClick={false}>
+         <box class={"launcher-item-inner"} spacing={Math.max(0, Number(itemGap ?? 14))}>
+            <image iconName={app.iconName} pixelSize={Math.max(8, Number(iconPx ?? 36))} />
             <box orientation={Gtk.Orientation.VERTICAL}>
                <label
                   class={"title"}
@@ -57,6 +63,7 @@ export function AppButton({
                   label={q.as((qq) => underlineMatches(app.name ?? "", qq))}
                />
                <label
+                  visible={Boolean(showDescription)}
                   class={"description"}
                   ellipsize={Pango.EllipsizeMode.END}
                   useMarkup={true}

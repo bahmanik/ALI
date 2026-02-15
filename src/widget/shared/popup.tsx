@@ -2,117 +2,233 @@ import { Astal, Gdk, Gtk } from "ags/gtk4"
 import app from "ags/gtk4/app"
 import { createState } from "ags"
 import Graphene from "gi://Graphene?version=1.0"
-import Adw from "gi://Adw?version=1"
 import { timeout } from "ags/time"
 
-const hide_all_windows = () => app.get_window("applauncher")?.hide()
+export type PopupLayout =
+   | "center"
+   | "top"
+   | "top_center"
+   | "top_left"
+   | "top_right"
+   | "bottom"
+   | "bottom_center"
+   | "bottom_left"
+   | "bottom_right"
+   | "full"
+
+function layoutToAlign(layout?: PopupLayout | string) {
+   const l = String(layout ?? "center").toLowerCase().replace(/-/g, "_")
+
+   switch (l) {
+      case "top":
+      case "top_center":
+         return { halign: Gtk.Align.CENTER, valign: Gtk.Align.START }
+      case "top_left":
+         return { halign: Gtk.Align.START, valign: Gtk.Align.START }
+      case "top_right":
+         return { halign: Gtk.Align.END, valign: Gtk.Align.START }
+
+      case "bottom":
+      case "bottom_center":
+         return { halign: Gtk.Align.CENTER, valign: Gtk.Align.END }
+      case "bottom_left":
+         return { halign: Gtk.Align.START, valign: Gtk.Align.END }
+      case "bottom_right":
+         return { halign: Gtk.Align.END, valign: Gtk.Align.END }
+
+      case "center":
+      default:
+         return { halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER }
+   }
+}
+
+function calculateAnchor(layout: PopupLayout | string | undefined) {
+   const { TOP, RIGHT, BOTTOM, LEFT } = Astal.WindowAnchor
+
+   // Accept "top-center" too.
+   const pos = String(layout ?? "center")
+      .trim()
+      .toLowerCase()
+      .replace(/-/g, "_")
+
+   switch (pos) {
+      case "top":
+         return TOP | LEFT | RIGHT
+      case "top_center":
+         return TOP
+      case "top_left":
+         return TOP | LEFT
+      case "top_right":
+         return TOP | RIGHT
+      case "bottom":
+         return BOTTOM | LEFT | RIGHT
+      case "bottom_center":
+         return BOTTOM
+      case "bottom_left":
+         return BOTTOM | LEFT
+      case "bottom_right":
+         return BOTTOM | RIGHT
+      case "full":
+         return TOP | BOTTOM | LEFT | RIGHT
+      case "center":
+      default:
+         return undefined
+   }
+}
 
 type PopupProps = JSX.IntrinsicElements["window"] & {
    children?: any
+
+   /** Optional size caps for the popup surface (not the fullscreen input layer). */
    width?: number
    height?: number
+
    gdkmonitor?: Gdk.Monitor
+
    transitionType?: Gtk.RevealerTransitionType
+   /** Seconds (kept for backward compat with your settings). */
    transitionDuration?: number
+
+   /** Initial state only. */
    open?: boolean
+
+   /** Epik-style layout name -> window anchor. */
+   layout?: PopupLayout | string
+
+   /** Extra classes applied to the popup surface (the thing with the shadow). */
+   surfaceClass?: string
 }
 
+/**
+ * Epik-style popup wrapper.
+ * - Keeps your reveal animation + (visible/revealed) state machine.
+ * - Uses Epik's click-outside-to-close logic.
+ * - Positions via `anchor` (or `layout`) instead of halign/valign.
+ */
 export function Popup({
    children,
    name,
    width,
    height,
    gdkmonitor,
-   transitionType = Gtk.RevealerTransitionType.SLIDE_DOWN,
-   transitionDuration = 1,
-   halign = Gtk.Align.CENTER,
-   valign = Gtk.Align.CENTER,
+   transitionType = Gtk.RevealerTransitionType.SWING_DOWN,
+   transitionDuration = 0.1,
    open,
+   layout = "center",
+   class: extraClass,
+   surfaceClass,
    ...props
 }: PopupProps) {
-   const { TOP, BOTTOM, RIGHT, LEFT } = Astal.WindowAnchor
+   let surface: Gtk.Widget | null = null
+   let syncing = false
 
-   let contentbox: Adw.Clamp | null = null
-
+   // Two-phase visibility: window must stay visible while revealer animates out.
    const [visible, setVisible] = createState(Boolean(open))
    const [revealed, setRevealed] = createState(Boolean(open))
 
    function show() {
+      if (syncing) return
       setVisible(true)
       timeout(1, () => setRevealed(true))
    }
 
    function hide() {
+      if (syncing) return
       setRevealed(false)
-
-      // hide the window AFTER the slide-out finishes
-      timeout(Math.max(0, transitionDuration * 1000), () => {
-         setVisible(false)
-      })
-   }
-
-   function onNotifyVisible({ visible: v }: { visible: boolean }) {
-      if (v) {
-         setVisible(true)
-         timeout(1, () => setRevealed(true))
-         contentbox?.grab_focus()
-      }
+      timeout(Math.max(0, transitionDuration * 1000), () => setVisible(false))
    }
 
    function init(self: Gtk.Window) {
-      // override existing show and hide methods
+      // Make sure callers (and `ags toggle`) hit animation-aware methods.
       Object.assign(self, { show, hide })
    }
 
+   function onNotifyVisible(win: Astal.Window) {
+      // External show (e.g. `ags toggle applauncher`) -> start animation.
+      if (win.visible) {
+         setVisible(true)
+         timeout(1, () => setRevealed(true))
+         surface?.grab_focus?.()
+         return
+      }
+
+      // Best-effort: if something hides the window directly (instead of calling `hide()`),
+      // re-show it long enough to run the slide-out, then fully hide it.
+      const isInternallyVisible = visible.peek?.() ?? false
+      const isRevealed = revealed.peek?.() ?? false
+      if (isInternallyVisible && isRevealed) {
+         syncing = true
+         setVisible(true)
+         timeout(1, () => {
+            syncing = false
+            hide()
+         })
+      }
+   }
+
+   const winClass = ["PopupWindow", extraClass].filter(Boolean).join(" ")
+   const surfaceClasses = ["window-content", surfaceClass].filter(Boolean).join(" ")
+
+   // Don't clobber anchor if caller provides one.
+   const anchor = (props as any).anchor ?? calculateAnchor(layout)
+
+   const { halign, valign } = layoutToAlign(layout)
    return (
       <window
          {...props}
          visible={visible}
          name={name}
          namespace={name}
-         class="PopupWindow"
+         class={winClass}
          decorated={false}
-         keymode={Astal.Keymode.ON_DEMAND}
+         keymode={Astal.Keymode.EXCLUSIVE}
          layer={Astal.Layer.OVERLAY}
          gdkmonitor={gdkmonitor}
-         anchor={TOP | BOTTOM | RIGHT | LEFT}
+         anchor={anchor}
          application={app}
          $={init}
          onNotifyVisible={onNotifyVisible}
       >
          <Gtk.EventControllerKey
             onKeyPressed={({ widget }, keyval: number) => {
-               if (keyval === Gdk.KEY_Escape) {
-                  widget.hide()
-               }
+               if (keyval === Gdk.KEY_Escape) widget.hide()
             }}
          />
-         <Gtk.GestureClick
-            onPressed={({ widget }, _, x, y) => {
-               const [, rect] = children.compute_bounds(widget)
-               const position = new Graphene.Point({ x, y })
-               console.log(rect.get_width(), rect.get_height())
 
+         {/* Epik-style: click anywhere outside the popup surface to close */}
+         <Gtk.GestureClick
+            onReleased={({ widget: win }, _n, x, y) => {
+               if (!surface) return false
+
+               const res = surface.compute_bounds(win)
+               const rect = res?.[1]
+               if (!rect) return false
+
+               const position = new Graphene.Point({ x, y })
                if (!rect.contains_point(position)) {
-                  hide_all_windows()
+                  win.hide()
+                  return true
                }
+
+               return false
             }}
          />
          <revealer
             transitionType={transitionType}
             transitionDuration={transitionDuration * 1000}
             revealChild={revealed}
-            halign={halign}
             valign={valign}
+            halign={halign}
          >
-            <Adw.Clamp
-               $={(self) => (contentbox = self)}
+            <box
+               $={(self) => (surface = self)}
+               class={surfaceClasses}
                focusable
-               maximum_size={width}
+               widthRequest={width}
                heightRequest={height}
             >
-               <box class={"main"}>{children}</box>
-            </Adw.Clamp>
+               {children}
+            </box>
          </revealer>
       </window>
    )

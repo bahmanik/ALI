@@ -1,14 +1,123 @@
-$fg-color: #{"@theme_fg_color"};
-$bg-color: #{"@theme_bg_color"};
+$fg: $colors-fg;
 
-window#launcher {
+// --- Panel background ---
+$panel-opacity-ratio: $launcher-style-bgOpacity * 0.01;
+$panel-transparency: 1 - $panel-opacity-ratio;
+$panel-bg: transparentize($launcher-style-bg, $panel-transparency);
+
+// --- Entry background ---
+$entry-opacity-ratio: $launcher-entry-bgOpacity * 0.01;
+$entry-transparency: 1 - $entry-opacity-ratio;
+$entry-bg: transparentize($launcher-entry-bg, $entry-transparency);
+
+// --- Item backgrounds ---
+$item-opacity-ratio: $launcher-list-itemBgOpacity * 0.01;
+$item-transparency: 1 - $item-opacity-ratio;
+$item-bg: transparentize($launcher-list-itemBg, $item-transparency);
+
+$item-hover-opacity-ratio: $launcher-list-itemHoverOpacity * 0.01;
+$item-hover-transparency: 1 - $item-hover-opacity-ratio;
+$item-bg-hover: transparentize($launcher-list-itemBg, $item-hover-transparency);
+
+$item-active-opacity-ratio: $launcher-list-itemActiveOpacity * 0.01;
+$item-active-transparency: 1 - $item-active-opacity-ratio;
+$item-bg-active: transparentize($launcher-list-itemBg, $item-active-transparency);
+
+// --- Favorites backgrounds ---
+$fav-opacity-ratio: $launcher-favoritesUI-bgOpacity * 0.01;
+$fav-transparency: 1 - $fav-opacity-ratio;
+$fav-bg: transparentize($launcher-favoritesUI-bg, $fav-transparency);
+
+$fav-hover-opacity-ratio: $launcher-favoritesUI-hoverOpacity * 0.01;
+$fav-hover-transparency: 1 - $fav-hover-opacity-ratio;
+$fav-bg-hover: transparentize($launcher-favoritesUI-bg, $fav-hover-transparency);
+
+// --- Shadows ---
+$panel-shadow: $launcher-style-shadowX * 1px $launcher-style-shadowY * 1px $launcher-style-shadowBlur * 1px
+  $launcher-style-shadowSpread * 1px $launcher-style-shadowColor;
+
+window.AppLauncher {
   background: transparent;
-  color: $fg-color;
+  color: $fg;
 
-  box#launcher-content {
-    background: $bg-color;
-    min-width: 400px;
-    border-radius: 12px;
-    padding: 6px;
+  // The Popup wrapper adds a `.main` container around your children.
+  .main {
+    background: transparent;
+  }
+
+  .launcher-panel {
+    background: $panel-bg;
+    border-radius: $launcher-style-radius * 1px;
+    padding: $launcher-style-padding * 1px;
+
+
+    border: if(
+      $launcher-style-borderEnable and $launcher-style-borderLocation == "full",
+      $launcher-style-borderWidth * 1px solid $launcher-style-borderColor,
+      none
+    );
+  }
+
+  // --- Search entry ---
+  entry.launcher-entry {
+    min-height: $launcher-entry-height * 1px;
+    border-radius: $launcher-entry-radius * 1px;
+    padding: $launcher-entry-paddingY * 1px $launcher-entry-paddingX * 1px;
+    background: $entry-bg;
+    color: $fg;
+
+    border: if(
+      $launcher-entry-borderEnable,
+      $launcher-entry-borderWidth * 1px solid $launcher-entry-borderColor,
+      none
+    );
+  }
+
+  // --- Favorites row ---
+  .launcher-favorites {
+    margin-top: 8px;
+    margin-bottom: 6px;
+  }
+
+  button.launcher-favorite {
+    background: $fav-bg;
+    border-radius: $launcher-favoritesUI-radius * 1px;
+    padding: 8px;
+  }
+
+  button.launcher-favorite:hover {
+    background: $fav-bg-hover;
+  }
+
+  // --- Result list ---
+  .launcher-list {
+    margin-top: 6px;
+  }
+
+  button.launcher-item {
+    background: $item-bg;
+    border-radius: $launcher-list-itemRadius * 1px;
+    padding: $launcher-list-itemPaddingY * 1px $launcher-list-itemPaddingX * 1px;
+  }
+
+  button.launcher-item:hover {
+    background: $item-bg-hover;
+  }
+
+  button.launcher-item:active {
+    background: $item-bg-active;
+  }
+
+  .launcher-item-inner {
+    // the gap is handled in TS via `spacing`, but keep this as a hook
+  }
+
+  label.title {
+    font-weight: 600;
+  }
+
+  label.description {
+    font-size: 0.9em;
+    opacity: 0.85;
   }
 }

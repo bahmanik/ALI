@@ -1,5 +1,5 @@
 import app from "ags/gtk4/app"
-import { Astal, Gdk, Gtk } from "ags/gtk4"
+import { Gdk, Gtk } from "ags/gtk4"
 import { createState, For, onCleanup } from "gnim"
 import { timeout, type Timer } from "ags/time"
 
@@ -12,7 +12,8 @@ import { LauncherRevealTransition } from "../../lib/options/types"
 
 const Apps = new AstalApps.Apps()
 
-const transitionType = options.launcher.revealTransition.as(toGtkRevealerTransition)
+const transitionType = toGtkRevealerTransition(options.launcher.revealTransition.get())
+const transitionduration = options.launcher.transitionDuration.get()
 
 export function hide_all_windows() {
    app.get_window("applauncher")?.hide()
@@ -43,9 +44,20 @@ const list = text.as((t) => {
 })
 
 // Animated row wrapper (enter-only animation)
-function AnimatedAppRow({ app, query }: { app: AstalApps.Application; query: string }) {
+function AnimatedAppRow({
+   app,
+   query,
+   iconPx,
+   itemGap,
+   showDescription,
+}: {
+   app: AstalApps.Application
+   query: string
+   iconPx: number
+   itemGap: number
+   showDescription: boolean
+}) {
    const animEnabled = Boolean(options.launcher.animateResults.get())
-   const animMs = Math.max(0, Number(options.launcher.animInMs.get() ?? 160))
    const animDelay = Math.max(0, Number(options.launcher.animInDelayMs.get() ?? 0))
 
    const [revealed, setRevealed] = createState<boolean>(!animEnabled)
@@ -60,10 +72,10 @@ function AnimatedAppRow({ app, query }: { app: AstalApps.Application; query: str
    return (
       <Gtk.Revealer
          revealChild={revealed}
-         transitionDuration={animMs}
+         transitionDuration={transitionduration}
          transitionType={transitionType}
       >
-         <AppButton app={app} query={query} />
+         <AppButton app={app} query={query} iconPx={iconPx} itemGap={itemGap} showDescription={showDescription} />
       </Gtk.Revealer>
    )
 }
@@ -84,6 +96,8 @@ function Entry() {
    return (
       <entry
          hexpand
+         heightRequest={Math.max(0, Number(options.launcher.entry.height.get() ?? 44))}
+         cssClasses={["launcher-entry"]}
          $={(self) => {
             appconnect = app.connect("window-toggled", async (_, win) => {
                const winName = win.name
@@ -97,7 +111,7 @@ function Entry() {
                }
             })
          }}
-         placeholderText={"Search..."}
+         placeholderText={String(options.launcher.entry.placeholder.get() ?? "Search…")}
          onActivate={onEnter}
          onNotifyText={(self) => {
             text_set(self.text)
@@ -111,8 +125,11 @@ const Favorites = () => {
 
    const favorites = (options.launcher.favorites.get() ?? []) as string[]
 
+   const iconPx = Math.max(8, Number(options.launcher.icons.favorite.get() ?? 42))
+   const spacing = Math.max(0, Number(options.launcher.favoritesUI.spacing.get() ?? 10))
+
    return (
-      <box spacing={10} orientation={Gtk.Orientation.HORIZONTAL}>
+      <box class={"launcher-favorites"} spacing={spacing} orientation={Gtk.Orientation.HORIZONTAL}>
          {favorites.map((fa) => {
             const app = Apps.exact_query(fa)[0]
             if (!app) return <box /> // skip missing favorites safely
@@ -120,14 +137,14 @@ const Favorites = () => {
             return (
                <button
                   hexpand
-                  cssClasses={["launcher-button", "appbutton"]}
+                  cssClasses={["launcher-favorite", "launcher-button", "appbutton"]}
                   onClicked={() => {
                      app.launch()
                      hide_all_windows()
                   }}
                   focusOnClick={false}
                >
-                  <image iconName={app.iconName} iconSize={Gtk.IconSize.LARGE} />
+                  <image iconName={app.iconName} pixelSize={iconPx} />
                </button>
             )
          })}
@@ -135,29 +152,40 @@ const Favorites = () => {
    )
 }
 
-const AppList = () => (
-   <box spacing={10} vexpand orientation={Gtk.Orientation.VERTICAL}>
-      <For each={list}>{(app: AstalApps.Application) => <AnimatedAppRow app={app} query={text} />}</For>
-   </box>
-)
+const AppList = () => {
+   const spacing = Math.max(0, Number(options.launcher.list.spacing.get() ?? 8))
+   const iconPx = Math.max(8, Number(options.launcher.icons.app.get() ?? 36))
+   const itemGap = Math.max(0, Number(options.launcher.list.itemGap.get() ?? 14))
+   const showDescription = Boolean(options.launcher.list.showDescription.get())
+
+   return (
+      <box class={"launcher-list"} spacing={spacing} vexpand orientation={Gtk.Orientation.VERTICAL}>
+         <For each={list}>
+            {(app: AstalApps.Application) => (
+               <AnimatedAppRow app={app} query={text} iconPx={iconPx} itemGap={itemGap} showDescription={showDescription} />
+            )}
+         </For>
+      </box>
+   )
+}
 
 export function AppLauncherWindow(gdkmonitor: Gdk.Monitor) {
-   const { TOP, BOTTOM, RIGHT, LEFT } = Astal.WindowAnchor
+   const width = Math.max(240, Number(options.launcher.window.width.get() ?? 520))
+   const height = Math.max(240, Number(options.launcher.window.height.get() ?? 560))
 
    return (
       <Popup
-         valign={Gtk.Align.START}
-         halign={Gtk.Align.CENTER}
-         margin={10}
-         visible
          name={"applauncher"}
          class="AppLauncher"
+         width={width}
+         transitionDuration={transitionduration}
+         height={height}
          gdkmonitor={gdkmonitor}
-         exclusivity={Astal.Exclusivity.EXCLUSIVE}
-         anchor={TOP | BOTTOM | RIGHT | LEFT}
-         application={app}
+         layout="top_center"
+         transitionType={transitionType}
+         surfaceClass="launcher-surface"
       >
-         <box orientation={Gtk.Orientation.VERTICAL}>
+         <box cssClasses={["launcher-panel"]} orientation={Gtk.Orientation.VERTICAL}>
             <Entry />
             <Favorites />
             <AppList />
