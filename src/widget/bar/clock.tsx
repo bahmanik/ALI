@@ -4,11 +4,10 @@ import { createPoll } from "ags/time"
 import { Opt } from "src/lib/options"
 
 export default function Clock({ vertical }: { vertical: Opt<boolean> }) {
-  const v = vertical.get()
-  const fmt = v ? "%H\n%M\n%S" : "%H:%M:%S"
+  const fmt = vertical.as(v => (v ? "%H\n%M\n%S" : "%H:%M:%S"))
 
   const time = createPoll("", 1000, () => {
-    return GLib.DateTime.new_now_local().format(fmt)!
+    return GLib.DateTime.new_now_local().format(fmt.peek())!
   })
 
   return (

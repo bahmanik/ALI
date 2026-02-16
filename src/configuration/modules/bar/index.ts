@@ -14,7 +14,7 @@ const bar = stem((opt) =>
 
       /** Visual styling options (exported to SCSS). Inspired by HyprPanel's bar theming knobs. */
       style: {
-        floating: opt(true, { scss: true }),
+        floating: opt(false, { scss: true }),
         transparent: opt(false, { scss: true }),
 
         // background
