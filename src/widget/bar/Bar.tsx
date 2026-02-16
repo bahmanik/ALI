@@ -1,8 +1,7 @@
 import app from "ags/gtk4/app"
-import Astal from "gi://Astal?version=4.0"
-import Gtk from "gi://Gtk?version=4.0"
-import type Gdk from "gi://Gdk?version=4.0"
+import { Astal } from "ags/gtk4";
 import { onCleanup } from "ags"
+import type { Gdk, Gtk } from "ags/gtk4";
 import type { BarLocation } from "src/lib/options/types"
 
 import Clock from "./clock"

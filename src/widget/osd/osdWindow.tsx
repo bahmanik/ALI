@@ -1,5 +1,5 @@
-import { Astal, Gtk } from "ags/gtk4";
 import app from "ags/gtk4/app";
+import { Astal, Gtk } from "ags/gtk4";
 import {
   osd_revealed,
   osd_visible,

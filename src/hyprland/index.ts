@@ -1,9 +1,8 @@
-import { type Opt } from '../lib/options';
 import options from '../configuration';
 import { writeFileAsync } from 'ags/file';
-import { ensureHyprlandSource } from '../lib/session';
-import Gio from 'gi://Gio?version=2.0';
+import { ensureHyprlandSource, ensureParentDir } from '../lib/session';
 import { SystemUtilities } from '../lib/system/SystemUtilities';
+import type { Opt } from '../lib/options';
 
 /**
  * Central manager for Hyprland configuration throughout the application
@@ -41,7 +40,7 @@ class HyprlandManager {
 
   constructor() {
     // Ensure the target directory exists before writing overlay files.
-    this._ensureParentDir(this._template_path);
+    ensureParentDir(this._template_path);
 
     // If integration is enabled at startup, inject a `source = <overlay>` line
     // into the user's Hyprland config (via the existing helper).
@@ -256,24 +255,6 @@ class HyprlandManager {
    */
   private async _applyHyprland(): Promise<void> {
     await SystemUtilities.sh(['hyprctl', 'reload']);
-  }
-
-  /**
-   * Ensures the parent directory of the overlay file exists.
-   *
-   * @param filePath - path to a file whose parent directory should be created
-   */
-  private _ensureParentDir(filePath: string): void {
-    const dirPath = filePath.split('/').slice(0, -1).join('/');
-    if (!dirPath) return;
-
-    const dir = Gio.File.new_for_path(dirPath);
-    try {
-      if (!dir.query_exists(null)) dir.make_directory_with_parents(null);
-    } catch (e) {
-      // Don't hard-fail; file write errors will surface if directory creation is critical.
-      console.error(e);
-    }
   }
 }
 

@@ -1,9 +1,9 @@
+import app from 'ags/gtk4/app';
+import options from '../configuration';
 import { initializeHotReload } from './utils/hotReload';
 import { SystemUtilities } from '../lib/system/SystemUtilities';
-import { type Opt } from '../lib/options';
-import options from '../configuration';
-import app from 'ags/gtk4/app';
 import { readFile, writeFile } from 'ags/file';
+import type { Opt } from '../lib/options';
 
 /**
  * Central manager for theme styling throughout the application

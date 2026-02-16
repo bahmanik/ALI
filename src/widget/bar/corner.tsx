@@ -1,8 +1,8 @@
 import app from "ags/gtk4/app";
-import { Astal, Gtk } from "ags/gtk4";
-import Gdk from "gi://Gdk?version=4.0";
 import giCairo from "cairo";
+import { Astal, Gdk } from "ags/gtk4";
 import { onCleanup } from "ags";
+import type { Gtk } from "ags/gtk4";
 
 import options from "../../configuration";
 import { barsGeometry } from "./geometry";

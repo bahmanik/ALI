@@ -1,7 +1,7 @@
-import { Astal, Gdk, Gtk } from "ags/gtk4"
 import app from "ags/gtk4/app"
-import { createState } from "ags"
 import Graphene from "gi://Graphene?version=1.0"
+import { Astal, Gdk, Gtk } from "ags/gtk4"
+import { createState } from "ags"
 import { timeout } from "ags/time"
 
 export type PopupLayout =

@@ -1,6 +1,6 @@
-import Gtk from "gi://Gtk?version=4.0"
 import AstalMpris from "gi://AstalMpris"
 import AstalApps from "gi://AstalApps"
+import { Gtk } from "ags/gtk4"
 import { For, createBinding } from "ags"
 
 export default function Mpris() {

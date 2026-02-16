@@ -1,8 +1,9 @@
-import { timeout } from "ags/time";
 import Wp from "gi://AstalWp";
-import Gtk from "gi://Gtk";
+import { Gtk } from "ags/gtk4"
+import { timeout } from "ags/time";
 //import { VolumeIcon } from "@/src/lib/icons";
-import { Accessor, createState, onCleanup } from "ags";
+import { createState, onCleanup } from "ags";
+import type { Accessor } from "gnim";
 
 export const [osd_visible, osd_visible_set] = createState(false);
 export const [osd_revealed, osd_revealed_set] = createState(false);

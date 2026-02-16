@@ -51,6 +51,24 @@ export function ensureHyprlandSource(path: string): void {
     }
 }
 
+/**
+ * Ensures the parent directory of the overlay file exists.
+ *
+ * @param filePath - path to a file whose parent directory should be created
+ */
+export function ensureParentDir(filePath: string): void {
+    const dirPath = filePath.split('/').slice(0, -1).join('/');
+    if (!dirPath) return;
+
+    const dir = Gio.File.new_for_path(dirPath);
+    try {
+        if (!dir.query_exists(null)) dir.make_directory_with_parents(null);
+    } catch (e) {
+        // Don't hard-fail; file write errors will surface if directory creation is critical.
+        console.error(e);
+    }
+}
+
 function ensureFile(path: string): void {
     const file = Gio.File.new_for_path(path);
     const parent = file.get_parent();

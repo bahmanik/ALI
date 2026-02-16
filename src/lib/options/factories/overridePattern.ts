@@ -1,5 +1,5 @@
-import type { Opt, OptFactory } from "..";
 import { dep } from "..";
+import type { Opt, OptFactory } from "..";
 import type { OptExports, Pattern } from "../types";
 
 export interface OverridePattern<Root, Self> {

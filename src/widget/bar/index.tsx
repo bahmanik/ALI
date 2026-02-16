@@ -1,7 +1,7 @@
-import { Gdk } from "ags/gtk4";
 import Bar from "./Bar";
 import Corner from "./corner";
 import options from "src/configuration";
+import type { Gdk } from "ags/gtk4"
 
 export function PrimaryBar(monitor: Gdk.Monitor) {
     return (

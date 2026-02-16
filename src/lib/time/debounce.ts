@@ -1,4 +1,5 @@
-import { timeout, type Timer } from "ags/time";
+import { timeout } from "ags/time";
+import type { Timer } from "ags/time"
 
 export type Debouncer = {
   schedule: (fn: () => unknown, ms?: number) => void;

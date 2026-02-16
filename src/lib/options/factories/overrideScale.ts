@@ -1,5 +1,5 @@
-import type { Opt, OptFactory } from "..";
 import { dep } from "..";
+import type { Opt, OptFactory } from "..";
 
 export interface OverrideScale<Root, Self> {
     useLocalScale: Opt<boolean, Root, Self>;

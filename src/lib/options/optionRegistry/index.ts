@@ -1,7 +1,7 @@
 import { Opt } from "../opt";
-import { ConfigManager } from "../configManager";
-import { MkOptionsResult, OptionsObject } from "../types";
 import { errorHandler } from "src/lib/errors/handler";
+import type { ConfigManager } from "../configManager";
+import type { MkOptionsResult, OptionsObject } from "../types";
 
 export class OptionRegistry<T extends OptionsObject> {
     private _options: Opt<unknown, T, unknown>[] = [];

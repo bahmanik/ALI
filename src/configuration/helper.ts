@@ -1,4 +1,3 @@
-// src/configuration/tree.ts
 import type { OptionsRoot, OptFactory } from "src/lib/options";
 
 type UnionToIntersection<U> =

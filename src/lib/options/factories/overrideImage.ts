@@ -1,5 +1,5 @@
-import type { Opt, OptFactory } from "..";
 import { dep } from "..";
+import type { Opt, OptFactory } from "..";
 import type { ImageTechnique, OptExports } from "../types";
 
 export interface OverrideImage<Root, Self> {

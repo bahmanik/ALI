@@ -1,4 +1,4 @@
-import Gtk from "gi://Gtk?version=4.0"
+import type { Gtk } from "ags/gtk4"
 
 type Slot = "start" | "center" | "end"
 

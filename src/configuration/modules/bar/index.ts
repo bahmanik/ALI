@@ -1,7 +1,7 @@
 import { graft, stem, twig } from "src/configuration/helper";
-import type { BarBorderLocation, BarLocation, HexColor } from "src/lib/options/types";
 import { overrideScale } from "src/lib/options/factories/overrideScale";
 import { overridePattern } from "src/lib/options/factories/overridePattern";
+import type { BarBorderLocation, BarLocation, HexColor } from "src/lib/options/types";
 
 import corner from "./corner";
 import secondaryBar from "./secondaryBar";

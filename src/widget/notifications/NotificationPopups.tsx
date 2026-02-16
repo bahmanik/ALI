@@ -1,7 +1,7 @@
 import app from "ags/gtk4/app"
-import { Astal, Gtk } from "ags/gtk4"
 import AstalNotifd from "gi://AstalNotifd"
 import Notification from "./Notification"
+import { Astal, Gtk } from "ags/gtk4"
 import { createBinding, For, createState, onCleanup } from "ags"
 
 export default function NotificationPopups() {

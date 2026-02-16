@@ -1,8 +1,8 @@
-import Gtk from "gi://Gtk?version=4.0"
 import AstalBattery from "gi://AstalBattery"
 import AstalPowerProfiles from "gi://AstalPowerProfiles"
+import { Gtk } from "ags/gtk4"
 import { createBinding } from "ags"
-import { Opt } from "src/lib/options"
+import type { Opt } from "src/lib/options"
 
 export default function Battery({ vertical }: { vertical: Opt<boolean> }) {
   const battery = AstalBattery.get_default()

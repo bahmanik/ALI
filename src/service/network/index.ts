@@ -1,8 +1,8 @@
 import Soup from 'gi://Soup?version=3.0';
 import GLib from 'gi://GLib?version=2.0';
-import { RequestOptions, RestResponse } from './types';
 import { HttpError } from './HttpError';
-import { errorHandler } from '../errors/handler';
+import { errorHandler } from 'src/lib/errors/handler';
+import type { RequestOptions, RestResponse } from './types';
 
 /**
  * HTTP client wrapper for Soup.Session providing a Promise-based API

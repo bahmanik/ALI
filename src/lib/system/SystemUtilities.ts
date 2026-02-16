@@ -1,10 +1,10 @@
+import GLib from 'gi://GLib?version=2.0';
 import icons from '../icons/icons';
 import { distroIcons } from './distroIcons';
 import { distro } from './osInfo';
-import { CommandResult, ServiceStatus } from './types';
-import GLib from 'gi://GLib?version=2.0';
 import { exec, execAsync } from 'ags/process';
 import { notify } from '../notiofication';
+import type { CommandResult, ServiceStatus } from './types';
 
 
 export class SystemUtilities {

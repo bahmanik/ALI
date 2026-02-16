@@ -1,6 +1,6 @@
 import AstalNetwork from "gi://AstalNetwork";
-import { network } from "../index";
 import GLib from "gi://GLib?version=2.0";
+import { network } from "../index";
 
 export function onNetworkConnection(
   setupFn: () => void,

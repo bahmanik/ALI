@@ -1,6 +1,7 @@
-import { Accessor, createState } from "gnim";
+import { createState } from "gnim";
 import { ConfigManager } from "../configManager";
 import type { DepRef, Derive, OptExports, OptProps } from "../types";
+import type { Accessor } from "gnim"
 
 type WriteOptions = { writeDisk?: boolean };
 

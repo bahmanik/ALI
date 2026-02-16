@@ -1,4 +1,4 @@
-import { HttpErrorOptions } from "./types";
+import type { HttpErrorOptions } from "./types";
 
 /**
  * Custom error class for HTTP request failures

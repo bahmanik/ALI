@@ -2,6 +2,12 @@ import AstalNotifd from "gi://AstalNotifd?version=0.1";
 
 export type NotificationUrgency = "low" | "normal" | "critical";
 
+//NOTE: notification example
+// notify({
+//   summary: 'File Saved Successfully',
+//   body: `At this file path.`,
+// });
+
 export type NotificationAction = {
   id: string;     // action identifier
   label: string;  // what the user sees

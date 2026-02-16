@@ -1,4 +1,4 @@
-import Gio from "gi://Gio?version=2.0";
+import type Gio from "gi://Gio?version=2.0";
 
 export interface RequestOptions {
   headers?: Record<string, string>;

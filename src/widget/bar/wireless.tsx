@@ -1,5 +1,5 @@
-import Gtk from "gi://Gtk?version=4.0"
 import AstalNetwork from "gi://AstalNetwork"
+import { Gtk } from "ags/gtk4"
 import { For, With, createBinding } from "ags"
 import { execAsync } from "ags/process"
 

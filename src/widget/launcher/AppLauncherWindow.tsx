@@ -1,7 +1,9 @@
 import app from "ags/gtk4/app"
-import { Gdk, Gtk } from "ags/gtk4"
+import { Gtk } from "ags/gtk4"
+import type { Gdk, } from "ags/gtk4"
 import { createState, For, onCleanup } from "gnim"
-import { timeout, type Timer } from "ags/time"
+import { timeout } from "ags/time"
+import type { Timer } from "ags/time"
 
 import options from "../../configuration"
 import AstalApps from "gi://AstalApps?version=0.1"

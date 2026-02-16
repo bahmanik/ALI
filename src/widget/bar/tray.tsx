@@ -1,6 +1,6 @@
-import Gtk from "gi://Gtk?version=4.0"
 import AstalTray from "gi://AstalTray"
 import { For, createBinding } from "ags"
+import type { Gtk } from "ags/gtk4"
 
 export default function Tray() {
   const tray = AstalTray.get_default()

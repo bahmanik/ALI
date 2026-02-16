@@ -15,7 +15,7 @@ type BrightnessServiceOptions = {
   minScreenPercent?: number
 }
 
-const { heartbeatPoll, heartbeatPollMs, } = options.display.brightness
+const { heartbeatPoll, heartbeatPollMs, } = options.osd.brightness
 
 @register({ GTypeName: "Brightness" })
 export default class BrightnessService extends GObject.Object {

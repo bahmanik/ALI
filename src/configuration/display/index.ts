@@ -1,5 +1,5 @@
-import { stem, twig } from "src/configuration/helper";
 import wallpaper from "./wallpaper";
+import { stem, twig } from "src/configuration/helper";
 
 const display = stem((opt) => ({
   wallpaper: wallpaper(twig(opt)),

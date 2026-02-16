@@ -1,10 +1,8 @@
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
-
 import { monitorFile } from "ags/file";
 import { execAsync } from "ags/process";
 import { Timer, timeout } from "ags/time";
-
 import { ensureDirectory } from "src/lib/session";
 import { joinPath, normalizeToAbsolutePath } from "src/lib/path/helpers";
 import { SystemUtilities } from "src/lib/system/SystemUtilities";
