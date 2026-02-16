@@ -1,0 +1,135 @@
+@use "sass:color";
+
+$bg: $colors-bg;
+$fg: $colors-fg;
+$accent: $colors-accent;
+
+$radius: $osd-style-radius * 1px;
+$pad: $osd-style-padding * 1px;
+$gap: $osd-style-gap * 1px;
+
+$min-w: $osd-style-width * 1px;
+$min-h: $osd-style-height * 1px;
+
+$margin: $osd-style-margin * 1px;
+
+$bg-opacity: $osd-style-bgOpacity * 0.01;
+$bg-alpha: 1 - $bg-opacity;
+$osd-bg: transparentize($osd-style-bg, $bg-alpha);
+
+$border-opacity: $osd-style-borderOpacity * 0.01;
+$border-alpha: 1 - $border-opacity;
+$osd-border: transparentize($osd-style-borderColor, $border-alpha);
+
+$bar-bg-opacity: $osd-style-barBgOpacity * 0.01;
+$bar-bg-alpha: 1 - $bar-bg-opacity;
+$bar-bg: transparentize($osd-style-barBg, $bar-bg-alpha);
+
+// Mix accent in to keep things consistent with the rest of the theme.
+$bar-fill: mix($accent, $osd-style-barFill, 40%);
+
+$shadow-margin: if($osd-style-shadowEnable, $osd-style-shadowMargin * 1px, 0px);
+$panel-shadow: $osd-style-shadowX * 1px $osd-style-shadowY * 1px $osd-style-shadowBlur * 1px
+  $osd-style-shadowSpread * 1px $osd-style-shadowColor;
+
+$icon-size: $osd-style-iconSize * 1px;
+$icon-pad: $osd-style-iconPadding * 1px;
+$icon-bg-opacity: $osd-style-iconBgOpacity * 0.01;
+$icon-bg: transparentize($bg, 1 - $icon-bg-opacity);
+
+$bar-w: $osd-style-barWidth * 1px;
+$bar-h: $osd-style-barHeight * 1px;
+
+.osd {
+  .osd-host {
+    padding: 0;
+  }
+
+  .osd-revealer {
+    // keep shadows from being clipped by the revealer allocation
+    padding: $shadow-margin;
+  }
+
+  .osd-surface {
+    min-width: $min-w;
+    min-height: $min-h;
+
+    padding: $pad;
+    border-radius: $radius;
+
+    background-color: $osd-bg;
+    color: $osd-style-fg;
+
+    border: if($osd-style-borderEnable, $osd-style-borderWidth * 1px, 0px) solid $osd-border;
+
+    box-shadow: if($osd-style-shadowEnable, $panel-shadow, none);
+
+    .osd-header {
+      margin-bottom: 8px;
+
+      .osd-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: $osd-style-fg;
+      }
+
+      .osd-percent {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $osd-style-fg;
+        opacity: 0.95;
+
+        &.overflow {
+          color: $accent;
+        }
+      }
+    }
+
+    .osd-body {
+      border-radius: $radius;
+
+      &.vertical,
+      &[vertical="true"] {
+        // TSX sometimes sets vertical as a property; the attribute selector helps.
+      }
+    }
+
+    .osd-icon {
+      min-width: $icon-size;
+      min-height: $icon-size;
+
+      border-radius: $radius;
+
+      background-color: $icon-bg;
+      color: $accent;
+
+      padding: $icon-pad;
+
+      image {
+        -gtk-icon-size: $icon-size;
+      }
+    }
+
+    .osd-level {
+      min-height: $bar-h;
+      min-width: $bar-w;
+
+      trough {
+        background-color: $bar-bg;
+        border-radius: $radius;
+      }
+
+      block {
+        border-radius: $radius;
+      }
+
+      block.filled {
+        background-color: $bar-fill;
+      }
+
+      &.overflow block.filled {
+        background-color: mix($accent, $bar-fill, 70%);
+      }
+    }
+  }
+}

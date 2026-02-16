@@ -5,8 +5,21 @@ const brightness = stem((opt) => ({
   heartbeatPollUser: opt(true),
 
   heartbeatPoll: opt(true, {
-    deps: [dep.root((r) => r.osd.enable), dep.self((s) => s.heartbeatPollUser)],
-    derive: ({ root, self }) => root.osd.enable.get() && self.heartbeatPollUser.get(),
+    deps: [
+      dep.root((r) => r.osd.enable),
+      dep.root((r) => r.osd.sources.brightness),
+      dep.root((r) => r.osd.sources.keyboardBrightness),
+      dep.self((s) => s.heartbeatPollUser),
+    ],
+    derive: ({ root, self }) => {
+      if (!root.osd.enable.get()) return false;
+      if (!self.heartbeatPollUser.get()) return false;
+
+      // Only poll when at least one brightness source is enabled.
+      return Boolean(
+        root.osd.sources.brightness.get() || root.osd.sources.keyboardBrightness.get(),
+      );
+    },
   }),
 
   heartbeatPollMs: opt(1000),

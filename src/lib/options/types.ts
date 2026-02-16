@@ -164,3 +164,48 @@ export type MatugenResizeFilter =
     | "gaussian"
     | "lanczos3"
     | "none";
+
+// -----------------------------------------------------------------------------
+// Shared layout + transitions (GTK4 widgets)
+// -----------------------------------------------------------------------------
+
+/**
+ * Shared layout names used by popup-like widgets (Launcher/OSD).
+ *
+ * We accept both HyprPanel-style "top-left" and internal underscore variants
+ * ("top_left") to avoid duplicating enums across subsystems.
+ */
+export type AnchorLayout =
+    | "top-left"
+    | "top-center"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-center"
+    | "bottom-right"
+    | "top"
+    | "bottom"
+    | "left"
+    | "right"
+    | "center"
+    | "full"
+    | "top_left"
+    | "top_center"
+    | "top_right"
+    | "bottom_left"
+    | "bottom_center"
+    | "bottom_right";
+
+/** Names mapped to Gtk.RevealerTransitionType (GTK4). */
+export type GtkRevealerTransitionName =
+    | "NONE"
+    | "CROSSFADE"
+    | "SLIDE_RIGHT"
+    | "SLIDE_LEFT"
+    | "SLIDE_UP"
+    | "SLIDE_DOWN"
+    | "SWING_RIGHT"
+    | "SWING_LEFT"
+    | "SWING_UP"
+    | "SWING_DOWN";
+
+export type OsdOrientation = "vertical" | "horizontal";

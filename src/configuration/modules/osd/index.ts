@@ -1,17 +1,114 @@
-import { stem, twig } from "src/configuration/helper";
-import brightness from "./brightness";
-import type { OptionsRoot, Opt } from "src/lib/options";
-import type { OsdBrightnessOptions } from "./brightness";
+import { graft, stem, twig } from "src/configuration/helper";
+import { dep } from "src/lib/options";
+import type {
+  AnchorLayout,
+  GtkRevealerTransitionName,
+  HexColor,
+  OsdOrientation,
+} from "src/lib/options/types";
 
-export interface OsdOptions {
-  enable: Opt<boolean, OptionsRoot, OsdOptions>;
-  brightness: OsdBrightnessOptions;
+import brightness from "./brightness";
+
+type OsdRevealTransition = "AUTO" | GtkRevealerTransitionName;
+
+function normalizeLayout(layout: AnchorLayout | string): string {
+  return String(layout).toLowerCase().replace(/_/g, "-");
 }
 
-const osd = stem((opt) => ({
-  enable: opt(true),
-  brightness: brightness(twig(opt)),
-}));
+function autoTransitionForLocation(layout: AnchorLayout | string): GtkRevealerTransitionName {
+  const l = normalizeLayout(layout);
+
+  // Centered overlays look best with a fade.
+  if (l === "center") return "CROSSFADE";
+
+  // Prefer vertical motion for top/bottom placements.
+  if (l === "top" || l.startsWith("top-")) return "SLIDE_DOWN";
+  if (l === "bottom" || l.startsWith("bottom-")) return "SLIDE_UP";
+
+  // Side placements.
+  if (l === "left" || l.endsWith("-left")) return "SLIDE_RIGHT";
+  if (l === "right" || l.endsWith("-right")) return "SLIDE_LEFT";
+
+  return "SLIDE_UP";
+}
+
+const osd = stem((opt) =>
+  graft({
+    enable: opt(true),
+
+    timeoutMs: opt(1400),
+    startupDelayMs: opt(250),
+
+    // HyprPanel-style location names (also accept underscore variants).
+    location: opt<AnchorLayout>("bottom-right"),
+    orientation: opt<OsdOrientation>("horizontal"),
+
+    // Transition options.
+    revealTransition: opt<OsdRevealTransition>("AUTO"),
+    transitionDurationMs: opt(180),
+
+    revealTransitionResolved: opt<GtkRevealerTransitionName>("SLIDE_UP", {
+      runtime: true,
+      deps: [dep.self((s) => s.location), dep.self((s) => s.revealTransition)],
+      derive: ({ self }) => {
+        const t = self.revealTransition.get();
+        if (t !== "AUTO") return t;
+        return autoTransitionForLocation(self.location.get());
+      },
+    }),
+
+    // Source toggles: the controllers will no-op if disabled.
+    sources: {
+      volume: opt(true),
+      microphone: opt(true),
+      brightness: opt(true),
+      keyboardBrightness: opt(true),
+    },
+
+    // Visual styling options (exported to SCSS).
+    style: {
+      width: opt(280, { scss: true }),
+      height: opt(96, { scss: true }),
+
+      radius: opt(18, { scss: true }),
+      padding: opt(14, { scss: true }),
+      gap: opt(12, { scss: true }),
+      margin: opt(12, { scss: true }),
+
+      fg: opt<HexColor>("#e1e2e9", { scss: true }),
+
+      bg: opt<HexColor>("#1d2024", { scss: true }),
+      bgOpacity: opt(92, { scss: true }), // 0..100
+
+      borderEnable: opt(false, { scss: true }),
+      borderWidth: opt(1, { scss: true }),
+      borderColor: opt<HexColor>("#8d9199", { scss: true }),
+      borderOpacity: opt(35, { scss: true }), // 0..100
+
+      shadowEnable: opt(true, { scss: true }),
+      shadowMargin: opt(10, { scss: true }),
+      shadowX: opt(0, { scss: true }),
+      shadowY: opt(14, { scss: true }),
+      shadowBlur: opt(40, { scss: true }),
+      shadowSpread: opt(0, { scss: true }),
+      shadowColor: opt("rgba(0,0,0,0.45)", { scss: true }),
+
+      iconSize: opt(28, { scss: true }),
+      iconPadding: opt(10, { scss: true }),
+      iconBgOpacity: opt(12, { scss: true }), // 0..100 (uses $colors-bg)
+
+      barWidth: opt(170, { scss: true }),
+      barHeight: opt(10, { scss: true }),
+      barBg: opt<HexColor>("#111318", { scss: true }),
+      barBgOpacity: opt(45, { scss: true }), // 0..100
+      barFill: opt<HexColor>("#1b93fd", { scss: true }),
+    },
+
+    brightness: brightness(twig(opt)),
+  })
+);
+
+export type OsdOptions = ReturnType<typeof osd>;
 
 declare module "src/lib/options/root" {
   interface OptionsRoot {
