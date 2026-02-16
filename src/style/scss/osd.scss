@@ -131,5 +131,30 @@ $bar-h: $osd-style-barHeight * 1px;
         background-color: mix($accent, $bar-fill, 70%);
       }
     }
+
+    .osd-scale {
+      min-height: $bar-h;
+      min-width: $bar-w;
+
+      trough {
+        background-color: $bar-bg;
+        border-radius: $radius;
+      }
+
+      trough highlight {
+        background-color: $bar-fill;
+        border-radius: $radius;
+      }
+
+      slider {
+        background-color: $bar-fill;
+        border-radius: $radius;
+      }
+
+      &.overflow trough highlight,
+      &.overflow slider {
+        background-color: mix($accent, $bar-fill, 70%);
+      }
+    }
   }
 }

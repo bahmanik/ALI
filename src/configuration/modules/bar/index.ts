@@ -11,6 +11,8 @@ const bar = stem((opt) =>
     {
       position: opt<BarLocation>("top", { scss: true, hyprland: true }),
       margin: opt<number[]>([0, 0, 0, 0]),
+      secondaryBar: secondaryBar(twig(opt)),
+      corner: corner(twig(opt)),
 
       /** Visual styling options (exported to SCSS). Inspired by HyprPanel's bar theming knobs. */
       style: {
@@ -57,9 +59,6 @@ const bar = stem((opt) =>
         paddingX: opt(2, { scss: true }), // px
         paddingY: opt(2, { scss: true }), // px
       },
-
-      secondaryBar: secondaryBar(twig(opt)),
-      corner: corner(twig(opt)),
     },
     overrideScale(opt, {
       defaultLocal: 12,

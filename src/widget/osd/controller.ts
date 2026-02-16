@@ -22,6 +22,8 @@ export type OsdEvent = {
 
 type Listener = (ev: OsdEvent) => void;
 
+const VOLUME_MAX = 1.5; // 150% (matches overflow behavior)
+
 function clamp01(n: number): number {
   if (!Number.isFinite(n)) return 0;
   return Math.max(0, Math.min(1, n));
@@ -129,6 +131,16 @@ class OsdController {
       }
     }
   }
+
+  /** Whether this controller supports setting the value (interactive slider). */
+  public canSet(): boolean {
+    return false;
+  }
+
+  /** Set the value with a 0..1 normalized input (clamped). */
+  public setNormalized(_v: number): void {
+    // default: no-op
+  }
 }
 
 function osdEnabled(): boolean {
@@ -152,6 +164,7 @@ function sourceEnabled(key: "volume" | "microphone" | "brightness" | "keyboardBr
 
 class SoundController extends OsdController {
   #started = false;
+  #speaker: AstalWp.Endpoint | null = null;
 
   constructor() {
     super("sound");
@@ -168,6 +181,8 @@ class SoundController extends OsdController {
       const wp = AstalWp.get_default?.();
       const speaker = (wp as any)?.defaultSpeaker;
       if (!speaker) return;
+
+      this.#speaker = speaker as AstalWp.Endpoint;
 
       const update = () => {
         if (!osdEnabled() || !sourceEnabled("volume")) return;
@@ -210,10 +225,31 @@ class SoundController extends OsdController {
       console.warn("[OSD] Sound controller unavailable:", err);
     }
   }
+
+  public override canSet(): boolean {
+    return Boolean(this.#speaker);
+  }
+
+  public override setNormalized(v: number): void {
+    const spk = this.#speaker;
+    if (!spk) return;
+
+    const n = clamp01(v);
+    const vol = n * VOLUME_MAX;
+
+    try {
+      // best-effort: unmute when raising above zero
+      if (vol > 0 && Boolean((spk as any).mute)) (spk as any).mute = false;
+      (spk as any).volume = vol;
+    } catch {
+      /* noop */
+    }
+  }
 }
 
 class MicController extends OsdController {
   #started = false;
+  #mic: AstalWp.Endpoint | null = null;
 
   constructor() {
     super("mic");
@@ -228,6 +264,8 @@ class MicController extends OsdController {
       const wp = AstalWp.get_default?.();
       const mic = (wp as any)?.defaultMicrophone ?? (wp as any)?.audio?.defaultMicrophone;
       if (!mic) return;
+
+      this.#mic = mic as AstalWp.Endpoint;
 
       const update = () => {
         if (!osdEnabled() || !sourceEnabled("microphone")) return;
@@ -265,10 +303,30 @@ class MicController extends OsdController {
       console.warn("[OSD] Microphone controller unavailable:", err);
     }
   }
+
+  public override canSet(): boolean {
+    return Boolean(this.#mic);
+  }
+
+  public override setNormalized(v: number): void {
+    const mic = this.#mic;
+    if (!mic) return;
+
+    const n = clamp01(v);
+    const vol = n * VOLUME_MAX;
+
+    try {
+      if (vol > 0 && Boolean((mic as any).mute)) (mic as any).mute = false;
+      (mic as any).volume = vol;
+    } catch {
+      /* noop */
+    }
+  }
 }
 
 class BrightnessController extends OsdController {
   #started = false;
+  #brightness: BrightnessService | null = null;
 
   constructor() {
     super("brightness");
@@ -281,6 +339,7 @@ class BrightnessController extends OsdController {
 
     try {
       const brightness = BrightnessService.getInstance();
+      this.#brightness = brightness;
 
       const update = () => {
         if (!osdEnabled() || !sourceEnabled("brightness")) return;
@@ -304,10 +363,27 @@ class BrightnessController extends OsdController {
       console.warn("[OSD] Brightness controller unavailable:", err);
     }
   }
+
+  public override canSet(): boolean {
+    const b = this.#brightness;
+    return Boolean(b?.available);
+  }
+
+  public override setNormalized(v: number): void {
+    const b = this.#brightness;
+    if (!b?.available) return;
+
+    try {
+      b.screen = clamp01(v);
+    } catch {
+      /* noop */
+    }
+  }
 }
 
 class KeyboardBrightnessController extends OsdController {
   #started = false;
+  #brightness: BrightnessService | null = null;
 
   constructor() {
     super("keyboardBrightness");
@@ -320,6 +396,7 @@ class KeyboardBrightnessController extends OsdController {
 
     try {
       const brightness = BrightnessService.getInstance();
+      this.#brightness = brightness;
 
       const update = () => {
         if (!osdEnabled() || !sourceEnabled("keyboardBrightness")) return;
@@ -340,6 +417,26 @@ class KeyboardBrightnessController extends OsdController {
       update();
     } catch (err) {
       console.warn("[OSD] Keyboard brightness controller unavailable:", err);
+    }
+  }
+
+  public override canSet(): boolean {
+    const b = this.#brightness;
+    return Boolean(b?.available && Number(b.kbdMax) > 0);
+  }
+
+  public override setNormalized(v: number): void {
+    const b = this.#brightness;
+    if (!b?.available) return;
+
+    const max = Number(b.kbdMax) || 0;
+    if (max <= 0) return;
+
+    const raw = Math.round(clamp01(v) * max);
+    try {
+      b.kbd = raw;
+    } catch {
+      /* noop */
     }
   }
 }

@@ -21,8 +21,8 @@ const secondaryBar = stem((opt) =>
         // geometry
         height: opt(36, { scss: true }), // px
         radius: opt(16, { scss: true }), // px
-        paddingX: opt(12, { scss: true }), // px
-        paddingY: opt(6, { scss: true }), // px
+        paddingX: opt(0, { scss: true }), // px
+        paddingY: opt(0, { scss: true }), // px
         marginTop: opt(8, { scss: true }), // px (inside the window)
         marginBottom: opt(8, { scss: true }), // px (inside the window)
         marginSides: opt(10, { scss: true }), // px (inside the window)
@@ -51,8 +51,8 @@ const secondaryBar = stem((opt) =>
 
         radius: opt(12, { scss: true }), // px
         spacing: opt(4, { scss: true }), // px (horizontal spacing)
-        paddingX: opt(10, { scss: true }), // px
-        paddingY: opt(6, { scss: true }), // px
+        paddingX: opt(0, { scss: true }), // px
+        paddingY: opt(0, { scss: true }), // px
       },
 
     },

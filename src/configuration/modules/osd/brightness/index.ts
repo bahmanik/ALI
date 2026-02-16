@@ -11,13 +11,17 @@ const brightness = stem((opt) => ({
       dep.root((r) => r.osd.sources.keyboardBrightness),
       dep.self((s) => s.heartbeatPollUser),
     ],
-    derive: ({ root, self }) => {
-      if (!root.osd.enable.get()) return false;
-      if (!self.heartbeatPollUser.get()) return false;
 
-      // Only poll when at least one brightness source is enabled.
+    derive: ({ root, self }) => {
+      const r = root as any;
+      const s = self as any;
+
+      if (!r.osd.enable.get()) return false;
+      if (!s.heartbeatPollUser.get()) return false;
+
       return Boolean(
-        root.osd.sources.brightness.get() || root.osd.sources.keyboardBrightness.get(),
+        r.osd.sources.brightness.get() ||
+        r.osd.sources.keyboardBrightness.get(),
       );
     },
   }),
@@ -26,5 +30,4 @@ const brightness = stem((opt) => ({
 }));
 
 export type OsdBrightnessOptions = ReturnType<typeof brightness>;
-
 export default brightness;

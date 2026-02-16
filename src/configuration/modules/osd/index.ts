@@ -36,7 +36,7 @@ const osd = stem((opt) =>
   graft({
     enable: opt(true),
 
-    timeoutMs: opt(1400),
+    timeoutMs: opt(4400),
     startupDelayMs: opt(250),
 
     // HyprPanel-style location names (also accept underscore variants).
@@ -63,6 +63,13 @@ const osd = stem((opt) =>
       microphone: opt(true),
       brightness: opt(true),
       keyboardBrightness: opt(true),
+    },
+
+    // Interactive OSD (drag-to-set) options.
+    interactive: {
+      enable: opt(true),
+      step: opt(0.02),
+      lockTimeoutWhileDragging: opt(true),
     },
 
     // Visual styling options (exported to SCSS).
