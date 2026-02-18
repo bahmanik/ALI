@@ -39,8 +39,9 @@ export function setSecondaryRect(monitor: string, rect?: BarRect) {
     upsert(monitor, { secondary: rect });
 }
 
-export function clearMonitor(monitor: string) {
-    const current = { ...bars.peek() };
-    delete current[monitor];
-    setBars(current);
-}
+//WARNING:this function is never used
+// export function clearMonitor(monitor: string) {
+//     const current = { ...bars.peek() };
+//     delete current[monitor];
+//     setBars(current);
+// }

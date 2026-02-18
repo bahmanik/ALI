@@ -5,8 +5,9 @@ import type {
   MatugenType,
   ThemeMode,
 } from "src/lib/options/types";
+import type { ColorsOptions } from "./type";
 
-const colors = stem((opt) => ({
+const colors = stem((opt): ColorsOptions => ({
   enableMatugen: opt(true),
   themeMode: opt<ThemeMode>("dark"),
 
@@ -28,13 +29,5 @@ const colors = stem((opt) => ({
     file: opt(`${CONFIG_DIR}/matugen.json`),
   },
 }));
-
-export type ColorsOptions = ReturnType<typeof colors>;
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    colors: ColorsOptions;
-  }
-}
 
 export default colors;

@@ -2,8 +2,9 @@ import { stem, graft } from "src/configuration/helper";
 import { overrideScale } from "src/lib/options/factories/overrideScale";
 import { overridePattern } from "src/lib/options/factories/overridePattern";
 import type { BarBorderLocation, BarLocation, HexColor } from "src/lib/options/types";
+import type { SecondaryBarOptions } from "./type";
 
-const secondaryBar = stem((opt) =>
+const secondaryBar = stem((opt): SecondaryBarOptions =>
   graft(
     {
       enable: opt(true),
@@ -66,5 +67,4 @@ const secondaryBar = stem((opt) =>
   )
 );
 
-export type SecondaryBarOptions = ReturnType<typeof secondaryBar>;
 export default secondaryBar;

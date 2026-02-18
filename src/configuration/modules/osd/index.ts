@@ -1,15 +1,14 @@
+import brightness from "./brightness";
 import { graft, stem, twig } from "src/configuration/helper";
 import { dep } from "src/lib/options";
+import type { OsdOptions } from "./type";
 import type {
   AnchorLayout,
   GtkRevealerTransitionName,
   HexColor,
   OsdOrientation,
+  OsdRevealTransition,
 } from "src/lib/options/types";
-
-import brightness from "./brightness";
-
-type OsdRevealTransition = "AUTO" | GtkRevealerTransitionName;
 
 function normalizeLayout(layout: AnchorLayout | string): string {
   return String(layout).toLowerCase().replace(/_/g, "-");
@@ -32,7 +31,7 @@ function autoTransitionForLocation(layout: AnchorLayout | string): GtkRevealerTr
   return "SLIDE_UP";
 }
 
-const osd = stem((opt) =>
+const osd = stem((opt): OsdOptions =>
   graft({
     enable: opt(true),
 
@@ -111,16 +110,9 @@ const osd = stem((opt) =>
       barFill: opt<HexColor>("#1b93fd", { scss: true }),
     },
 
+    imNotDefined: opt<boolean>(true),
     brightness: brightness(twig(opt)),
   })
 );
-
-export type OsdOptions = ReturnType<typeof osd>;
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    osd: OsdOptions;
-  }
-}
 
 export default osd;

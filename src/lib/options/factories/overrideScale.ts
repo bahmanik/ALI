@@ -1,24 +1,20 @@
 import { dep } from "..";
 import type { Opt, OptFactory } from "..";
 
-export interface OverrideScale<Root, Self> {
-    useLocalScale: Opt<boolean, Root, Self>;
-    localScale: Opt<number, Root, Self>;
-    scale: Opt<number, Root, Self>;
+export interface OverrideScale<_Root, _Self> {
+    useLocalScale: Opt<boolean>;
+    localScale: Opt<number>;
+    scale: Opt<number>;
 }
 
-type HasGlobalScale<Root> = Root extends {
-    global: { scale: Opt<number, Root, unknown> };
-} ? Root : never;
-
 export function overrideScale<Root, Self>(
-    opt: OptFactory<HasGlobalScale<Root>, Self>,
+    opt: OptFactory<Root, Self>,
     params: {
         defaultUseLocal?: boolean;
         defaultLocal: number;
         exports?: { scss?: boolean; hyprland?: boolean };
     }
-): OverrideScale<HasGlobalScale<Root>, Self> {
+): OverrideScale<Root, Self> {
     const { defaultUseLocal = false, defaultLocal, exports = {} } = params;
 
     const useLocalScale = opt(defaultUseLocal);
@@ -28,12 +24,17 @@ export function overrideScale<Root, Self>(
         ...exports,
         runtime: true,
         deps: [
-            dep.root((r) => r.global.scale),
+            // Root typing is provided by the injected module factory.
+            // These factories are shared helpers, so we keep them permissive and
+            // rely on the caller's Root type for correctness.
+            dep.root((r: any) => r.global.scale),
             dep.opt(useLocalScale),
             dep.opt(localScale),
         ],
-        derive: ({ root }) =>
-            useLocalScale.get() ? localScale.get() : root.global.scale.get(),
+        derive: ({ root }) => {
+            const g = (root as any).global;
+            return useLocalScale.get() ? localScale.get() : g.scale.get();
+        },
     });
 
     return { useLocalScale, localScale, scale };

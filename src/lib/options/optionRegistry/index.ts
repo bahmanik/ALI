@@ -1,15 +1,19 @@
-import { Opt } from "../opt";
-import { errorHandler } from "src/lib/errors/handler";
+import { OptImpl, isOpt } from "../opt";
+
+// Scoped build: avoid pulling the whole project via shared error utilities.
+const errorHandler = (e: unknown) => {
+    console.error(e);
+};
 import type { ConfigManager } from "../configManager";
 import type { MkOptionsResult, OptionsObject } from "../types";
 
 export class OptionRegistry<T extends OptionsObject> {
-    private _options: Opt<unknown, T, unknown>[] = [];
+    private _options: OptImpl<unknown>[] = [];
     private _optionsObj: T;
     private _configManager: ConfigManager;
 
-    private _derived: Opt<unknown, T, unknown>[] = [];
-    private _derivedOrder: Opt<unknown, T, unknown>[] = [];
+    private _derived: OptImpl<unknown>[] = [];
+    private _derivedOrder: OptImpl<unknown>[] = [];
     private _derivedRecomputeScheduled = false;
 
     constructor(optionsObj: T, configManager: ConfigManager) {
@@ -18,7 +22,7 @@ export class OptionRegistry<T extends OptionsObject> {
         this._initializeOptions();
     }
 
-    public toArray(): Opt[] {
+    public toArray(): OptImpl[] {
         return this._options;
     }
 
@@ -68,7 +72,7 @@ export class OptionRegistry<T extends OptionsObject> {
     }
 
 
-    private _expandDepsToOpts(target: Opt<unknown, T, unknown>): Opt<unknown, T, unknown>[] {
+    private _expandDepsToOpts(target: OptImpl<unknown>): OptImpl<unknown>[] {
         if (!target.deps || target.deps.length === 0) return [];
 
         const ctx = {
@@ -76,7 +80,7 @@ export class OptionRegistry<T extends OptionsObject> {
             self: target.selfRef,
         } as unknown as { root: T; self: unknown };
 
-        const expanded: Opt<unknown, T, unknown>[] = [];
+        const expanded: OptImpl<unknown>[] = [];
 
         for (const d of target.deps) {
             try {
@@ -88,13 +92,13 @@ export class OptionRegistry<T extends OptionsObject> {
         }
 
         // de-dupe by id
-        const uniq = new Map<string, Opt<unknown, T, unknown>>();
+        const uniq = new Map<string, OptImpl<unknown>>();
         for (const opt of expanded) uniq.set(opt.id, opt);
         return [...uniq.values()];
     }
 
-    private _expandDepInput(input: unknown): Opt<unknown, T, unknown>[] {
-        if (input instanceof Opt) return [input as Opt<unknown, T, unknown>];
+    private _expandDepInput(input: unknown): OptImpl<unknown>[] {
+        if (isOpt(input)) return [input as OptImpl<unknown>];
 
         if (typeof input === "object" && input !== null) {
             const kind = (input as { kind?: unknown }).kind;
@@ -114,13 +118,13 @@ export class OptionRegistry<T extends OptionsObject> {
         return [];
     }
 
-    private _collectOptRefsFromObject(node: unknown): Opt<unknown, T, unknown>[] {
-        const out: Opt<unknown, T, unknown>[] = [];
+    private _collectOptRefsFromObject(node: unknown): OptImpl<unknown>[] {
+        const out: OptImpl<unknown>[] = [];
         const seen = new WeakSet<object>();
 
         const walk = (val: unknown) => {
-            if (val instanceof Opt) {
-                out.push(val as Opt<unknown, T, unknown>);
+            if (isOpt(val)) {
+                out.push(val as OptImpl<unknown>);
                 return;
             }
 
@@ -136,7 +140,7 @@ export class OptionRegistry<T extends OptionsObject> {
         walk(node);
 
         // de-dupe
-        const uniq = new Map<string, Opt<unknown, T, unknown>>();
+        const uniq = new Map<string, OptImpl<unknown>>();
         for (const opt of out) uniq.set(opt.id, opt);
         return [...uniq.values()];
     }
@@ -202,9 +206,9 @@ export class OptionRegistry<T extends OptionsObject> {
     }
 
     private _topoSortDerivedOptions(
-        derived: Opt<unknown, T, unknown>[]
-    ): Opt<unknown, T, unknown>[] {
-        const byId = new Map<string, Opt<unknown, T, unknown>>(
+        derived: OptImpl<unknown>[]
+    ): OptImpl<unknown>[] {
+        const byId = new Map<string, OptImpl<unknown>>(
             derived.map((o) => [o.id, o])
         );
 
@@ -240,7 +244,7 @@ export class OptionRegistry<T extends OptionsObject> {
             if (deg === 0) queue.push(id);
         }
 
-        const ordered: Opt<unknown, T, unknown>[] = [];
+        const ordered: OptImpl<unknown>[] = [];
         while (queue.length > 0) {
             const id = queue.shift()!;
             const opt = byId.get(id);
@@ -275,8 +279,8 @@ export class OptionRegistry<T extends OptionsObject> {
         });
     }
 
-    private _collectTopLevelModules(root: Record<string, unknown>): Opt<unknown, T, unknown>[] {
-        const result: Opt<unknown, T, unknown>[] = [];
+    private _collectTopLevelModules(root: Record<string, unknown>): OptImpl<unknown>[] {
+        const result: OptImpl<unknown>[] = [];
 
         for (const key of Object.keys(root)) {
             const subtree = root[key];
@@ -299,16 +303,16 @@ export class OptionRegistry<T extends OptionsObject> {
         sourceObject: Record<string, unknown>,
         path = "",
         moduleRoot: unknown
-    ): Opt<unknown, T, unknown>[] {
-        const result: Opt<unknown, T, unknown>[] = [];
+    ): OptImpl<unknown>[] {
+        const result: OptImpl<unknown>[] = [];
 
         try {
             for (const key in sourceObject) {
                 const value = sourceObject[key];
                 const id = path ? `${path}.${key}` : key;
 
-                if (value instanceof Opt) {
-                    const opt = value as Opt<unknown, T, unknown>;
+                if (isOpt(value)) {
+                    const opt = value as OptImpl<unknown>;
                     opt.id = id;
 
                     // IMPORTANT:
@@ -328,7 +332,7 @@ export class OptionRegistry<T extends OptionsObject> {
         return result;
     }
 
-    private async _resetAllOptions(opts: Opt[]): Promise<string[]> {
+    private async _resetAllOptions(opts: OptImpl[]): Promise<string[]> {
         const results: string[] = [];
         for (const opt of opts) {
             const id = opt.reset();

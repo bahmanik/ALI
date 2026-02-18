@@ -2,8 +2,9 @@ import { stem, graft } from "src/configuration/helper";
 import { overrideImage } from "src/lib/options/factories/overrideImage";
 import { overridePattern } from "src/lib/options/factories/overridePattern";
 import type { CornerFill, HexColor } from "src/lib/options/types";
+import type { BarCornerOptions } from "./type";
 
-const corner = stem((opt) =>
+const corner = stem((opt): BarCornerOptions =>
   graft(
     {
       enable: opt(true, { scss: true }),
@@ -35,5 +36,4 @@ const corner = stem((opt) =>
   )
 );
 
-export type BarCornerOptions = ReturnType<typeof corner>;
 export default corner;

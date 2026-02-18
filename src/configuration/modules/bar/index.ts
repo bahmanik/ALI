@@ -1,12 +1,12 @@
+import corner from "./corner";
+import secondaryBar from "./secondaryBar";
 import { graft, stem, twig } from "src/configuration/helper";
 import { overrideScale } from "src/lib/options/factories/overrideScale";
 import { overridePattern } from "src/lib/options/factories/overridePattern";
 import type { BarBorderLocation, BarLocation, HexColor } from "src/lib/options/types";
+import type { BarOptions } from "./type";
 
-import corner from "./corner";
-import secondaryBar from "./secondaryBar";
-
-const bar = stem((opt) =>
+const bar = stem((opt): BarOptions =>
   graft(
     {
       position: opt<BarLocation>("top", { scss: true, hyprland: true }),
@@ -69,13 +69,5 @@ const bar = stem((opt) =>
     }),
   )
 );
-
-export type BarOptions = ReturnType<typeof bar>;
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    bar: BarOptions;
-  }
-}
 
 export default bar;

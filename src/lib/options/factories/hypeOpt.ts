@@ -1,9 +1,9 @@
 import type { Opt, OptFactory } from "..";
 import type { OptExports } from "../types";
 
-export type EnabledPair<Root, Self, K extends string, T> =
-    { [P in K]: Opt<T, Root, Self> } &
-    { [P in `${K}_enable`]: Opt<boolean, Root, Self> };
+export type EnabledPair<_Root, _Self, K extends string, T> =
+    { [P in K]: Opt<T> } &
+    { [P in `${K}_enable`]: Opt<boolean> };
 
 export function hyprOpt<Root, Self, K extends string, T>(
     opt: OptFactory<Root, Self>,

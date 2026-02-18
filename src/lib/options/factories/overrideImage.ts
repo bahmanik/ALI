@@ -2,22 +2,18 @@ import { dep } from "..";
 import type { Opt, OptFactory } from "..";
 import type { ImageTechnique, OptExports } from "../types";
 
-export interface OverrideImage<Root, Self> {
-    useLocalOuterImage: Opt<boolean, Root, Self>;
-    localOuterImage: Opt<string, Root, Self>;
+export interface OverrideImage<_Root, _Self> {
+    useLocalOuterImage: Opt<boolean>;
+    localOuterImage: Opt<string>;
 
-    enableTechnique: Opt<boolean, Root, Self>;
-    technique: Opt<ImageTechnique, Root, Self>;
+    enableTechnique: Opt<boolean>;
+    technique: Opt<ImageTechnique>;
 
-    outerImage: Opt<string, Root, Self>;
+    outerImage: Opt<string>;
 }
 
-type HasDisplayWallpaperFile<Root> = Root extends {
-    display: { wallpaper: { file: Opt<string, Root, unknown> } };
-} ? Root : never;
-
 export function overrideImage<Root, Self>(
-    opt: OptFactory<HasDisplayWallpaperFile<Root>, Self>,
+    opt: OptFactory<Root, Self>,
     params: {
         defaultUseLocal?: boolean;
         defaultLocal?: string;
@@ -25,7 +21,7 @@ export function overrideImage<Root, Self>(
         defaultTechnique?: ImageTechnique;
         exports?: { outerImage?: OptExports };
     }
-): OverrideImage<HasDisplayWallpaperFile<Root>, Self> {
+): OverrideImage<Root, Self> {
     const {
         defaultUseLocal = false,
         defaultLocal = "",
@@ -43,14 +39,16 @@ export function overrideImage<Root, Self>(
     const outerImage = opt<string>("", {
         ...(exports.outerImage ?? {}),
         deps: [
-            dep.root((r) => r.display.wallpaper.file),
+            dep.root((r: any) => r.display.wallpaper.file),
             dep.opt(useLocalOuterImage),
             dep.opt(localOuterImage),
         ],
-        derive: ({ root }) =>
-            useLocalOuterImage.get()
+        derive: ({ root }) => {
+            const d = (root as any).display;
+            return useLocalOuterImage.get()
                 ? localOuterImage.get()
-                : root.display.wallpaper.file.get(),
+                : d.wallpaper.file.get();
+        },
     });
 
     return { useLocalOuterImage, localOuterImage, enableTechnique, technique, outerImage };

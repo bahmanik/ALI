@@ -2,28 +2,24 @@ import { dep } from "..";
 import type { Opt, OptFactory } from "..";
 import type { OptExports, Pattern } from "../types";
 
-export interface OverridePattern<Root, Self> {
-    patternEnable: Opt<boolean, Root, Self>;
-    useLocalPattern: Opt<boolean, Root, Self>;
-    localPattern: Opt<Pattern, Root, Self>;
+export interface OverridePattern<_Root, _Self> {
+    patternEnable: Opt<boolean>;
+    useLocalPattern: Opt<boolean>;
+    localPattern: Opt<Pattern>;
 
-    patternPath: Opt<string, Root, Self>;
-    patternSize: Opt<number, Root, Self>;
+    patternPath: Opt<string>;
+    patternSize: Opt<number>;
 }
 
-type HasGlobalPattern<Root> = Root extends {
-    global: { pattern: Opt<Pattern, Root, unknown> };
-} ? Root : never;
-
 export function overridePattern<Root, Self>(
-    opt: OptFactory<HasGlobalPattern<Root>, Self>,
+    opt: OptFactory<Root, Self>,
     params: {
         defaultUseLocal?: boolean;
         defaultEnable?: boolean;
         defaultLocal?: Pattern;
         exports?: { path?: OptExports; size?: OptExports };
     }
-): OverridePattern<HasGlobalPattern<Root>, Self> {
+): OverridePattern<Root, Self> {
     const {
         defaultEnable = false,
         defaultUseLocal = false,
@@ -38,14 +34,15 @@ export function overridePattern<Root, Self>(
     const patternPath = opt<string>("", {
         ...(exports.path ?? {}),
         deps: [
-            dep.root((r) => r.global.pattern),
+            dep.root((r: any) => r.global.pattern),
             dep.opt(patternEnable),
             dep.opt(useLocalPattern),
             dep.opt(localPattern),
         ],
         derive: ({ root }) => {
             if (!patternEnable.get()) return "none";
-            const p = useLocalPattern.get() ? localPattern.get() : root.global.pattern.get();
+            const g = (root as any).global;
+            const p = useLocalPattern.get() ? localPattern.get() : g.pattern.get();
             return p.path;
         },
     });
@@ -53,12 +50,13 @@ export function overridePattern<Root, Self>(
     const patternSize = opt<number>(defaultLocal.size, {
         ...(exports.size ?? {}),
         deps: [
-            dep.root((r) => r.global.pattern),
+            dep.root((r: any) => r.global.pattern),
             dep.opt(useLocalPattern),
             dep.opt(localPattern),
         ],
         derive: ({ root }) => {
-            const p = useLocalPattern.get() ? localPattern.get() : root.global.pattern.get();
+            const g = (root as any).global;
+            const p = useLocalPattern.get() ? localPattern.get() : g.pattern.get();
             return p.size;
         },
     });

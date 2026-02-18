@@ -1,7 +1,8 @@
 import { stem } from "src/configuration/helper";
+import type { WallpaperOptions } from "./type";
 import type { TransitionPos, TransitionType } from "src/lib/options/types";
 
-const wallpaper = stem((opt) => ({
+const wallpaper = stem((opt): WallpaperOptions => ({
   enable: opt(true),
   file: opt(`${CONFIG_DIR}/background`),
 
@@ -20,7 +21,5 @@ const wallpaper = stem((opt) => ({
     pos: opt<TransitionPos>("cursor"),
   },
 }));
-
-export type WallpaperOptions = ReturnType<typeof wallpaper>;
 
 export default wallpaper;

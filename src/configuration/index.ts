@@ -7,6 +7,7 @@ import osd from "./modules/osd";
 import bar from "./modules/bar";
 import launcher from "./modules/launcher";
 import hyprland from "./hyprland";
+import calendar from "./modules/calendar";
 
 const options = mkOptions<OptionsRoot>({
     global,
@@ -15,6 +16,7 @@ const options = mkOptions<OptionsRoot>({
     osd,
     bar,
     launcher,
+    calendar,
     hyprland,
 });
 

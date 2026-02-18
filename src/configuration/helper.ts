@@ -7,12 +7,18 @@ type Merge<T extends readonly object[]> = UnionToIntersection<T[number]>;
 
 /**
  * stem:
- * - defines a module factory with inferred Self
- * - avoids TS7022 because modules are functions, not self-typed object literals
+ * - Explicit module contracts: callers should pass <Self>
+ * - The injected opt() is typed as OptFactory<OptionsRoot, Self>
+ *   so dep/derive see the same strongly-typed Self.
  */
-function stem<Self>(factory: (opt: OptFactory<OptionsRoot, any>) => Self) {
-  // infer Self from return type (object literal), not from the opt parameter
-  return factory as unknown as (opt: OptFactory<OptionsRoot, Self>) => Self;
+type Exact<Shape, Actual extends Shape> = Actual & Record<Exclude<keyof Actual, keyof Shape>, never>;
+type ExactFn<Self> = <Actual extends Self>(value: Exact<Self, Actual>) => Actual;
+
+function stem<Self>(
+  factory: (opt: OptFactory<OptionsRoot, Self>, exact: ExactFn<Self>) => Self,
+): (opt: OptFactory<OptionsRoot, Self>) => Self {
+  const exact: ExactFn<Self> = (value) => value;
+  return (opt) => factory(opt, exact);
 }
 
 /**

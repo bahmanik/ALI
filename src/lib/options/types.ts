@@ -59,14 +59,20 @@ export type DepRef<Root, Self> = {
     resolve: DepResolver<Root, Self>;
 };
 
-export interface OptProps<Root = unknown, Self = unknown, T = unknown> {
+/**
+ * Per-option configuration.
+ *
+ * Root and Self are *type-level only* and live on the injected OptFactory.
+ * Runtime Opt objects are always Opt<T>.
+ */
+export type OptConfig<Root, Self, T> = {
     runtime?: boolean;
     scss?: boolean;
     hyprland?: boolean;
 
-    derive?: Derive<Root, Self, T>;
-    deps?: DepRef<Root, Self>[];
-}
+    deps?: readonly DepRef<Root, Self>[];
+    derive?: (ctx: { root: Root; self: Self }) => T;
+};
 
 export interface OptExports {
     scss?: boolean;
@@ -80,13 +86,13 @@ export type OptionsObject = object
  */
 export type OptFactory<Root, Self> = <T>(
     initial: T,
-    props?: OptProps<Root, Self, T>
-) => Opt<T, Root, Self>;
+    cfg?: OptConfig<Root, Self, T>
+) => Opt<T>;
 
 export type ModuleFactory<Root, Self> = (opt: OptFactory<Root, Self>) => Self;
 
 export interface MkOptionsResult {
-    toArray: () => Opt[];
+    toArray: () => Opt<unknown>[];
     reset: () => Promise<string>;
     handler: (optionsToWatch: string[], callback: () => void) => void;
 }
@@ -131,7 +137,6 @@ export type BarBorderLocation =
     | "horizontal"
     | "vertical"
     | "full";
-export type OverrideMode = "local" | "global";
 
 export type ImageTechnique = "none" | "negative" | "grayscale" | "sepia";
 export type HexColor = `#${string}`;
@@ -207,5 +212,7 @@ export type GtkRevealerTransitionName =
     | "SWING_LEFT"
     | "SWING_UP"
     | "SWING_DOWN";
+
+export type OsdRevealTransition = "AUTO" | GtkRevealerTransitionName;
 
 export type OsdOrientation = "vertical" | "horizontal";

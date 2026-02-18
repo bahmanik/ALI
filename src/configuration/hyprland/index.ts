@@ -1,7 +1,8 @@
 import { stem } from "src/configuration/helper";
 import { hyprOpt } from "src/lib/options/factories/hypeOpt";
+import type { HyprlandOptions } from "./type";
 
-const hyprland = stem((opt) => ({
+const hyprland = stem((opt): HyprlandOptions => ({
   enable: opt(false),
 
   general: {
@@ -13,13 +14,5 @@ const hyprland = stem((opt) => ({
     ...hyprOpt(opt, "rounding", 10),
   },
 }));
-
-export type HyprlandOptions = ReturnType<typeof hyprland>;
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    hyprland: HyprlandOptions;
-  }
-}
 
 export default hyprland;

@@ -1,9 +1,10 @@
 import { stem } from "src/configuration/helper";
+import type { LauncherOptions } from "./type";
 import type { HexColor, LauncherRevealTransition } from "src/lib/options/types";
 
 type LauncherBorderLocation = "none" | "full";
 
-const launcher = stem((opt) => ({
+const launcher = stem((opt): LauncherOptions => ({
   localScale: opt(true),
   scale: opt(12, { scss: true, hyprland: true }),
   revealTransition: opt<LauncherRevealTransition>("SWING_DOWN"),
@@ -91,13 +92,5 @@ const launcher = stem((opt) => ({
     "Dolphin",
   ]),
 }));
-
-export type LauncherOptions = ReturnType<typeof launcher>;
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    launcher: LauncherOptions;
-  }
-}
 
 export default launcher;
