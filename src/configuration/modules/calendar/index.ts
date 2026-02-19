@@ -6,7 +6,7 @@ type CalendarBorderLocation = "none" | "full";
 
 const calendarModule = stem((opt): CalendarOptions => ({
   /** Which calendar system to display in the widget. */
-  calendar: opt<calendar>("Japanese"),
+  calendar: opt<calendar>("Gregorian"),
   /**
    * Locale used for labels (month title, weekday labels) when Intl is available.
    * Empty string => system default.
