@@ -8,19 +8,20 @@ export function ensureDirectory(path: string): void {
     }
 }
 
-export function ensureJsonFile(path: string): void {
-    const file = Gio.File.new_for_path(path);
-    const parent = file.get_parent();
-
-    if (parent && !parent.query_exists(null)) {
-        parent.make_directory_with_parents(null);
-    }
-
-    if (!file.query_exists(null)) {
-        const stream = file.create(Gio.FileCreateFlags.NONE, null);
-        stream.write_all('{}', null);
-    }
-}
+//WARNING: this is used nowhere
+// export function ensureJsonFile(path: string): void {
+//     const file = Gio.File.new_for_path(path);
+//     const parent = file.get_parent();
+//
+//     if (parent && !parent.query_exists(null)) {
+//         parent.make_directory_with_parents(null);
+//     }
+//
+//     if (!file.query_exists(null)) {
+//         const stream = file.create(Gio.FileCreateFlags.NONE, null);
+//         stream.write_all('{}', null);
+//     }
+// }
 
 export function ensureHyprlandSource(path: string): void {
     const hyprPath = `${GLib.get_user_config_dir()}/hypr/hyprland.conf`;
@@ -64,8 +65,33 @@ export function ensureParentDir(filePath: string): void {
     try {
         if (!dir.query_exists(null)) dir.make_directory_with_parents(null);
     } catch (e) {
-        // Don't hard-fail; file write errors will surface if directory creation is critical.
         console.error(e);
+    }
+}
+
+/**
+ * Copies a file from srcPath to dstPath.
+ * Ensures the destination parent directory exists.
+ */
+export function copyFile(srcPath: string, dstPath: string, overwrite = true): void {
+    ensureParentDir(dstPath);
+
+    const src = Gio.File.new_for_path(srcPath);
+    const dst = Gio.File.new_for_path(dstPath);
+
+    const flags = overwrite ? Gio.FileCopyFlags.OVERWRITE : Gio.FileCopyFlags.NONE;
+    src.copy(dst, flags, null, null);
+}
+
+/**
+ * Deletes a file if it exists. No-op on missing files.
+ */
+export function deleteFile(path: string): void {
+    const file = Gio.File.new_for_path(path);
+    try {
+        if (file.query_exists(null)) file.delete(null);
+    } catch (e) {
+        console.error("deleteFile:", e);
     }
 }
 

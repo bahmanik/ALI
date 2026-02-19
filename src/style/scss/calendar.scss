@@ -1,0 +1,115 @@
+window.CalendarPopup {
+  background: transparent;
+
+  .calendar-surface {
+    background: transparent;
+  }
+
+  .calendar-panel {
+    padding: #{$calendar-style-padding}px;
+    border-radius: #{$calendar-style-radius}px;
+    background: rgba(
+      red($calendar-style-bg),
+      green($calendar-style-bg),
+      blue($calendar-style-bg),
+      $calendar-style-bgOpacity / 100
+    );
+
+    @if $calendar-style-borderEnable {
+      border: #{$calendar-style-borderWidth}px solid $calendar-style-borderColor;
+    }
+
+    @if $calendar-style-shadowEnable {
+      box-shadow: #{$calendar-style-shadowX}px #{$calendar-style-shadowY}px #{$calendar-style-shadowBlur}px
+        #{$calendar-style-shadowSpread}px $calendar-style-shadowColor;
+    }
+  }
+
+  .calendar-header {
+    margin-bottom: #{$calendar-grid-cellGap}px;
+    // spacing: #{$calendar-grid-cellGap}px;
+    // align-items: center;
+
+    .calendar-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: $colors-fg;
+    }
+  }
+
+  .calendar-nav-btn {
+    min-width: #{$calendar-header-navButtonSize}px;
+    min-height: #{$calendar-header-navButtonSize}px;
+    border-radius: #{$calendar-header-navButtonRadius}px;
+    background: rgba(255, 255, 255, 0.04);
+    color: $colors-fg;
+
+    &:hover {
+      background: $calendar-grid-hoverBg;
+    }
+  }
+
+  .calendar-weekdays {
+    // spacing: #{$calendar-grid-cellGap}px;
+    margin-bottom: #{$calendar-grid-cellGap}px;
+  }
+
+  .calendar-weekday {
+    opacity: $calendar-grid-weekdayOpacity;
+    font-size: 0.9rem;
+    color: $colors-fg;
+  }
+
+  .calendar-grid {
+    // spacing: #{$calendar-grid-cellGap}px;
+  }
+
+  .calendar-row {
+    // spacing: #{$calendar-grid-cellGap}px;
+  }
+
+  .calendar-cell {
+    border-radius: #{$calendar-grid-cellRadius}px;
+    padding: #{$calendar-grid-cellPadding}px;
+    background: rgba(255, 255, 255, 0.03);
+    color: $colors-fg;
+
+    &:hover {
+      background: $calendar-grid-hoverBg;
+    }
+
+    &.outside {
+      opacity: $calendar-grid-outsideOpacity;
+    }
+
+    &.weekend {
+      opacity: $calendar-grid-weekendOpacity;
+    }
+
+    &.today {
+      background: $calendar-grid-todayBg;
+    }
+
+    &.selected {
+      background: $calendar-grid-selectedBg;
+    }
+
+    &.empty {
+      background: transparent;
+      box-shadow: none;
+    }
+  }
+
+  .calendar-cell-inner {
+    // spacing: 2px;
+  }
+
+  .calendar-day {
+    font-weight: 600;
+  }
+
+  .calendar-day-secondary {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+}

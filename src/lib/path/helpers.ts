@@ -15,6 +15,19 @@ export function normalizeToAbsolutePath(path: string): string {
 }
 
 /**
+ * Extracts the extension of a path (including the leading '.')
+ *
+ * Examples:
+ *  - "/a/b/c.png" -> ".png"
+ *  - "/a/b/c"     -> ""
+ */
+export function extFromPath(path: string): string {
+    const base = GLib.path_get_basename(path);
+    const dot = base.lastIndexOf('.');
+    return dot >= 0 ? base.slice(dot) : '';
+}
+
+/**
  * Gets the home directory path
  * @returns The home directory path
  */
