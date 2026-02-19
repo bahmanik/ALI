@@ -15,6 +15,7 @@ import { PrimaryOsd, SecondaryOsd, BrightnessOsd, KeyboardBrightnessOsd } from "
 import NotificationPopups from "./src/widget/notifications/NotificationPopups";
 import { initService } from "./src/initService";
 import CalendarWindow from "src/widget/calendar/CalendarWindow";
+import CountdownWindow from "src/widget/countdown/CountdownWindow";
 
 app.start({
   main() {
@@ -104,6 +105,7 @@ app.start({
     app.get_monitors().map(BrightnessOsd);
     app.get_monitors().map(KeyboardBrightnessOsd);
     app.get_monitors().map(CalendarWindow);
+    app.get_monitors().map(CountdownWindow);
     NotificationPopups();
     initService();
   },

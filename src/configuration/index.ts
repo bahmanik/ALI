@@ -8,9 +8,11 @@ import bar from "./modules/bar";
 import launcher from "./modules/launcher";
 import hyprland from "./hyprland";
 import calendar from "./modules/calendar";
+import countdown from "./modules/countdown";
 
 const options = mkOptions<OptionsRoot>({
     global,
+    countdown,
     display,
     colors,
     osd,

@@ -1,0 +1,63 @@
+.CountdownPopup {
+  .countdown-surface {
+    background: $countdown-style-bg;
+    color: $countdown-style-fg;
+    border-radius: $countdown-style-radius + px;
+    padding: $countdown-style-padding + px;
+    min-width: 360px;
+  }
+
+  .countdown-root {
+    // spacing: $countdown-style-gap + px;
+  }
+
+  .countdown-nav {
+    // spacing: 8px;
+  }
+
+  .countdown-nav-btn {
+    padding: 6px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .countdown-nav-label {
+    font-size: $countdown-style-navSize + px;
+  }
+
+  .countdown-slide {
+    border-radius: $countdown-style-imageRadius + px;
+    min-height: $countdown-style-imageMinSize + px;
+    min-width: $countdown-style-imageMinSize + px;
+    background: rgba(255, 255, 255, 0.04);
+    // overflow: hidden;
+  }
+
+  .countdown-image {
+    background-size: cover;
+    background-position: center;
+  }
+
+  .countdown-overlay {
+    background: $countdown-style-overlayBg;
+    color: $countdown-style-overlayFg;
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin: 12px;
+  }
+
+  .countdown-title {
+    font-weight: 700;
+    font-size: $countdown-style-titleSize + px;
+  }
+
+  .countdown-description {
+    font-size: $countdown-style-descriptionSize + px;
+    opacity: 0.92;
+  }
+
+  .countdown-timer {
+    font-size: $countdown-style-timerSize + px;
+    opacity: 0.9;
+  }
+}

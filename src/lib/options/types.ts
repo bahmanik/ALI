@@ -155,11 +155,16 @@ export type calendar =
     | "Chinese";
 
 export type LauncherRevealTransition =
-    | "SWING_DOWN"
-    | "SLIDE_DOWN"
-    | "SLIDE_UP"
-    | "CROSSFADE"
-    | "NONE";
+    "NONE" |
+    "CROSSFADE" |
+    "SLIDE_RIGHT" |
+    "SLIDE_LEFT" |
+    "SLIDE_UP" |
+    "SLIDE_DOWN" |
+    "SWING_RIGHT" |
+    "SWING_LEFT" |
+    "SWING_UP" |
+    "SWING_DOWN";
 
 export type ThemeMode = "dark" | "light";
 
