@@ -1,15 +1,14 @@
 import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
-
+import options from "src/configuration";
+import icons from "src/lib/icons/icons";
+import CountdownService from "src/services/countdown";
 import { Gtk } from "ags/gtk4";
 import { createPoll } from "ags/time";
 import { For, createRoot, createState, onCleanup } from "gnim";
-import type { Accessor } from "gnim";
-
-import options from "src/configuration";
-import icons from "src/lib/icons/icons";
-import CountdownService, { type CountdownUiSlide } from "src/service/countdown";
 import { formatRemaining, toGtkStackTransition } from "./helper";
+import type { Accessor } from "gnim";
+import type { CountdownUiSlide } from "src/services/countdown";
 
 type StackPage = { name: string; slide: CountdownUiSlide };
 
@@ -61,6 +60,8 @@ function SlideCard(props: { slide: CountdownUiSlide; nowMs: Accessor<number> }):
 
 export default function CountdownView(): JSX.Element {
   const svc = CountdownService.getInstance();
+  // Start heavy countdown runtime only when the widget is actually mounted.
+  void svc.ensureStartedFull();
   const cd = options.countdown; // crash if missing (as requested)
 
   const [slides, setSlides] = createState<StackPage[]>([]);

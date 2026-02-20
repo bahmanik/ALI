@@ -57,9 +57,3 @@ export interface CalendarOptions {
     hoverBg: Opt<string>;
   };
 }
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    calendar: CalendarOptions;
-  }
-}

@@ -143,6 +143,9 @@ export type HexColor = `#${string}`;
 export type CornerFill = "image" | "solid" | "pattern";
 
 export type weekDays = "Sun" | "Mon" | "Tues" | "Wed" | "thurs" | "Fri" | "Sat";
+
+export type CalendarBorderLocation = "none" | "full";
+
 export type calendar =
     | "Gregorian"
     | "Jalali"
@@ -153,6 +156,8 @@ export type calendar =
     | "Indian"
     | "ROC"
     | "Chinese";
+
+export type LauncherBorderLocation = "none" | "full";
 
 export type LauncherRevealTransition =
     "NONE" |

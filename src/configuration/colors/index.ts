@@ -1,4 +1,5 @@
 import { stem } from "src/configuration/helper";
+import { CONFIG_DIR } from "src/lib/session/api";
 import type {
   HexColor,
   MatugenResizeFilter,
@@ -29,5 +30,11 @@ const colors = stem((opt): ColorsOptions => ({
     file: opt(`${CONFIG_DIR}/matugen.json`),
   },
 }));
+
+declare module "src/lib/options/root" {
+  interface OptionsRoot {
+    colors: ColorsOptions;
+  }
+}
 
 export default colors;

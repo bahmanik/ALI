@@ -2,6 +2,10 @@ import { ConfigManager } from "./configManager";
 import { OptImpl } from "./opt";
 import { OptionRegistry } from "./optionRegistry";
 import { dep } from "./dep";
+import { CONFIG_FILE } from "src/lib/session/api";
+// IMPORTANT: use the same module specifier as app boot (`src/lib/options/runtime`)
+// so runtime state is shared even under path-alias resolvers.
+import { registerOptionsRuntime } from "src/lib/options/runtime";
 import type { OptionsRoot } from "src/lib/options/root";
 import type {
     MkOptionsResult,
@@ -11,6 +15,7 @@ import type {
 } from "./types";
 
 const configManager = new ConfigManager(CONFIG_FILE);
+console.log("starting config manager")
 
 /**
  * Create a typed opt() factory bound to Root and Self.
@@ -40,6 +45,7 @@ export function mkOptions<Root extends OptionsRoot>(
     }
 
     const registry = new OptionRegistry(built, configManager);
+    registerOptionsRuntime(registry, configManager);
     return registry.createEnhancedOptions();
 }
 

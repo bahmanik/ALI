@@ -15,9 +15,3 @@ export interface HyprlandOptions {
     rounding_enable: Opt<boolean>;
   };
 }
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    hyprland: HyprlandOptions;
-  }
-}

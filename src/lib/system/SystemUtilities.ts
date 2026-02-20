@@ -3,7 +3,7 @@ import icons from '../icons/icons';
 import { distroIcons } from './distroIcons';
 import { distro } from './osInfo';
 import { exec, execAsync } from 'ags/process';
-import { notify } from '../notiofication';
+import { notify } from 'src/lib/notiofication';
 import type { CommandResult, ServiceStatus } from './types';
 
 

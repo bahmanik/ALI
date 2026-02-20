@@ -1,8 +1,6 @@
 import { stem } from "src/configuration/helper";
-import type { calendar, LauncherRevealTransition, weekDays } from "src/lib/options/types";
+import type { calendar, CalendarBorderLocation, LauncherRevealTransition, weekDays } from "src/lib/options/types";
 import type { CalendarOptions } from "./type";
-
-type CalendarBorderLocation = "none" | "full";
 
 const calendarModule = stem((opt): CalendarOptions => ({
   /** Which calendar system to display in the widget. */
@@ -72,5 +70,11 @@ const calendarModule = stem((opt): CalendarOptions => ({
     hoverBg: opt("rgba(255,255,255,0.06)", { scss: true }),
   },
 }));
+
+declare module "src/lib/options/root" {
+  interface OptionsRoot {
+    calendar: CalendarOptions;
+  }
+}
 
 export default calendarModule;

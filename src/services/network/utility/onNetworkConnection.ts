@@ -1,6 +1,6 @@
 import AstalNetwork from "gi://AstalNetwork";
 import GLib from "gi://GLib?version=2.0";
-import { network } from "../index";
+import { getNetwork } from "../index";
 
 export function onNetworkConnection(
   setupFn: () => void,
@@ -34,7 +34,7 @@ export function onNetworkConnection(
   const checkAndApply = async () => {
     if (lastCheckPromise) return;
 
-    const checkPromise = network.hasInternet();
+    const checkPromise = getNetwork().hasInternet();
     lastCheckPromise = checkPromise;
 
     const online = await checkPromise;

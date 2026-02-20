@@ -28,9 +28,3 @@ export interface ColorsOptions {
     file: Opt<string>;
   };
 }
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    colors: ColorsOptions;
-  }
-}

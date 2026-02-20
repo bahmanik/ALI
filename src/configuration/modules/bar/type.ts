@@ -61,9 +61,3 @@ export interface BarOptions {
   patternPath: Opt<string>;
   patternSize: Opt<number>;
 }
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    bar: BarOptions;
-  }
-}

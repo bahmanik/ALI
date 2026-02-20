@@ -115,4 +115,10 @@ const osd = stem((opt): OsdOptions =>
   })
 );
 
+declare module "src/lib/options/root" {
+  interface OptionsRoot {
+    osd: OsdOptions;
+  }
+}
+
 export default osd;

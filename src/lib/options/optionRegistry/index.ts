@@ -1,11 +1,8 @@
 import { OptImpl, isOpt } from "../opt";
-
-// Scoped build: avoid pulling the whole project via shared error utilities.
-const errorHandler = (e: unknown) => {
-    console.error(e);
-};
+import { errorHandler } from "src/lib/errors/handler";
 import type { ConfigManager } from "../configManager";
 import type { MkOptionsResult, OptionsObject } from "../types";
+
 
 export class OptionRegistry<T extends OptionsObject> {
     private _options: OptImpl<unknown>[] = [];
@@ -16,9 +13,20 @@ export class OptionRegistry<T extends OptionsObject> {
     private _derivedOrder: OptImpl<unknown>[] = [];
     private _derivedRecomputeScheduled = false;
 
+    private _booted = false;
+
     constructor(optionsObj: T, configManager: ConfigManager) {
         this._optionsObj = optionsObj;
         this._configManager = configManager;
+    }
+
+    /**
+     * Explicit options runtime boot (disk hydration + derived wiring + config-change plumbing).
+     * Idempotent.
+     */
+    public async boot(): Promise<void> {
+        if (this._booted) return;
+        this._booted = true;
         this._initializeOptions();
     }
 

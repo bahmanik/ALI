@@ -70,4 +70,10 @@ const bar = stem((opt): BarOptions =>
   )
 );
 
+declare module "src/lib/options/root" {
+  interface OptionsRoot {
+    bar: BarOptions;
+  }
+}
+
 export default bar;

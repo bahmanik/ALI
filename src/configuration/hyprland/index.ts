@@ -15,4 +15,10 @@ const hyprland = stem((opt): HyprlandOptions => ({
   },
 }));
 
+declare module "src/lib/options/root" {
+  interface OptionsRoot {
+    hyprland: HyprlandOptions;
+  }
+}
+
 export default hyprland;

@@ -1,5 +1,5 @@
 import icons from 'src/lib/icons/icons';
-import { ensureDirectory } from 'src/lib/session';
+import { ensureDirectory, ensureParentDir } from 'src/lib/session/api';
 import { errorHandler } from 'src/lib/errors/handler';
 import { monitorFile, readFile, writeFile } from 'ags/file';
 import { notify } from 'src/lib/notiofication';
@@ -24,6 +24,7 @@ export class ConfigManager {
     private readonly _changeCallbacks: Array<() => void> = [];
     private _fileMonitor: Gio.FileMonitor | null = null;
     private _lastChangeTime = 0;
+    private _monitoringStarted = false;
 
     /**
      * Creates a new configuration manager for a specific config file
@@ -32,6 +33,18 @@ export class ConfigManager {
      */
     constructor(configPath: string) {
         this._configPath = configPath;
+    }
+
+    /**
+     * Explicit start: ensure directory exists and enable file monitoring.
+     * Idempotent.
+     */
+    public startMonitoring(): void {
+        if (this._monitoringStarted) return;
+        this._monitoringStarted = true;
+
+        // Ensure the config directory exists before creating a monitor.
+        ensureParentDir(this._configPath);
         this._createConfigDirectory();
         this._startConfigMonitoring();
     }

@@ -1,12 +1,10 @@
+import options from "src/configuration";
 import app from "ags/gtk4/app";
 import giCairo from "cairo";
 import { Astal, Gdk } from "ags/gtk4";
 import { onCleanup } from "ags";
-import type { Gtk } from "ags/gtk4";
-
-import options from "../../configuration";
 import { barsGeometry } from "./geometry";
-import { TechniqueImageService } from "../../service/image/TechniqueImageService";
+import { TechniqueImageService } from "src/services/image/TechniqueImageService";
 import {
   clearToTransparent,
   paintCoverSurface,
@@ -15,6 +13,7 @@ import {
   punchRoundedHole,
   type Rgba,
 } from "./cornerPaint";
+import type { Gtk } from "ags/gtk4";
 
 function makeClickThrough(win: Astal.Window) {
   // GI surfaces can appear a few ticks after window creation.

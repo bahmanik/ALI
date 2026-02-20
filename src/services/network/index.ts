@@ -295,4 +295,15 @@ class Network {
   }
 }
 
-export const network = new Network();
+let _network: Network | null = null;
+
+/**
+ * Lazy singleton getter.
+ * Replaces the previous import-time `new Network()` side effect.
+ */
+export function getNetwork(): Network {
+  if (!_network) _network = new Network();
+  return _network;
+}
+
+export type { Network };

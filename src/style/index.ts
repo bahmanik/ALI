@@ -4,6 +4,8 @@ import { initializeHotReload } from './utils/hotReload';
 import { SystemUtilities } from '../lib/system/SystemUtilities';
 import { readFile, writeFile } from 'ags/file';
 import type { Opt } from '../lib/options';
+import { startOnce } from 'src/services/startOnce';
+import { SRC_DIR, TMP } from "src/lib/session/api";
 
 /**
  * Central manager for theme styling throughout the application
@@ -197,15 +199,24 @@ class ThemeStyleManager {
   }
 }
 
-const themeManager = new ThemeStyleManager();
+let _themeManager: ThemeStyleManager | null = null;
 
-// Get id of css options
-const optionsToWatch = themeManager.getCssOptions().map((e) => e.id)
+export function getThemeManager(): ThemeStyleManager {
+  if (!_themeManager) _themeManager = new ThemeStyleManager();
+  return _themeManager;
+}
 
-initializeHotReload();
+/**
+ * Explicit style runtime boot.
+ * This was previously executed at import-time (including top-level await).
+ */
+export const bootStyle = startOnce(async () => {
+  const themeManager = getThemeManager();
 
-options.handler(optionsToWatch, themeManager.applyCss.bind(themeManager));
+  // Get ids of options that export SCSS.
+  const optionsToWatch = themeManager.getCssOptions().map((e) => e.id);
 
-await themeManager.applyCss();
-
-export { themeManager };
+  await initializeHotReload(themeManager.applyCss.bind(themeManager));
+  options.handler(optionsToWatch, themeManager.applyCss.bind(themeManager));
+  await themeManager.applyCss();
+});

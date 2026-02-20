@@ -1,8 +1,7 @@
 import AstalWp from "gi://AstalWp";
-
 import app from "ags/gtk4/app";
 import Gdk from "gi://Gdk?version=4.0";
-import BrightnessService from "src/service/brightness";
+import BrightnessService from "src/services/brightness";
 import icons from "src/lib/icons/icons";
 import options from "src/configuration";
 
@@ -357,8 +356,10 @@ class BrightnessController extends OsdController {
         });
       };
 
-      brightness.connect?.("notify::screen", update);
-      update();
+      void brightness.ensureStarted().then(() => {
+        brightness.connect?.("notify::screen", update);
+        update();
+      });
     } catch (err) {
       console.warn("[OSD] Brightness controller unavailable:", err);
     }
@@ -413,8 +414,10 @@ class KeyboardBrightnessController extends OsdController {
         });
       };
 
-      brightness.connect?.("notify::kbd-percent", update);
-      update();
+      void brightness.ensureStarted().then(() => {
+        brightness.connect?.("notify::kbd-percent", update);
+        update();
+      });
     } catch (err) {
       console.warn("[OSD] Keyboard brightness controller unavailable:", err);
     }

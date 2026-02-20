@@ -1,6 +1,12 @@
-import AstalNotifd from "gi://AstalNotifd?version=0.1";
+import AstalNotifd from "gi://AstalNotifd";
+import { startOnce } from "src/services/startOnce";
 
 export type NotificationUrgency = "low" | "normal" | "critical";
+
+// WARNING: without this notification daemon start a race agains itself becouse AstalNotifd is started async in multiple places
+export const bootNotif = startOnce(async () => {
+  AstalNotifd.get_default()
+});
 
 //NOTE: notification example
 // notify({

@@ -1,8 +1,8 @@
 import { monitorFile } from 'ags/file';
-import { themeManager } from '..';
 import { createDebouncer } from '../../lib/time/debounce';
+import { SRC_DIR } from "src/lib/session/api";
 
-export const initializeHotReload = async (): Promise<void> => {
+export const initializeHotReload = async (applyCss: () => Promise<void>): Promise<void> => {
     const monitorList = [
         `${SRC_DIR}/style/main.scss`,
         `${SRC_DIR}/style/scss/bar.scss`,
@@ -22,7 +22,7 @@ export const initializeHotReload = async (): Promise<void> => {
 
         running = true
         try {
-            await themeManager.applyCss()
+            await applyCss()
         } finally {
             running = false
             if (rerun) {

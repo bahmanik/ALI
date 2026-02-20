@@ -1,8 +1,8 @@
 import app from "ags/gtk4/app"
-import AstalNotifd from "gi://AstalNotifd"
 import Notification from "./Notification"
 import { Astal, Gtk } from "ags/gtk4"
 import { createBinding, For, createState, onCleanup } from "ags"
+import AstalNotifd from "gi://AstalNotifd"
 
 export default function NotificationPopups() {
   const monitors = createBinding(app, "monitors")
@@ -15,11 +15,12 @@ export default function NotificationPopups() {
 
   const notifiedHandler = notifd.connect("notified", (_, id, replaced) => {
     const notification = notifd.get_notification(id)
+    if (!notification) return
 
-    if (replaced && notifications(notiflist => notiflist.some((n) => n.id === id))) {
-      setNotifications((ns) => ns.map((n) => (n.id === id ? notification : n)))
+    if (replaced && notifications(list => list.some(n => n.id === id))) {
+      setNotifications(ns => ns.map(n => (n.id === id ? notification : n)))
     } else {
-      setNotifications((ns) => [notification, ...ns])
+      setNotifications(ns => [notification, ...ns])
     }
   })
 

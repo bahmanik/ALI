@@ -1,6 +1,4 @@
 import { stem } from "src/configuration/helper"
-
-import './type'
 import type { CountdownOptions } from './type'
 
 const countdown = stem((opt): CountdownOptions => ({
@@ -35,5 +33,11 @@ const countdown = stem((opt): CountdownOptions => ({
     navSize: opt(18, { scss: true }),
   },
 }))
+
+declare module 'src/lib/options/root' {
+  interface OptionsRoot {
+    countdown: CountdownOptions
+  }
+}
 
 export default countdown

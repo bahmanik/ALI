@@ -60,9 +60,3 @@ export interface CountdownOptions {
 
   style: CountdownStyleOptions
 }
-
-declare module 'src/lib/options/root' {
-  interface OptionsRoot {
-    countdown: CountdownOptions
-  }
-}

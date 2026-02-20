@@ -82,9 +82,3 @@ export interface LauncherOptions {
   showFavorites: Opt<boolean>;
   favorites: Opt<string[]>;
 }
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    launcher: LauncherOptions;
-  }
-}

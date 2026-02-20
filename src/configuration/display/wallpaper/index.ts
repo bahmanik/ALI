@@ -1,4 +1,5 @@
 import { stem } from "src/configuration/helper";
+import { CONFIG_DIR } from "src/lib/session/api";
 import type { WallpaperOptions } from "./type";
 import type { TransitionPos, TransitionType } from "src/lib/options/types";
 

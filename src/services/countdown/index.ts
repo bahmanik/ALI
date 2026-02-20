@@ -1,19 +1,16 @@
-import 'src/lib/session';
-
 import Gio from 'gi://Gio?version=2.0';
 import GLib from 'gi://GLib?version=2.0';
-import AstalNotifd from 'gi://AstalNotifd?version=0.1';
-
+import icons from 'src/lib/icons/icons';
 import { readFile, writeFile } from 'ags/file';
 import { execAsync } from 'ags/process';
 import { timeout } from 'ags/time';
-import type { Timer } from 'ags/time';
-
-import icons from 'src/lib/icons/icons';
+import { startOnce } from 'src/services/startOnce';
 import { notify, type NotificationAction } from 'src/lib/notiofication';
-import { ensureDirectory, ensureParentDir } from 'src/lib/session';
+import { CACHE, ensureDirectory, ensureParentDir } from 'src/lib/session/api';
 import { extFromPath, joinPath } from 'src/lib/path/helpers';
 import { SystemUtilities } from 'src/lib/system/SystemUtilities';
+import type { Timer } from 'ags/time';
+import AstalNotifd from 'gi://AstalNotifd';
 
 // ---------------------------------
 // Types
@@ -497,17 +494,50 @@ export default class CountdownService {
   }
 
   private _timer: Timer | undefined;
-  private _notifd = AstalNotifd.get_default();
+  private _notifd: ReturnType<typeof AstalNotifd.get_default> | null = null;
   private _notifInvokedHandler = new Map<number, number>();
   private _notifResolvedHandler = new Map<number, number>();
   private _dataMonitor: Gio.FileMonitor | null = null;
   private _rescanScheduled = false;
+  private _fullStarted = false;
+
+  private readonly _ensureStartedMinimal = startOnce(async () => {
+    this._notifd ??= AstalNotifd.get_default()
+
+    // global, cheap: binds notification action handlers
+    this._bindNotificationActions();
+  });
+
+  private readonly _ensureStartedFull = startOnce(async () => {
+    await this._ensureStartedMinimal();
+
+    // heavy: cache dirs + watchers + timer-based scheduler
+    ensureCacheDirs();
+    this._watchCache();
+
+    this._fullStarted = true;
+    this.refresh();
+  });
 
   private constructor() {
-    ensureCacheDirs();
-    this._bindNotificationActions();
-    this._watchCache();
-    this.refresh();
+    // cheap constructor: no IO/monitors/timers/subprocess
+  }
+
+
+  /**
+   * Minimal global start: binds notification action handlers only.
+   * Idempotent.
+   */
+  public async ensureStartedMinimal(): Promise<void> {
+    await this._ensureStartedMinimal();
+  }
+
+  /**
+   * Full start: enables cache watching + scheduler/timers.
+   * Idempotent.
+   */
+  public async ensureStartedFull(): Promise<void> {
+    await this._ensureStartedFull();
   }
 
   // -----------------------------
@@ -731,8 +761,9 @@ export default class CountdownService {
   // -----------------------------
   // Public: scheduler
   // -----------------------------
-
   public refresh(): void {
+    if (!this._fullStarted) return;
+
     this._timer?.cancel();
     this._timer = undefined;
     this._tick();
@@ -862,8 +893,10 @@ export default class CountdownService {
   }
 
   private _bindNotificationActions(): void {
-    this._notifd.connect('notified', (_d: unknown, id: number) => {
-      const n = this._notifd.get_notification(id);
+    const notifd = (this._notifd ??= AstalNotifd.get_default())
+
+    notifd.connect('notified', (_d: unknown, id: number) => {
+      const n = notifd.get_notification(id);
       if (!n) return;
       if ((n.category ?? '') !== CATEGORY) return;
 
@@ -881,7 +914,9 @@ export default class CountdownService {
 
   private _cleanupNotifHandlers(id: number): void {
     try {
-      const n = this._notifd.get_notification(id);
+      const notifd = this._notifd;
+      if (!notifd) return;
+      const n = notifd.get_notification(id);
       if (!n) return;
       const inv = this._notifInvokedHandler.get(id);
       if (inv) n.disconnect(inv);

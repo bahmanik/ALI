@@ -5,14 +5,30 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { monitorFile, writeFile } from "ags/file"
 import { execAsync } from "ags/process"
 
-import options from "../../configuration"
 import { SwwwDaemon } from "./SwwwDaemon"
 import { createDebouncer } from "../../lib/time/debounce"
+import { startOnce } from "../../services/startOnce"
+import type { Opt } from "../../lib/options"
+import options from "src/configuration"
 
-const hyprland = AstalHyprland.get_default()
 
-const { wallpaper } = options.display
-const { transition, daemon } = wallpaper
+type WallpaperOptions = {
+  enable: Opt<boolean>
+  file: Opt<string>
+  transition: {
+    enabled: Opt<boolean>
+    type: Opt<string>
+    duration: Opt<number>
+    fps: Opt<number>
+    invert_y: Opt<boolean>
+    pos: Opt<string>
+  }
+  daemon: {
+    namespace: Opt<string>
+    layer: Opt<string>
+    quiet: Opt<boolean>
+  }
+}
 
 export class WallpaperService {
   private static _instance: WallpaperService | undefined
@@ -27,16 +43,22 @@ export class WallpaperService {
   private _monitor: Gio.FileMonitor | undefined
   private _applyDebounce = createDebouncer(80)
 
-  private _managedFile = wallpaper.file.get()
+  private _opts: WallpaperOptions | null = null
+  private _managedFile = ""
 
-  private constructor() {
+  private readonly _ensureStarted = startOnce(async () => {
+    // ✅ resolve at runtime, not module scope
+    const { wallpaper } = options.display
+    const opts = (this._opts ??= wallpaper as unknown as WallpaperOptions)
+
+    this._managedFile = opts.file.get()
     this._ensureManagedFile()
     this._setupMonitor()
 
-    wallpaper.enable.subscribe(() => this._syncDaemon())
+    opts.enable.subscribe(() => void this._syncDaemon())
 
-    wallpaper.file.subscribe(() => {
-      const next = wallpaper.file.get()
+    opts.file.subscribe(() => {
+      const next = opts.file.get()
       if (next === this._managedFile) return
       this._managedFile = next
       this._ensureManagedFile()
@@ -45,14 +67,21 @@ export class WallpaperService {
     })
 
     // Re-apply on transition tweaks
-    transition.enabled.subscribe(() => this.scheduleApply())
-    transition.type.subscribe(() => this.scheduleApply())
-    transition.duration.subscribe(() => this.scheduleApply())
-    transition.fps.subscribe(() => this.scheduleApply())
-    transition.invert_y.subscribe(() => this.scheduleApply())
-    transition.pos.subscribe(() => this.scheduleApply())
+    opts.transition.enabled.subscribe(() => this.scheduleApply())
+    opts.transition.type.subscribe(() => this.scheduleApply())
+    opts.transition.duration.subscribe(() => this.scheduleApply())
+    opts.transition.fps.subscribe(() => this.scheduleApply())
+    opts.transition.invert_y.subscribe(() => this.scheduleApply())
+    opts.transition.pos.subscribe(() => this.scheduleApply())
 
-    this._syncDaemon()
+    await this._syncDaemon()
+  })
+
+  private constructor() {
+  }
+  /** Explicit runtime start. Idempotent. */
+  public async ensureStarted(): Promise<void> {
+    await this._ensureStarted()
   }
 
   public get isRunning(): boolean {
@@ -85,15 +114,17 @@ export class WallpaperService {
 
   /** Apply current wallpaper immediately. */
   public async apply(): Promise<void> {
-    if (!wallpaper.enable.get()) return
+    const opts = this._opts
+    if (!opts) return
+    if (!opts.enable.get()) return
 
-    const namespace = daemon.namespace.get().trim() || undefined
+    const namespace = opts.daemon.namespace.get().trim() || undefined
 
     if (!this._daemon.isRunning) {
       const started = await this._daemon.start({
         namespace,
-        layer: daemon.layer.get(),
-        quiet: daemon.quiet.get(),
+        layer: opts.daemon.layer.get(),
+        quiet: opts.daemon.quiet.get(),
       })
       if (!started) return
     }
@@ -113,21 +144,24 @@ export class WallpaperService {
   }
 
   private async _buildSwwwImgCmd(namespace?: string): Promise<string[]> {
+    const opts = this._opts
+    if (!opts) return ["swww", "img", this._managedFile]
+
     const argv: string[] = ["swww", "img"]
     if (namespace) argv.push("--namespace", namespace)
 
-    const transitionEnabled = transition.enabled.get()
+    const transitionEnabled = opts.transition.enabled.get()
 
     if (transitionEnabled) {
-      argv.push("--transition-type", transition.type.get())
-      argv.push("--transition-duration", String(transition.duration.get()))
-      argv.push("--transition-fps", String(transition.fps.get()))
-      if (transition.invert_y.get()) {
+      argv.push("--transition-type", opts.transition.type.get())
+      argv.push("--transition-duration", String(opts.transition.duration.get()))
+      argv.push("--transition-fps", String(opts.transition.fps.get()))
+      if (opts.transition.invert_y.get()) {
         argv.push("--invert-y")
       }
 
 
-      const posOpt = transition.pos.get()
+      const posOpt = opts.transition.pos.get()
       const pos = await this._resolveTransitionPos(posOpt)
       if (pos) argv.push("--transition-pos", pos)
     }
@@ -140,6 +174,8 @@ export class WallpaperService {
     if (pos !== "cursor") return pos
 
     try {
+      const hyprland = AstalHyprland.get_default()
+
       // Hyprland cursorpos is usually "X, Y" -> swww wants "X,Y"
       const raw = String(hyprland.message("cursorpos"))
       const cleaned = raw.trim().replace(/\s+/g, "")
@@ -208,8 +244,11 @@ export class WallpaperService {
   }
 
   private async _syncDaemon(): Promise<void> {
-    const enabled = wallpaper.enable.get()
-    const namespace = daemon.namespace.get().trim() || undefined
+    const opts = this._opts
+    if (!opts) return
+
+    const enabled = opts.enable.get()
+    const namespace = opts.daemon.namespace.get().trim() || undefined
 
     if (!enabled) {
       await this._daemon.stop(namespace)
@@ -218,8 +257,8 @@ export class WallpaperService {
 
     const started = await this._daemon.start({
       namespace,
-      layer: daemon.layer.get(),
-      quiet: daemon.quiet.get(),
+      layer: opts.daemon.layer.get(),
+      quiet: opts.daemon.quiet.get(),
     })
 
     if (started) this.scheduleApply()

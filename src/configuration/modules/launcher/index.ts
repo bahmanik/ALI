@@ -1,8 +1,6 @@
 import { stem } from "src/configuration/helper";
 import type { LauncherOptions } from "./type";
-import type { HexColor, LauncherRevealTransition } from "src/lib/options/types";
-
-type LauncherBorderLocation = "none" | "full";
+import type { HexColor, LauncherBorderLocation, LauncherRevealTransition } from "src/lib/options/types";
 
 const launcher = stem((opt): LauncherOptions => ({
   localScale: opt(true),
@@ -92,5 +90,11 @@ const launcher = stem((opt): LauncherOptions => ({
     "Dolphin",
   ]),
 }));
+
+declare module "src/lib/options/root" {
+  interface OptionsRoot {
+    launcher: LauncherOptions;
+  }
+}
 
 export default launcher;

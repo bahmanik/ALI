@@ -1,6 +1,7 @@
 import GLib from "gi://GLib"
 import Gio from "gi://Gio"
-import options from "../configuration"
+import { startOnce } from "../services/startOnce"
+import options from "src/configuration";
 
 import GObject, { register, getter, setter } from "gnim/gobject"
 import { monitorFile, readFileAsync } from "ags/file"
@@ -15,8 +16,6 @@ type BrightnessServiceOptions = {
   minScreenPercent?: number
 }
 
-const { heartbeatPoll, heartbeatPollMs, } = options.osd.brightness
-
 @register({ GTypeName: "Brightness" })
 export default class BrightnessService extends GObject.Object {
   public static instance: BrightnessService | undefined
@@ -24,6 +23,15 @@ export default class BrightnessService extends GObject.Object {
   public static getInstance(opts: BrightnessServiceOptions = {}): BrightnessService {
     if (!this.instance) this.instance = new BrightnessService(opts)
     return this.instance
+  }
+
+  /**
+   * Explicit runtime start. Idempotent.
+   *
+   * This wires timers/monitors/subscriptions that were previously started in the constructor.
+   */
+  public async ensureStarted(): Promise<void> {
+    await this.#ensureStarted()
   }
 
   // NOTE: must be public for @register typing (private constructor breaks decorators)
@@ -35,36 +43,6 @@ export default class BrightnessService extends GObject.Object {
       kbdDevice: opts.kbdDevice ?? "",
       minScreenPercent: opts.minScreenPercent ?? 1,
     }
-
-    this.#available = SystemUtilities.checkDependencies("brightnessctl")
-    if (!this.#available) {
-      console.warn("[Brightness] brightnessctl not found -> service disabled")
-      return
-    }
-
-    this.#hb.enabled = Boolean(heartbeatPoll.get())
-    const initHbMs = Number(heartbeatPollMs.get())
-    this.#hb.ms = Math.max(200, Math.round(Number.isFinite(initHbMs) ? initHbMs : 1000))
-
-    this.#initDevices()
-    this.#initPaths()
-    this.#initMaxValues()
-
-    void this.#refreshAll()
-    this.#setupMonitors()
-    this.#updateHeartbeat()
-
-    // keep in sync with options
-    heartbeatPoll.subscribe(() => {
-      this.#hb.enabled = Boolean(heartbeatPoll.get())
-      this.#updateHeartbeat()
-    })
-
-    heartbeatPollMs.subscribe(() => {
-      const ms = Number(heartbeatPollMs.get())
-      this.#hb.ms = Math.max(200, Math.round(Number.isFinite(ms) ? ms : 1000))
-      this.#updateHeartbeat(true)
-    })
   }
 
   // ----------------- state -----------------
@@ -98,6 +76,40 @@ export default class BrightnessService extends GObject.Object {
   }
   #hbTimer?: Timer
   #hbGen = 0
+
+  #ensureStarted = startOnce(async () => {
+    this.#available = SystemUtilities.checkDependencies("brightnessctl")
+    if (!this.#available) {
+      console.warn("[Brightness] brightnessctl not found -> service disabled")
+      return
+    }
+
+    // ✅ resolve at runtime, not module scope
+    const { heartbeatPoll, heartbeatPollMs } = options.osd.brightness
+    this.#hb.enabled = Boolean(heartbeatPoll.get())
+    const initHbMs = Number(heartbeatPollMs.get())
+    this.#hb.ms = Math.max(200, Math.round(Number.isFinite(initHbMs) ? initHbMs : 1000))
+
+    // keep in sync with options
+    heartbeatPoll.subscribe(() => {
+      this.#hb.enabled = Boolean(heartbeatPoll.get())
+      this.#updateHeartbeat()
+    })
+
+    heartbeatPollMs.subscribe(() => {
+      const ms = Number(heartbeatPollMs.get())
+      this.#hb.ms = Math.max(200, Math.round(Number.isFinite(ms) ? ms : 1000))
+      this.#updateHeartbeat(true)
+    })
+
+    this.#initDevices()
+    this.#initPaths()
+    this.#initMaxValues()
+
+    await this.#refreshAll()
+    this.#setupMonitors()
+    this.#updateHeartbeat()
+  })
 
   // ----------------- exported GObject properties -----------------
 

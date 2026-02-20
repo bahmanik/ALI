@@ -71,9 +71,3 @@ export interface OsdOptions {
 
   brightness: OsdBrightnessOptions;
 }
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    osd: OsdOptions;
-  }
-}

@@ -1,7 +1,8 @@
 import options from '../configuration';
 import { writeFileAsync } from 'ags/file';
-import { ensureHyprlandSource, ensureParentDir } from '../lib/session';
 import { SystemUtilities } from '../lib/system/SystemUtilities';
+import { CONFIG_DIR, ensureHyprlandSource, ensureParentDir } from '../lib/session/api';
+import { startOnce } from '../services/startOnce';
 import type { Opt } from '../lib/options';
 
 /**
@@ -39,17 +40,11 @@ class HyprlandManager {
   private readonly _template_path = this._hypr_config_path;
 
   constructor() {
-    // Ensure the target directory exists before writing overlay files.
-    ensureParentDir(this._template_path);
+    // cheap constructor: no IO/monitors/timers
+  }
 
-    // If integration is enabled at startup, inject a `source = <overlay>` line
-    // into the user's Hyprland config (via the existing helper).
-    //
-    // NOTE:
-    // If integration is disabled, we intentionally do not touch the user's config here.
-    if (options.hyprland.enable.get()) {
-      ensureHyprlandSource(this._template_path);
-    }
+  public get templatePath(): string {
+    return this._template_path;
   }
 
   /**
@@ -258,44 +253,58 @@ class HyprlandManager {
   }
 }
 
-const hyprlandManager = new HyprlandManager();
+let _hyprlandManager: HyprlandManager | null = null;
 
-// Build a lookup map once so we can discover `<id>_enable/_enabled` toggles for watchers.
-const all = options.toArray();
-const byId = new Map(all.map(o => [o.id, o]));
-
-// Watch only Hypr-exportable value options by default.
-const valueIds = hyprlandManager.getHyprlandOptions().map((e) => e.id);
-
-// Also watch per-setting enable flags if they exist so toggles regenerate the overlay.
-const enableIds: string[] = [];
-for (const id of valueIds) {
-  const a = `${id}_enable`;
-  const b = `${id}_enabled`;
-  if (byId.has(a)) enableIds.push(a);
-  else if (byId.has(b)) enableIds.push(b);
+export function getHyprlandManager(): HyprlandManager {
+  if (!_hyprlandManager) _hyprlandManager = new HyprlandManager();
+  return _hyprlandManager;
 }
 
-// Watch the global integration toggle too (if it exists).
-const globalEnableId = 'hyprland.enable';
+/**
+ * Explicit Hyprland runtime boot.
+ * This was previously executed at import-time (including top-level await).
+ */
+export const bootHyprland = startOnce(async () => {
+  const hyprlandManager = getHyprlandManager();
 
-// Final watch list (deduplicated):
-// - exported hyprland value options
-// - per-setting enable toggles
-// - global enable toggle
-const watchIds = Array.from(
-  new Set([
-    ...valueIds,
-    ...enableIds,
-    ...(byId.has(globalEnableId) ? [globalEnableId] : []),
-  ]),
-);
+  // Ensure output directory exists before writing overlay files.
+  ensureParentDir(hyprlandManager.templatePath);
 
-// Re-generate overlay and reload Hyprland whenever any relevant option changes.
-options.handler(watchIds, hyprlandManager.applyHyprland.bind(hyprlandManager));
+  // Preserve previous behavior: if enabled at startup, ensure user's config sources the overlay.
+  if (options.hyprland.enable.get()) {
+    ensureHyprlandSource(hyprlandManager.templatePath);
+  }
 
-// Apply once at startup.
-await hyprlandManager.applyHyprland();
+  // Build a lookup map once so we can discover `<id>_enable/_enabled` toggles for watchers.
+  const all = options.toArray();
+  const byId = new Map(all.map((o) => [o.id, o]));
 
-export { hyprlandManager };
+  // Watch only Hypr-exportable value options by default.
+  const valueIds = hyprlandManager.getHyprlandOptions().map((e) => e.id);
 
+  // Also watch per-setting enable flags if they exist so toggles regenerate the overlay.
+  const enableIds: string[] = [];
+  for (const id of valueIds) {
+    const a = `${id}_enable`;
+    const b = `${id}_enabled`;
+    if (byId.has(a)) enableIds.push(a);
+    else if (byId.has(b)) enableIds.push(b);
+  }
+
+  // Watch the global integration toggle too (if it exists).
+  const globalEnableId = 'hyprland.enable';
+
+  const watchIds = Array.from(
+    new Set([
+      ...valueIds,
+      ...enableIds,
+      ...(byId.has(globalEnableId) ? [globalEnableId] : []),
+    ]),
+  );
+
+  // Re-generate overlay and reload Hyprland whenever any relevant option changes.
+  options.handler(watchIds, hyprlandManager.applyHyprland.bind(hyprlandManager));
+
+  // Apply once at startup.
+  await hyprlandManager.applyHyprland();
+});

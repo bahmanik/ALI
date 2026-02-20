@@ -3,10 +3,11 @@ import Gio from "gi://Gio?version=2.0";
 import { monitorFile } from "ags/file";
 import { execAsync } from "ags/process";
 import { Timer, timeout } from "ags/time";
-import { ensureDirectory } from "src/lib/session";
+import { ensureDirectory } from "src/lib/session/api";
 import { joinPath, normalizeToAbsolutePath } from "src/lib/path/helpers";
 import { SystemUtilities } from "src/lib/system/SystemUtilities";
 import type { ImageTechnique } from "src/lib/options/types";
+import { CACHE } from "src/lib/session/api";
 
 type Subscriber = (outPath: string) => void;
 

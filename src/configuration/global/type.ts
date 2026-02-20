@@ -5,9 +5,3 @@ export interface GlobalOptions {
   scale: Opt<number>;
   pattern: Opt<Pattern>;
 }
-
-declare module "src/lib/options/root" {
-  interface OptionsRoot {
-    global: GlobalOptions;
-  }
-}
