@@ -6,6 +6,7 @@ const launcher = stem((opt): LauncherOptions => ({
   localScale: opt(true),
   scale: opt(12, { scss: true, hyprland: true }),
   revealTransition: opt<LauncherRevealTransition>("SWING_DOWN"),
+  transitionDuration: opt(0.4),
   maxItems: opt(5),
 
   // --- Window + panel theming (SCSS exported) ---
@@ -77,8 +78,8 @@ const launcher = stem((opt): LauncherOptions => ({
     hoverOpacity: opt(55, { scss: true }),
   },
 
-  animateResults: opt(true),
-  transitionDuration: opt(0.4),
+  animateResults: opt("CROSSFADE"),
+  animateDuration: opt(0.4),
   animInDelayMs: opt(0),
 
   showFavorites: opt(true),

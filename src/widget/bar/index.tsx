@@ -1,10 +1,9 @@
-import Bar from "./Bar";
-import Corner from "./corner";
 import options from "src/configuration";
-import type { Gdk } from "ags/gtk4"
+import Bar from "./bar/Bar";
+import Corner from "./corner/Corner";
 import { With } from "ags"
+import type { Gdk } from "ags/gtk4"
 
-const secondaryEnabled = options.bar.secondaryBar.enable.as(Boolean)
 
 export function PrimaryBar(monitor: Gdk.Monitor) {
     return (
@@ -19,6 +18,8 @@ export function PrimaryBar(monitor: Gdk.Monitor) {
 }
 
 export function SecondaryBar(monitor: Gdk.Monitor) {
+    const secondaryEnabled = options.bar.secondaryBar.enable.as(Boolean)
+
     return (
         <With value={secondaryEnabled}>
             {(on) =>

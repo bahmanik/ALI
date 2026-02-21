@@ -1,14 +1,12 @@
+import options from "src/configuration";
+import giCairo from "cairo";
 import { createState } from "gnim";
 import { Astal, Gtk } from "ags/gtk4";
-
+import { layoutToAlign } from "../shared/helpers";
+import { toGtkRevealerTransitionType } from "../shared/helpers";
+import { controllerForKind } from "./controllers";
 import type Gdk from "gi://Gdk?version=4.0";
-import giCairo from "cairo";
-
-import options from "src/configuration";
-import { layoutToAlign } from "src/widget/shared/layout";
-import { toGtkRevealerTransitionType } from "src/widget/shared/revealer";
-import type { OsdKind, OsdEvent } from "./controller";
-import { controllerForKind } from "./controller";
+import type { OsdKind, OsdEvent } from "./controllers";
 
 export type OsdProps = {
   name: string;

@@ -1,5 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { calendar, LauncherRevealTransition, weekDays } from "src/lib/options/types";
+import type { calendar, GtkRevealerTransitionName, weekDays } from "src/lib/options/types";
 
 export interface CalendarOptions {
   calendar: Opt<calendar>;
@@ -18,7 +18,7 @@ export interface CalendarOptions {
     height: Opt<number>;
     margin: Opt<number>;
     layout: Opt<string>;
-    revealTransition: Opt<LauncherRevealTransition>;
+    revealTransition: Opt<GtkRevealerTransitionName>;
     transitionDuration: Opt<number>;
   };
 

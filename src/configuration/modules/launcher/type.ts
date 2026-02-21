@@ -1,10 +1,11 @@
 import type { Opt } from "src/lib/options";
-import type { HexColor, LauncherRevealTransition } from "src/lib/options/types";
+import type { GtkRevealerTransitionName, HexColor } from "src/lib/options/types";
 
 export interface LauncherOptions {
   localScale: Opt<boolean>;
   scale: Opt<number>;
-  revealTransition: Opt<LauncherRevealTransition>;
+  revealTransition: Opt<GtkRevealerTransitionName>;
+  transitionDuration: Opt<number>;
   maxItems: Opt<number>;
 
   window: {
@@ -75,8 +76,8 @@ export interface LauncherOptions {
     hoverOpacity: Opt<number>;
   };
 
-  animateResults: Opt<boolean>;
-  transitionDuration: Opt<number>;
+  animateResults: Opt<GtkRevealerTransitionName>;
+  animateDuration: Opt<number>
   animInDelayMs: Opt<number>;
 
   showFavorites: Opt<boolean>;

@@ -1,55 +1,39 @@
-import app from "ags/gtk4/app"
-import Notification from "./Notification"
-import { Astal, Gtk } from "ags/gtk4"
-import { createBinding, For, createState, onCleanup } from "ags"
-import AstalNotifd from "gi://AstalNotifd"
+import app from "ags/gtk4/app";
+import { createBinding, createState, For, onCleanup } from "ags";
+import AstalNotifd from "gi://AstalNotifd";
+
+import { addOrReplaceNotification, removeNotificationById } from "./helpers";
+import { NotificationPopupWindow } from "./_components";
 
 export default function NotificationPopups() {
-  const monitors = createBinding(app, "monitors")
-
-  const notifd = AstalNotifd.get_default()
+  const monitors = createBinding(app, "monitors");
+  const notifd = AstalNotifd.get_default();
 
   const [notifications, setNotifications] = createState(
     new Array<AstalNotifd.Notification>(),
-  )
+  );
 
-  const notifiedHandler = notifd.connect("notified", (_, id, replaced) => {
-    const notification = notifd.get_notification(id)
-    if (!notification) return
+  const notifiedHandler = notifd.connect("notified", (_self, id, replaced) => {
+    const notification = notifd.get_notification(id);
+    if (!notification) return;
 
-    if (replaced && notifications(list => list.some(n => n.id === id))) {
-      setNotifications(ns => ns.map(n => (n.id === id ? notification : n)))
-    } else {
-      setNotifications(ns => [notification, ...ns])
-    }
-  })
+    setNotifications((prev) => addOrReplaceNotification(prev, notification, Boolean(replaced)));
+  });
 
-  const resolvedHandler = notifd.connect("resolved", (_, id) => {
-    setNotifications((ns) => ns.filter((n) => n.id !== id))
-  })
+  const resolvedHandler = notifd.connect("resolved", (_self, id) => {
+    setNotifications((prev) => removeNotificationById(prev, id));
+  });
 
   onCleanup(() => {
-    notifd.disconnect(notifiedHandler)
-    notifd.disconnect(resolvedHandler)
-  })
+    notifd.disconnect(notifiedHandler);
+    notifd.disconnect(resolvedHandler);
+  });
 
   return (
     <For each={monitors}>
       {(monitor) => (
-        <window
-          $={(self) => onCleanup(() => self.destroy())}
-          class="NotificationPopups"
-          gdkmonitor={monitor}
-          visible={notifications((ns) => ns.length > 0)}
-          anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
-        >
-          <box orientation={Gtk.Orientation.VERTICAL}>
-            <For each={notifications}>
-              {(notification) => <Notification notification={notification} />}
-            </For>
-          </box>
-        </window>
+        <NotificationPopupWindow monitor={monitor} notifications={notifications} />
       )}
     </For>
-  )
+  );
 }

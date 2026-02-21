@@ -6,7 +6,7 @@ import {
   micController,
   brightnessController,
   keyboardBrightnessController,
-} from "./controller";
+} from "./controllers";
 
 export function SoundOsd(monitor: Gdk.Monitor) {
   return (

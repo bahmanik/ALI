@@ -1,24 +1,13 @@
 import { Gtk } from "ags/gtk4";
-import { createState, For, onCleanup } from "gnim";
+import { createState, onCleanup } from "gnim";
 import type { Accessor } from "gnim";
 
 import options from "src/configuration";
 import { buildMonthGrid, shiftMonth } from "src/lib/calendar";
 import type { DayCell, MonthGrid } from "src/lib/calendar";
 
-function chunk7<T>(xs: T[]): T[][] {
-  const out: T[][] = [];
-  for (let i = 0; i < xs.length; i += 7) out.push(xs.slice(i, i + 7));
-  return out;
-}
-
-function sameYMD(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
+import { CalendarGrid, CalendarHeader, CalendarWeekdays } from "./_components";
+import { chunk7 } from "./helpers";
 
 export function CalendarView(): JSX.Element {
   const [viewDate, setViewDate] = createState<Date>(new Date());
@@ -53,6 +42,9 @@ export function CalendarView(): JSX.Element {
   );
 
   const rows: Accessor<DayCell[][]> = grid.as((g) => chunk7(g.cells));
+  const headerVisible = options.calendar.header.show.as(Boolean);
+  const title = grid.as((g) => g.title);
+  const weekdayLabels = grid.as((g) => g.weekdayLabels);
 
   const goMonth = (delta: -1 | 1) => {
     const next = shiftMonth(
@@ -68,88 +60,23 @@ export function CalendarView(): JSX.Element {
 
   return (
     <box class="calendar-panel" orientation={Gtk.Orientation.VERTICAL}>
-      <box
-        class="calendar-header"
-        visible={options.calendar.header.show.as(Boolean)}
-        orientation={Gtk.Orientation.HORIZONTAL}
-      >
-        <button
-          class="calendar-nav-btn"
-          onClicked={() => goMonth(-1)}
-          tooltipText="Previous month"
-        >
-          <label label="◀" />
-        </button>
+      <CalendarHeader
+        visible={headerVisible}
+        title={title}
+        onPrevMonth={() => goMonth(-1)}
+        onNextMonth={() => goMonth(1)}
+      />
 
-        <label
-          class="calendar-title"
-          label={grid.as((g) => g.title)}
-          hexpand
-          halign={Gtk.Align.CENTER}
-        />
+      <CalendarWeekdays labels={weekdayLabels} />
 
-        <button
-          class="calendar-nav-btn"
-          onClicked={() => goMonth(1)}
-          tooltipText="Next month"
-        >
-          <label label="▶" />
-        </button>
-      </box>
-
-      <box class="calendar-weekdays" homogeneous orientation={Gtk.Orientation.HORIZONTAL}>
-        <For each={grid.as((g) => g.weekdayLabels)}>
-          {(d: string) => <label class="calendar-weekday" label={d} />}
-        </For>
-      </box>
-
-      <box class="calendar-grid" orientation={Gtk.Orientation.VERTICAL}>
-        <For each={rows}>
-          {(week: DayCell[]) => (
-            <box class="calendar-row" homogeneous orientation={Gtk.Orientation.HORIZONTAL}>
-              {week.map((cell) => {
-                const sel = selected.peek();
-                const isSelected = sel ? sameYMD(sel, cell.date) : false;
-
-                const cls = [
-                  "calendar-cell",
-                  cell.inMonth ? "" : "outside",
-                  cell.isToday ? "today" : "",
-                  cell.isWeekend ? "weekend" : "",
-                  isSelected ? "selected" : "",
-                  cell.label ? "" : "empty",
-                ]
-                  .filter(Boolean)
-                  .join(" ");
-
-                return (
-                  <button
-                    class={cls}
-                    sensitive={Boolean(cell.label)}
-                    onClicked={() => {
-                      if (!cell.label) return;
-                      setSelected(cell.date);
-                      bump();
-                    }}
-                    tooltipText={cell.date.toDateString()}
-                    hexpand
-                    vexpand
-                  >
-                    <box class="calendar-cell-inner" orientation={Gtk.Orientation.VERTICAL}>
-                      <label class="calendar-day" label={cell.label} />
-                      <label
-                        class="calendar-day-secondary"
-                        label={cell.secondaryLabel ?? ""}
-                        visible={Boolean(cell.secondaryLabel)}
-                      />
-                    </box>
-                  </button>
-                );
-              })}
-            </box>
-          )}
-        </For>
-      </box>
+      <CalendarGrid
+        rows={rows}
+        selected={selected}
+        onSelect={(date) => {
+          setSelected(date);
+          bump();
+        }}
+      />
     </box>
   );
 }

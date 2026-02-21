@@ -1,62 +1,15 @@
-import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
 import options from "src/configuration";
-import icons from "src/lib/icons/icons";
 import CountdownService from "src/services/countdown";
 import { Gtk } from "ags/gtk4";
 import { createPoll } from "ags/time";
-import { For, createRoot, createState, onCleanup } from "gnim";
-import { formatRemaining, toGtkStackTransition } from "./helper";
-import type { Accessor } from "gnim";
+import { createRoot, createState, onCleanup } from "gnim";
+import { CountdownEmpty, CountdownNav, CountdownSlideCard } from "./_components";
+import { clampIndex, pagesKey, slideName } from "./helpers";
+import { toGtkStackTransition } from "../shared/helpers";
 import type { CountdownUiSlide } from "src/services/countdown";
 
 type StackPage = { name: string; slide: CountdownUiSlide };
-
-function fileUri(path: string): string {
-  try {
-    return Gio.File.new_for_path(path).get_uri();
-  } catch {
-    return path;
-  }
-}
-
-function slideName(s: CountdownUiSlide): string {
-  const key = encodeURIComponent(`${s.countdownId}::${s.occKey}`);
-  return `cd:${key}`;
-}
-
-function clampIndex(i: number, len: number): number {
-  if (len <= 0) return 0;
-  return Math.max(0, Math.min(len - 1, i));
-}
-
-function SlideCard(props: { slide: CountdownUiSlide; nowMs: Accessor<number> }): JSX.Element {
-  const s = props.slide;
-  const cssBg = s.imagePath ? `background-image: url("${fileUri(s.imagePath)}");` : "";
-
-  return (
-    <box class="countdown-slide countdown-image" css={cssBg} hexpand vexpand>
-      <box vexpand />
-
-      <box class="countdown-overlay" orientation={Gtk.Orientation.VERTICAL} hexpand>
-        <label class="countdown-title" label={s.title} xalign={0} wrap />
-        <label
-          class="countdown-description"
-          label={s.description ?? ""}
-          visible={Boolean(s.description)}
-          xalign={0}
-          wrap
-        />
-        <label
-          class="countdown-timer"
-          label={props.nowMs.as((n) => formatRemaining(s.whenMs - n))}
-          xalign={0}
-          wrap
-        />
-      </box>
-    </box>
-  );
-}
 
 export default function CountdownView(): JSX.Element {
   const svc = CountdownService.getInstance();
@@ -103,11 +56,6 @@ export default function CountdownView(): JSX.Element {
     return raw.map((s) => ({ name: slideName(s), slide: s }));
   }
 
-  function pagesKey(pages: StackPage[]): string {
-    // stable identity of the stack; if this string doesn't change we do NOT rebuild
-    return pages.map((p) => p.name).join("|");
-  }
-
   function rebuildStack(pages: StackPage[]): void {
     const st = stackRef;
     if (!st) return;
@@ -128,17 +76,7 @@ export default function CountdownView(): JSX.Element {
 
     if (pages.length === 0) {
       const empty = mkWidget(
-        () => (
-          <box class="countdown-slide" hexpand vexpand>
-            <label
-              label="No countdowns"
-              halign={Gtk.Align.CENTER}
-              valign={Gtk.Align.CENTER}
-              hexpand
-              vexpand
-            />
-          </box>
-        ),
+        () => <CountdownEmpty />,
         "empty",
       );
       st.add_named(empty, "empty");
@@ -147,7 +85,7 @@ export default function CountdownView(): JSX.Element {
     }
 
     for (const p of pages) {
-      const w = mkWidget(() => <SlideCard slide={p.slide} nowMs={nowMs} />, p.name);
+      const w = mkWidget(() => <CountdownSlideCard slide={p.slide} nowMs={nowMs} />, p.name);
       st.add_named(w, p.name);
     }
 
@@ -200,29 +138,13 @@ export default function CountdownView(): JSX.Element {
 
   return (
     <box class="countdown-root" orientation={Gtk.Orientation.VERTICAL}>
-      <box class="countdown-nav" orientation={Gtk.Orientation.HORIZONTAL}>
-        <button class="countdown-nav-btn" onClicked={() => go(-1)} tooltipText="Previous">
-          <image iconName={icons.ui.arrow.left} />
-        </button>
-
-        <box hexpand halign={Gtk.Align.CENTER}>
-          <For each={slides}>
-            {(p: StackPage, i: Accessor<number>) => (
-              <button
-                class={idx.as((n) => (n === i() ? "countdown-nav-btn active" : "countdown-nav-btn"))}
-                tooltipText={p.slide.title}
-                onClicked={() => setVisibleByIdx(i())}
-              >
-                <label class="countdown-nav-label" label={idx.as((n) => (n === i() ? "●" : "○"))} />
-              </button>
-            )}
-          </For>
-        </box>
-
-        <button class="countdown-nav-btn" onClicked={() => go(1)} tooltipText="Next">
-          <image iconName={icons.ui.arrow.right} />
-        </button>
-      </box>
+      <CountdownNav
+        slides={slides}
+        idx={idx}
+        onPrev={() => go(-1)}
+        onNext={() => go(1)}
+        onSelect={setVisibleByIdx}
+      />
 
       <stack
         hexpand
