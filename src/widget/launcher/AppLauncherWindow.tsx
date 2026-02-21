@@ -5,12 +5,12 @@ import { createState } from "gnim"
 import { Popup } from "../shared/popup"
 import { LauncherPanel } from "./_components"
 import { hideLauncherWindow, numMin } from "./helpers"
-import { toGtkRevealerTransitionType } from "../shared/helpers"
+import { toRevealerTransition } from "../shared/helpers"
 
 const Apps = new AstalApps.Apps()
 
 // keep behavior: these are evaluated once at import time
-const transitionType = toGtkRevealerTransitionType(options.launcher.revealTransition.get())
+const transitionType = toRevealerTransition(options.launcher.revealTransition.get())
 const transitionduration = options.launcher.transitionDuration.get()
 
 export function hide_all_windows() {

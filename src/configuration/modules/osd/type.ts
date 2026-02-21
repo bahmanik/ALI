@@ -18,7 +18,6 @@ export interface OsdOptions {
 
   revealTransition: Opt<"AUTO" | GtkRevealerTransitionName>;
   transitionDurationMs: Opt<number>;
-  revealTransitionResolved: Opt<GtkRevealerTransitionName>;
 
   sources: {
     volume: Opt<boolean>;

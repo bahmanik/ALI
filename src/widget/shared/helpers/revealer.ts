@@ -1,11 +1,11 @@
 import { Gtk } from "ags/gtk4";
-import type { AnchorLayout, GtkRevealerTransitionName } from "src/lib/options/types";
+import type { AnchorLayout, GtkRevealerTransitionName as RevealerTransitionName, RevealTransitionWithAuto } from "src/lib/options/types";
 
 function normalizeLayout(layout: AnchorLayout | string): string {
   return String(layout).toLowerCase().replace(/_/g, "-");
 }
 
-export function autoTransitionForLocation(layout: AnchorLayout | string): GtkRevealerTransitionName {
+export function getTransitionForLocation(layout: AnchorLayout): RevealerTransitionName {
   const l = normalizeLayout(layout);
 
   // Centered overlays look best with a fade.
@@ -27,8 +27,8 @@ export function autoTransitionForLocation(layout: AnchorLayout | string): GtkRev
  *
  * NOTE: Gtk enum is stable; these names match GTK4's transition type names.
  */
-export function toGtkRevealerTransitionType(
-  name: GtkRevealerTransitionName
+export function toRevealerTransition(
+  name: RevealerTransitionName
 ): Gtk.RevealerTransitionType {
   switch (name) {
     case "NONE":
@@ -57,4 +57,12 @@ export function toGtkRevealerTransitionType(
     default:
       return Gtk.RevealerTransitionType.SLIDE_UP;
   }
+}
+
+export function toRevealerTransitionWithAuto(
+  name: RevealTransitionWithAuto,
+  layout: AnchorLayout,
+): Gtk.RevealerTransitionType {
+  if (name !== 'AUTO') return toRevealerTransition(name)
+  else return toRevealerTransition(getTransitionForLocation(layout))
 }

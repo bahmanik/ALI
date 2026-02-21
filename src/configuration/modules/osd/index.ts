@@ -1,11 +1,8 @@
 import brightness from "./brightness";
 import { graft, stem, twig } from "src/configuration/helper";
-import { dep } from "src/lib/options";
-import { autoTransitionForLocation } from "src/widget/shared/helpers";
 import type { OsdOptions } from "./type";
 import type {
   AnchorLayout,
-  GtkRevealerTransitionName,
   HexColor,
   OsdOrientation,
   RevealTransitionWithAuto,
@@ -25,16 +22,6 @@ const osd = stem((opt): OsdOptions =>
     // Transition options.
     revealTransition: opt<RevealTransitionWithAuto>("AUTO"),
     transitionDurationMs: opt(180),
-
-    revealTransitionResolved: opt<GtkRevealerTransitionName>("SLIDE_UP", {
-      runtime: true,
-      deps: [dep.self((s) => s.location), dep.self((s) => s.revealTransition)],
-      derive: ({ self }) => {
-        const t = self.revealTransition.get();
-        if (t !== "AUTO") return t;
-        return autoTransitionForLocation(self.location.get());
-      },
-    }),
 
     // Source toggles: the controllers will no-op if disabled.
     sources: {
@@ -90,9 +77,8 @@ const osd = stem((opt): OsdOptions =>
       barFill: opt<HexColor>("#1b93fd", { scss: true }),
     },
 
-    imNotDefined: opt<boolean>(true),
     brightness: brightness(twig(opt)),
-  })
+  } satisfies OsdOptions)
 );
 
 declare module "src/lib/options/root" {

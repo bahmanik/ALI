@@ -4,7 +4,7 @@ import { createState, onCleanup, type Accessor } from "gnim"
 import { AppButton } from "./AppButton"
 import type { Timer } from "ags/time"
 import type AstalApps from "gi://AstalApps?version=0.1"
-import { toGtkRevealerTransitionType } from "src/widget/shared/helpers"
+import { toRevealerTransition } from "src/widget/shared/helpers"
 
 export type AnimatedAppRowProps = {
   app: AstalApps.Application
@@ -22,7 +22,7 @@ export function AnimatedAppRow({
   itemGap,
   showDescription,
 }: AnimatedAppRowProps) {
-  const transitionType = toGtkRevealerTransitionType(options.launcher.revealTransition.get())
+  const transitionType = toRevealerTransition(options.launcher.revealTransition.get())
   const transitionduration = options.launcher.transitionDuration.get()
   const animEnabled = options.launcher.animateResults.get() !== "NONE"
   const animDelay = Math.max(0, Number(options.launcher.animInDelayMs.get() ?? 0))

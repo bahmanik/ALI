@@ -2,8 +2,7 @@ import options from "src/configuration";
 import giCairo from "cairo";
 import { createState } from "gnim";
 import { Astal, Gtk } from "ags/gtk4";
-import { layoutToAlign } from "../shared/helpers";
-import { toGtkRevealerTransitionType } from "../shared/helpers";
+import { layoutToAlign, toRevealerTransitionWithAuto } from "../shared/helpers";
 import { controllerForKind } from "./controllers";
 import type Gdk from "gi://Gdk?version=4.0";
 import type { OsdKind, OsdEvent } from "./controllers";
@@ -283,6 +282,9 @@ export default function Osd(props: OsdProps) {
   const percentClass = overflow.as((o: boolean) => (o ? "osd-percent overflow" : "osd-percent"));
   const levelClass = overflow.as((o: boolean) => (o ? "osd-level overflow" : "osd-level"));
 
+  const { revealTransition, location } = options.osd
+  const transition = toRevealerTransitionWithAuto(revealTransition.get(), location.get())
+
   return (
     <window
       name={name}
@@ -376,9 +378,9 @@ export default function Osd(props: OsdProps) {
           marginStart={margin}
           marginEnd={margin}
         >
-          <Gtk.Revealer
+          <revealer
             class="osd-revealer"
-            transitionType={options.osd.revealTransitionResolved.as(toGtkRevealerTransitionType)}
+            transitionType={transition}
             transitionDuration={options.osd.transitionDurationMs.as((ms: number) => Math.max(0, ms))}
             revealChild={revealed}
           >
@@ -473,7 +475,7 @@ export default function Osd(props: OsdProps) {
                 />
               </box>
             </box>
-          </Gtk.Revealer>
+          </revealer>
         </box>
       </box>
     </window>

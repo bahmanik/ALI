@@ -1,5 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { calendar, RevealTransitionWithAuto, weekDays } from "src/lib/options/types";
+import type { AnchorLayout, calendar, RevealTransitionWithAuto, weekDays } from "src/lib/options/types";
 
 export interface CalendarOptions {
   calendar: Opt<calendar>;
@@ -17,7 +17,7 @@ export interface CalendarOptions {
     width: Opt<number>;
     height: Opt<number>;
     margin: Opt<number>;
-    layout: Opt<string>;
+    layout: Opt<AnchorLayout>;
     revealTransition: Opt<RevealTransitionWithAuto>;
     transitionDuration: Opt<number>;
   };
