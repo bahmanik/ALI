@@ -1,21 +1,22 @@
 import Gio from 'gi://Gio?version=2.0';
 import GLib from 'gi://GLib?version=2.0';
 import icons from 'src/lib/icons/icons';
+import AstalNotifd from 'gi://AstalNotifd';
 import { readFile, writeFile } from 'ags/file';
 import { execAsync } from 'ags/process';
 import { timeout } from 'ags/time';
 import { startOnce } from 'src/services/startOnce';
 import { notify, type NotificationAction } from 'src/lib/notiofication';
-import { CACHE, ensureDirectory, ensureParentDir } from 'src/lib/session/api';
+import { CACHE, ensureDirectory, ensureParentDir, fileExists } from 'src/lib/session/api';
 import { extFromPath, joinPath } from 'src/lib/path/helpers';
 import { SystemUtilities } from 'src/lib/system/SystemUtilities';
 import type { Timer } from 'ags/time';
-import AstalNotifd from 'gi://AstalNotifd';
 
 // ---------------------------------
 // Types
 // ---------------------------------
 
+//NOTE:not yet implemented and may never be imokemented
 export type IsoInstant = string; // e.g. 2026-12-25T00:00:00.000Z
 export type IsoLocalDateTime = string; // e.g. 2026-03-01T21:00:00 (in tzid)
 
@@ -115,10 +116,6 @@ function ensureCacheDirs(): void {
 
 function dataPath(id: string): string {
   return joinPath(DATA_DIR, `${id}.json`);
-}
-
-function fileExists(path: string): boolean {
-  return GLib.file_test(path, GLib.FileTest.EXISTS);
 }
 
 function nowIso(): IsoInstant {

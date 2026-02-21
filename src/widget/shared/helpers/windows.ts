@@ -71,4 +71,3 @@ export function calculateAnchor(layout: PopupLayout | string | undefined) {
       return undefined
   }
 }
-

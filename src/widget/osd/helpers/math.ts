@@ -1,14 +1,11 @@
-export function clamp01(n: number): number {
-  if (!Number.isFinite(n)) return 0;
-  return Math.max(0, Math.min(1, n));
-}
+import { Accessor } from "gnim";
 
-export function boolPeek(acc: any): boolean {
+export function boolPeek(acc: Accessor): boolean {
   try {
     return Boolean(acc?.peek?.());
   } catch {
     try {
-      return Boolean(acc?.get?.());
+      return Boolean(acc?.peek?.());
     } catch {
       return Boolean(acc);
     }

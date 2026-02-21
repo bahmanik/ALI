@@ -1,5 +1,26 @@
 import { Gtk } from "ags/gtk4";
-import type { GtkRevealerTransitionName } from "src/lib/options/types";
+import type { AnchorLayout, GtkRevealerTransitionName } from "src/lib/options/types";
+
+function normalizeLayout(layout: AnchorLayout | string): string {
+  return String(layout).toLowerCase().replace(/_/g, "-");
+}
+
+export function autoTransitionForLocation(layout: AnchorLayout | string): GtkRevealerTransitionName {
+  const l = normalizeLayout(layout);
+
+  // Centered overlays look best with a fade.
+  if (l === "center") return "CROSSFADE";
+
+  // Prefer vertical motion for top/bottom placements.
+  if (l === "top" || l.startsWith("top-")) return "SLIDE_DOWN";
+  if (l === "bottom" || l.startsWith("bottom-")) return "SLIDE_UP";
+
+  // Side placements.
+  if (l === "left" || l.endsWith("-left")) return "SLIDE_RIGHT";
+  if (l === "right" || l.endsWith("-right")) return "SLIDE_LEFT";
+
+  return "SLIDE_UP";
+}
 
 /**
  * Map string names (used in options) to Gtk.RevealerTransitionType.

@@ -1,5 +1,4 @@
 import AstalNotifd from "gi://AstalNotifd";
-
 import NotificationCard from "./_components/NotificationCard";
 
 export interface NotificationProps {

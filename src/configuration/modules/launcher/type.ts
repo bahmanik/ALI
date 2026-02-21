@@ -1,10 +1,10 @@
 import type { Opt } from "src/lib/options";
-import type { GtkRevealerTransitionName, HexColor } from "src/lib/options/types";
+import type { HexColor, RevealTransitionWithAuto } from "src/lib/options/types";
 
 export interface LauncherOptions {
   localScale: Opt<boolean>;
   scale: Opt<number>;
-  revealTransition: Opt<GtkRevealerTransitionName>;
+  revealTransition: Opt<RevealTransitionWithAuto>;
   transitionDuration: Opt<number>;
   maxItems: Opt<number>;
 

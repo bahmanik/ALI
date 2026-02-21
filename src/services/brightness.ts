@@ -1,14 +1,14 @@
 import GLib from "gi://GLib"
 import Gio from "gi://Gio"
-import { startOnce } from "../services/startOnce"
 import options from "src/configuration";
-
 import GObject, { register, getter, setter } from "gnim/gobject"
+import { startOnce } from "../services/startOnce"
 import { monitorFile, readFileAsync } from "ags/file"
 import { execAsync } from "ags/process"
 import { Timer, timeout } from "ags/time"
-
 import { SystemUtilities } from "../lib/system/SystemUtilities"
+
+
 
 type BrightnessServiceOptions = {
   screenDevice?: string

@@ -1,35 +1,15 @@
 import brightness from "./brightness";
 import { graft, stem, twig } from "src/configuration/helper";
 import { dep } from "src/lib/options";
+import { autoTransitionForLocation } from "src/widget/shared/helpers";
 import type { OsdOptions } from "./type";
 import type {
   AnchorLayout,
   GtkRevealerTransitionName,
   HexColor,
   OsdOrientation,
-  OsdRevealTransition,
+  RevealTransitionWithAuto,
 } from "src/lib/options/types";
-
-function normalizeLayout(layout: AnchorLayout | string): string {
-  return String(layout).toLowerCase().replace(/_/g, "-");
-}
-
-function autoTransitionForLocation(layout: AnchorLayout | string): GtkRevealerTransitionName {
-  const l = normalizeLayout(layout);
-
-  // Centered overlays look best with a fade.
-  if (l === "center") return "CROSSFADE";
-
-  // Prefer vertical motion for top/bottom placements.
-  if (l === "top" || l.startsWith("top-")) return "SLIDE_DOWN";
-  if (l === "bottom" || l.startsWith("bottom-")) return "SLIDE_UP";
-
-  // Side placements.
-  if (l === "left" || l.endsWith("-left")) return "SLIDE_RIGHT";
-  if (l === "right" || l.endsWith("-right")) return "SLIDE_LEFT";
-
-  return "SLIDE_UP";
-}
 
 const osd = stem((opt): OsdOptions =>
   graft({
@@ -43,7 +23,7 @@ const osd = stem((opt): OsdOptions =>
     orientation: opt<OsdOrientation>("horizontal"),
 
     // Transition options.
-    revealTransition: opt<OsdRevealTransition>("AUTO"),
+    revealTransition: opt<RevealTransitionWithAuto>("AUTO"),
     transitionDurationMs: opt(180),
 
     revealTransitionResolved: opt<GtkRevealerTransitionName>("SLIDE_UP", {

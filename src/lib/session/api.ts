@@ -34,6 +34,10 @@ export function ensureParentDir(filePath: string): void {
   ensureDirectory(dir);
 }
 
+export function fileExists(path: string): boolean {
+  return GLib.file_test(path, GLib.FileTest.EXISTS);
+}
+
 /**
  * Ensure a file exists, creating parent directories if needed.
  * No-op if the file already exists.
@@ -114,8 +118,4 @@ export function deleteFile(path: string): void {
   } catch (e) {
     console.error("deleteFile:", e);
   }
-}
-
-export function joinPath(...parts: string[]): string {
-  return parts.join("/").replace(/\/+/g, "/");
 }

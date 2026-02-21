@@ -159,18 +159,6 @@ export type calendar =
 
 export type LauncherBorderLocation = "none" | "full";
 
-export type LauncherRevealTransition =
-    "NONE" |
-    "CROSSFADE" |
-    "SLIDE_RIGHT" |
-    "SLIDE_LEFT" |
-    "SLIDE_UP" |
-    "SLIDE_DOWN" |
-    "SWING_RIGHT" |
-    "SWING_LEFT" |
-    "SWING_UP" |
-    "SWING_DOWN";
-
 export type ThemeMode = "dark" | "light";
 
 export type MatugenType =
@@ -232,6 +220,6 @@ export type GtkRevealerTransitionName =
     | "SWING_UP"
     | "SWING_DOWN";
 
-export type OsdRevealTransition = "AUTO" | GtkRevealerTransitionName;
+export type RevealTransitionWithAuto = "AUTO" | GtkRevealerTransitionName;
 
 export type OsdOrientation = "vertical" | "horizontal";

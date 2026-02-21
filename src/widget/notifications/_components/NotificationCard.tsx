@@ -2,8 +2,8 @@ import Adw from "gi://Adw";
 import AstalNotifd from "gi://AstalNotifd";
 import Pango from "gi://Pango";
 import { Gtk } from "ags/gtk4";
-
-import { fileExists, formatTime, isIconName, urgencyClass } from "../helpers";
+import { formatTime, isIconName, urgencyClass } from "../helpers";
+import { fileExists } from "src/lib/session";
 
 export interface NotificationCardProps {
   notification: AstalNotifd.Notification;

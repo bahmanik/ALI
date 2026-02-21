@@ -1,11 +1,11 @@
 import { stem } from "src/configuration/helper";
 import type { LauncherOptions } from "./type";
-import type { HexColor, LauncherBorderLocation, LauncherRevealTransition } from "src/lib/options/types";
+import type { HexColor, LauncherBorderLocation, RevealTransitionWithAuto } from "src/lib/options/types";
 
 const launcher = stem((opt): LauncherOptions => ({
   localScale: opt(true),
   scale: opt(12, { scss: true, hyprland: true }),
-  revealTransition: opt<LauncherRevealTransition>("SWING_DOWN"),
+  revealTransition: opt<RevealTransitionWithAuto>("SWING_DOWN"),
   transitionDuration: opt(0.4),
   maxItems: opt(5),
 

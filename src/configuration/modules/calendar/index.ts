@@ -1,5 +1,5 @@
 import { stem } from "src/configuration/helper";
-import type { calendar, CalendarBorderLocation, LauncherRevealTransition, weekDays } from "src/lib/options/types";
+import type { calendar, CalendarBorderLocation, RevealTransitionWithAuto, weekDays } from "src/lib/options/types";
 import type { CalendarOptions } from "./type";
 
 const calendarModule = stem((opt): CalendarOptions => ({
@@ -26,7 +26,7 @@ const calendarModule = stem((opt): CalendarOptions => ({
     height: opt(420, { scss: true }),
     margin: opt(12, { scss: true }),
     layout: opt("top_right"),
-    revealTransition: opt<LauncherRevealTransition>("SWING_DOWN"),
+    revealTransition: opt<RevealTransitionWithAuto>("SWING_DOWN"),
     transitionDuration: opt(0.18),
   },
 
