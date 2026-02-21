@@ -6,14 +6,13 @@ import options from "./src/configuration";
 import { setSecondaryRect } from "./src/widget/bar/geometry";
 
 import { AppLauncherWindow } from "./src/widget/launcher/AppLauncherWindow";
-import { PrimaryOsd, SecondaryOsd, BrightnessOsd, KeyboardBrightnessOsd } from "./src/widget/osd";
+import { MicOsd, SoundOsd, BrightnessOsd, KeyboardBrightnessOsd } from "./src/widget/osd";
 import NotificationPopups from "./src/widget/notifications/NotificationPopups";
 import CalendarWindow from "src/widget/calendar/CalendarWindow";
 import CountdownWindow from "src/widget/countdown/CountdownWindow";
 
 import { bootSession } from "src/lib/session";
 import { bootOptions } from "src/lib/options/runtime";
-import { bootServices } from "src/services";
 import { bootNotif } from "src/lib/notiofication";
 import { boot } from "src/boot";
 
@@ -114,8 +113,8 @@ void (async () => {
       syncSecondaryBars();
 
       app.get_monitors().map(AppLauncherWindow);
-      app.get_monitors().map(PrimaryOsd);
-      app.get_monitors().map(SecondaryOsd);
+      app.get_monitors().map(SoundOsd);
+      app.get_monitors().map(MicOsd);
       app.get_monitors().map(BrightnessOsd);
       app.get_monitors().map(KeyboardBrightnessOsd);
       app.get_monitors().map(CalendarWindow);

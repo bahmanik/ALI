@@ -8,7 +8,7 @@ import {
   keyboardBrightnessController,
 } from "./controller";
 
-export function PrimaryOsd(monitor: Gdk.Monitor) {
+export function SoundOsd(monitor: Gdk.Monitor) {
   return (
     <Osd
       name={`sound-osd-${(monitor as any).connector}`}
@@ -20,7 +20,7 @@ export function PrimaryOsd(monitor: Gdk.Monitor) {
   );
 }
 
-export function SecondaryOsd(monitor: Gdk.Monitor) {
+export function MicOsd(monitor: Gdk.Monitor) {
   return (
     <Osd
       name={`mic-osd-${(monitor as any).connector}`}
