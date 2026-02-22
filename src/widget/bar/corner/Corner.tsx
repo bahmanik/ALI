@@ -30,11 +30,11 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
   const imgSvc = TechniqueImageService.getInstance();
 
   // --- caches ---
-  let outerSurface: any = null;
+  let outerSurface: giCairo.ImageSurface | null = null;
   let outerW = 1;
   let outerH = 1;
 
-  let patternSurface: any = null;
+  let patternSurface: giCairo.ImageSurface | null = null;
   let patternW = 1;
   let patternH = 1;
 
@@ -102,7 +102,7 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
     patternSurface = null;
     queueDraw();
 
-    const fill = options.bar.corner.fill.get?.() ?? "image";
+    const fill = options.bar.corner.fill.get?.() ?? "solid";
     if (fill === "solid") return;
 
     if (fill === "image") {
@@ -145,7 +145,7 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
     unsubs.push(options.bar.corner.solidOpacity.subscribe(queueDraw));
 
     // pattern sizing
-    unsubs.push(options.bar.corner.patternSize?.subscribe?.(queueDraw) ?? (() => {}));
+    unsubs.push(options.bar.corner.patternSize?.subscribe?.(queueDraw) ?? (() => { }));
 
     // rebuild when any input that affects sources changes
     const reload = () => rewatchAssets();
@@ -153,7 +153,7 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
     unsubs.push(options.bar.corner.outerImage.subscribe(reload));
     unsubs.push(options.bar.corner.enableTechnique.subscribe(reload));
     unsubs.push(options.bar.corner.technique.subscribe(reload));
-    unsubs.push(options.bar.corner.patternPath?.subscribe?.(reload) ?? (() => {}));
+    unsubs.push(options.bar.corner.patternPath?.subscribe?.(reload) ?? (() => { }));
 
     onCleanup(() => {
       for (const u of unsubs) {
@@ -211,7 +211,7 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
               paintSolid(ctx, w, h, solid);
             } else {
               const size = Math.max(1, Number(options.bar.corner.patternSize?.get?.() ?? 12));
-              paintTiledPattern(ctx, w, h, patternSurface, patternW, patternH, size, null);
+              paintTiledPattern(ctx, w, h, patternSurface, patternW, patternH, size);
             }
           } else {
             // image
