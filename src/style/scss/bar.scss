@@ -100,6 +100,22 @@ window.bar {
 
     border-color: $bar-style-borderColor;
 
+    .workspace-container{
+      background-color: grey;
+      .workspace-button{
+        background-color: blue;
+      }
+      .workspace-button:hover{
+        background-color: white;
+      }
+      .active{
+        background-color: tomato;
+      }
+      .occupied{
+        background-color: black;
+      }
+    }
+
     // Target GTK4 MenuButtons too (they are not always styled via `menubutton` directly)
     button,
     menubutton,

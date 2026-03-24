@@ -4,7 +4,7 @@ import { Gtk } from "ags/gtk4"
 import { createBinding } from "ags"
 import type { Opt } from "src/lib/options"
 
-export default function Battery({ vertical }: { vertical: Opt<boolean> }) {
+export default function Battery({ verticalState }: { verticalState: Opt<boolean> }) {
   const battery = AstalBattery.get_default()
   const powerprofiles = AstalPowerProfiles.get_default()
 
@@ -14,9 +14,9 @@ export default function Battery({ vertical }: { vertical: Opt<boolean> }) {
     powerprofiles.set_active_profile(profile)
   }
 
-  const contentOrientation = vertical.as(v => v ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL)
-  const contentHalign = vertical.as(v => v ? Gtk.Align.CENTER : Gtk.Align.START)
-  const contentSpacing = vertical.as(v => v ? 2 : 6)
+  const contentOrientation = verticalState.as(v => v ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL)
+  const contentHalign = verticalState.as(v => v ? Gtk.Align.CENTER : Gtk.Align.START)
+  const contentSpacing = verticalState.as(v => v ? 2 : 6)
 
   return (
     <menubutton visible={createBinding(battery, "isPresent")} hexpand={false} halign={Gtk.Align.CENTER}>

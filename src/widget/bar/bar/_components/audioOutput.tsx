@@ -288,6 +288,7 @@ export default function AudioOutput() {
     </menubutton>
   )
 }
+
 function Header({ showArrow = false }: { showArrow?: boolean }) {
   return (
     <box class={"header"} spacing={10}>

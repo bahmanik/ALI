@@ -1,12 +1,7 @@
 import app from "ags/gtk4/app";
 import { Astal } from "ags/gtk4";
 import { onCleanup } from "ags";
-import type { Gdk, Gtk } from "ags/gtk4";
-import type { BarLocation } from "src/lib/options/types";
-
-import { AudioOutput, Battery, Clock, Mpris, Tray, Wireless } from "./_components";
-
-import type { BarOptionGroup as BarOptionGroupT, BarKind } from "./helpers";
+import { AudioOutput, Workspaces, Battery, Clock, Mpris, Tray, Wireless } from "./_components";
 import {
   createBarWindowBinds,
   computeBarRect,
@@ -16,6 +11,10 @@ import {
   subscribeOpt,
   watchWidgetSize,
 } from "./helpers";
+import type { Gdk, Gtk } from "ags/gtk4";
+import type { BarLocation } from "src/lib/options/types";
+import type { BarOptionGroup as BarOptionGroupT, BarKind } from "./helpers";
+import type { Opt } from "src/lib/options";
 
 type BarOptionGroup = BarOptionGroupT & {
   position: { get(): BarLocation; subscribe(cb: () => void): any; as?: any };
@@ -40,12 +39,11 @@ export default function Bar({
   let win: Astal.Window;
   let root: Gtk.Widget | null = null;
 
-  const isVertical = option.position.as(isBarVertical)
-  console.log(name, isVertical)
+  const isVertical: Opt<boolean> = option.position.as(isBarVertical)
 
   const monitorId = gdkmonitor.connector;
 
-  const layout = getBarOrientation(option);
+  const layout = getBarOrientation(option.position);
   const winBinds = createBarWindowBinds(option);
 
   const recompute = () => {
@@ -122,6 +120,7 @@ export default function Bar({
           valign={layout.start.valign}
         >
           <AudioOutput />
+          <Workspaces verticalState={isVertical} />
         </box>
       </centerbox>
     </window>
