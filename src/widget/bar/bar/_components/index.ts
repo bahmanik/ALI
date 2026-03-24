@@ -1,4 +1,3 @@
-export { default as BarSection } from "./BarSection";
 export { default as Clock } from "./clock";
 export { default as Mpris } from "./mpris";
 export { default as Tray } from "./tray";

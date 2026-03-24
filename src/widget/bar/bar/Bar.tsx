@@ -4,7 +4,7 @@ import { onCleanup } from "ags";
 import type { Gdk, Gtk } from "ags/gtk4";
 import type { BarLocation } from "src/lib/options/types";
 
-import { AudioOutput, BarSection, Battery, Clock, Mpris, Tray, Wireless } from "./_components";
+import { AudioOutput, Battery, Clock, Mpris, Tray, Wireless } from "./_components";
 
 import type { BarOptionGroup as BarOptionGroupT, BarKind } from "./helpers";
 import {
@@ -107,27 +107,22 @@ export default function Bar({
           });
         }}
       >
-        <BarSection
-          slot="start"
+        <box
+          $type="start"
           orientation={layout.orientation}
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
-          <Clock vertical={isVertical} />
-          <Mpris />
-        </BarSection>
+        </box>
 
-        <BarSection
-          slot="end"
+        <box
+          $type="end"
           orientation={layout.orientation}
-          halign={layout.end.halign}
-          valign={layout.end.valign}
+          halign={layout.start.halign}
+          valign={layout.start.valign}
         >
-          <Tray />
-          <Wireless />
           <AudioOutput />
-          <Battery vertical={isVertical} />
-        </BarSection>
+        </box>
       </centerbox>
     </window>
   );
