@@ -52,7 +52,7 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
   };
 
   const readSolid = () =>
-    parseSolidColor(options.bar.corner.solidColor.get?.() ?? "#111318", options.bar.corner.solidOpacity.get?.() ?? 100);
+    parseSolidColor(options.bar.style.bg.get?.() ?? "#111318", options.bar.style.bgOpacity.get?.() ?? 100);
 
   const loadOuterFrom = (outPath: string, gen: number) => {
     if (gen !== watchGen) return;
@@ -141,8 +141,8 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
     unsubs.push(options.bar.corner.radius.subscribe(queueDraw));
 
     // solid
-    unsubs.push(options.bar.corner.solidColor.subscribe(queueDraw));
-    unsubs.push(options.bar.corner.solidOpacity.subscribe(queueDraw));
+    unsubs.push(options.bar.style.bg.subscribe(queueDraw));
+    unsubs.push(options.bar.style.bgOpacity.subscribe(queueDraw));
 
     // pattern sizing
     unsubs.push(options.bar.corner.patternSize?.subscribe?.(queueDraw) ?? (() => { }));

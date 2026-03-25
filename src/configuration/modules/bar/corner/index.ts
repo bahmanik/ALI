@@ -1,7 +1,7 @@
 import { stem, graft } from "src/configuration/helper";
 import { overrideImage } from "src/lib/options/factories/overrideImage";
 import { overridePattern } from "src/lib/options/factories/overridePattern";
-import type { CornerFill, HexColor } from "src/lib/options/types";
+import type { CornerFill } from "src/lib/options/types";
 import type { BarCornerOptions } from "./type";
 
 const corner = stem((opt): BarCornerOptions =>
@@ -18,8 +18,6 @@ const corner = stem((opt): BarCornerOptions =>
        * - solid: fill with solidColor and then punch the inner hole
        */
       fill: opt<CornerFill>("solid", { scss: true }),
-      solidColor: opt<HexColor>("#111318", { scss: true }),
-      solidOpacity: opt(100, { scss: true }), // 0..100
     },
     overrideImage(opt, {
       defaultUseLocal: true,

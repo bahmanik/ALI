@@ -1,5 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { CornerFill, HexColor, ImageTechnique, Pattern } from "src/lib/options/types";
+import type { CornerFill, ImageTechnique, Pattern } from "src/lib/options/types";
 
 export interface BarCornerOptions {
   enable: Opt<boolean>;
@@ -8,8 +8,6 @@ export interface BarCornerOptions {
   radius: Opt<number>;
 
   fill: Opt<CornerFill>;
-  solidColor: Opt<HexColor>;
-  solidOpacity: Opt<number>;
 
   // overrideImage
   useLocalOuterImage: Opt<boolean>;
