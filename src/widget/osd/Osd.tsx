@@ -5,6 +5,7 @@ import { Astal, Gtk } from "ags/gtk4";
 import { layoutToAlign, toRevealerTransitionWithAuto } from "../shared/helpers";
 import { controllerForKind } from "./controllers";
 import type Gdk from "gi://Gdk?version=4.0";
+import type { Accessor } from "gnim";
 import type { OsdKind, OsdEvent } from "./controllers";
 
 export type OsdProps = {
@@ -28,12 +29,12 @@ function clamp01(n: number): number {
   return Math.max(0, Math.min(1, n));
 }
 
-function boolPeek(acc: any): boolean {
+function boolPeek(acc: Accessor<boolean>): boolean {
   try {
     return Boolean(acc?.peek?.());
   } catch {
     try {
-      return Boolean(acc?.get?.());
+      return Boolean(acc?.peek?.());
     } catch {
       return Boolean(acc);
     }
@@ -42,24 +43,17 @@ function boolPeek(acc: any): boolean {
 
 function translateXY(from: Gtk.Widget, to: Gtk.Widget): { x: number; y: number } | null {
   try {
-    const tr = (from as any).translate_coordinates?.(to as any, 0, 0);
+    const tr = (from).translate_coordinates?.(to, 0, 0);
 
     if (Array.isArray(tr)) {
       // [ok, x, y]
       if (tr.length >= 3 && typeof tr[0] === "boolean") {
         if (!tr[0]) return null;
         return { x: Number(tr[1]) || 0, y: Number(tr[2]) || 0 };
+      } else {
+        throw "type of corrdinate should be [ok, x, y]"
       }
-      // [x, y]
-      if (tr.length >= 2 && typeof tr[0] === "number" && typeof tr[1] === "number") {
-        return { x: Number(tr[0]) || 0, y: Number(tr[1]) || 0 };
-      }
-    } else if (tr && typeof tr === "object") {
-      if ("x" in (tr as any) && "y" in (tr as any)) {
-        return { x: Number((tr as any).x) || 0, y: Number((tr as any).y) || 0 };
-      }
-    }
-    return null;
+    } return null;
   } catch {
     return null;
   }
@@ -69,8 +63,8 @@ function widgetRectIn(child: Gtk.Widget, dest: Gtk.Widget): Rect | null {
   const p = translateXY(child, dest);
   if (!p) return null;
 
-  const w = Math.max(0, Number((child as any).get_allocated_width?.() ?? 0));
-  const h = Math.max(0, Number((child as any).get_allocated_height?.() ?? 0));
+  const w = Math.max(0, Number((child).get_allocated_width?.() ?? 0));
+  const h = Math.max(0, Number((child).get_allocated_height?.() ?? 0));
   return { x: p.x, y: p.y, w, h };
 }
 
@@ -251,7 +245,7 @@ export default function Osd(props: OsdProps) {
 
   const onEvent = (ev: OsdEvent) => {
     // per-event monitor selection
-    const connector = (gdkmonitor as any).connector;
+    const connector = (gdkmonitor).connector;
     if (connector && ev.monitorConnector && connector !== ev.monitorConnector) return;
 
     setTitle(ev.title);
@@ -262,7 +256,7 @@ export default function Osd(props: OsdProps) {
       setPercent(pct);
       setOverflow(Boolean(ev.overflow));
 
-      const evValue = Number((ev as any).value);
+      const evValue = Number((ev).value);
       const norm = Number.isFinite(evValue) ? clamp01(evValue) : clamp01(pct / maxPercent);
       setValue(norm);
     }
@@ -358,7 +352,7 @@ export default function Osd(props: OsdProps) {
             if (!acceptingInput) return false;
             if (!surface) return false;
 
-            const r = widgetRectIn(surface, w as any) ?? (overlay ? widgetRectIn(surface, overlay) : null);
+            const r = widgetRectIn(surface, w) ?? (overlay ? widgetRectIn(surface, overlay) : null);
             if (!r) return false;
 
             if (!rectContains(r, x, y)) {
@@ -423,13 +417,13 @@ export default function Osd(props: OsdProps) {
                   inverted={false}
                   hexpand
                   vexpand
-                  $={(bar: any) => {
+                  $={(bar) => {
                     const click = new Gtk.GestureClick({ button: 0, exclusive: false });
                     try {
-                      (click as any).propagationPhase = Gtk.PropagationPhase.CAPTURE;
+                      (click).propagationPhase = Gtk.PropagationPhase.CAPTURE;
                     } catch { }
 
-                    click.connect("pressed", (_g: any, _n: number, x: number) => {
+                    click.connect("pressed", (_g, _n: number, x: number) => {
                       if (!acceptingInput) return;
                       const w = Math.max(1, bar.get_allocated_width?.() ?? 1);
                       dragging = true;
@@ -448,13 +442,13 @@ export default function Osd(props: OsdProps) {
 
                     const drag = new Gtk.GestureDrag({ button: 0, exclusive: false });
                     try {
-                      (drag as any).propagationPhase = Gtk.PropagationPhase.CAPTURE;
+                      (drag).propagationPhase = Gtk.PropagationPhase.CAPTURE;
                     } catch { }
 
                     let startX = 0;
                     let width = 1;
 
-                    drag.connect("drag-begin", (_g: any, x: number) => {
+                    drag.connect("drag-begin", (_g, x: number) => {
                       if (!acceptingInput) return;
                       dragging = true;
                       clearHideTimers();
@@ -463,7 +457,7 @@ export default function Osd(props: OsdProps) {
                       applyNormalized(startX / width);
                     });
 
-                    drag.connect("drag-update", (_g: any, dx: number) => {
+                    drag.connect("drag-update", (_g, dx: number) => {
                       if (!acceptingInput) return;
                       applyNormalized((startX + dx) / width);
                     });
