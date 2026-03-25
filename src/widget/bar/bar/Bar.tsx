@@ -1,7 +1,7 @@
 import app from "ags/gtk4/app";
 import { Astal } from "ags/gtk4";
 import { onCleanup } from "ags";
-import { AudioOutput, Workspaces, Battery, Clock, Mpris, Tray, Wireless } from "./_components";
+import { Volume, Workspaces, Battery, Clock, Media, Tray, Wireless } from "./_components";
 import {
   createBarWindowBinds,
   computeBarRect,
@@ -119,7 +119,7 @@ export default function Bar({
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
-          <AudioOutput />
+          <Volume />
           <Workspaces verticalState={isVertical} />
         </box>
       </centerbox>

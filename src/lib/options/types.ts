@@ -223,3 +223,38 @@ export type GtkRevealerTransitionName =
 export type RevealTransitionWithAuto = "AUTO" | GtkRevealerTransitionName;
 
 export type OsdOrientation = "vertical" | "horizontal";
+
+export type BarModule =
+    | 'battery'
+    | 'workspaces'
+    | 'media'
+    | 'volume'
+    | 'network'
+    | 'clock'
+    | 'systray'
+//  | 'windowtitle'
+//  | 'clipboard'
+//  | 'ram'
+//  | 'cpu'
+//  | 'cputemp'
+//  | 'storage'
+//  | 'kbinput'
+//  | 'power'
+//  | 'quicktheme'
+//  | 'hypridle'
+//  | 'hyprsunset'
+//  | 'notifications'
+//  | 'updates'
+//  | 'dashboard'
+//  | 'netstat'
+//  | 'bluetooth'
+
+export type BarLayout = {
+    left: BarModule[];
+    middle: BarModule[];
+    right: BarModule[];
+    extends?: string;
+};
+export type BarLayouts = {
+    [key: string]: BarLayout;
+};

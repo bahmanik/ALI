@@ -3,7 +3,7 @@ import AstalApps from "gi://AstalApps"
 import { Gtk } from "ags/gtk4"
 import { For, createBinding } from "ags"
 
-export default function Mpris() {
+export default function Media() {
   const mpris = AstalMpris.get_default()
   const apps = new AstalApps.Apps()
   const players = createBinding(mpris, "players")

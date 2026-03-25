@@ -274,7 +274,7 @@ export function VolumeModule({ showArrow = false }: { showArrow?: boolean }) {
   );
 }
 
-export default function AudioOutput() {
+export default function Volume() {
   const { defaultSpeaker: speaker } = AstalWp.get_default()!
 
   return (
