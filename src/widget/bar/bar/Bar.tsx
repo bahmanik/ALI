@@ -1,7 +1,17 @@
 import app from "ags/gtk4/app";
 import { Astal } from "ags/gtk4";
 import { onCleanup } from "ags";
-import { Volume, Workspaces, Battery, Clock, Media, Tray, Wireless } from "./_components";
+
+import {
+  Volume,
+  Windowtitle,
+  Workspaces,
+  Battery,
+  Clock,
+  Media,
+  Tray,
+  Wireless
+} from "./_components";
 import {
   createBarWindowBinds,
   computeBarRect,
@@ -11,6 +21,7 @@ import {
   subscribeOpt,
   watchWidgetSize,
 } from "./helpers";
+
 import type { Gdk, Gtk } from "ags/gtk4";
 import type { BarLocation } from "src/lib/options/types";
 import type { BarOptionGroup as BarOptionGroupT, BarKind } from "./helpers";
@@ -114,13 +125,21 @@ export default function Bar({
         </box>
 
         <box
+          $type="center"
+          orientation={layout.orientation}
+          halign={layout.start.halign}
+          valign={layout.start.valign}
+        >
+          <Windowtitle />
+        </box>
+
+        <box
           $type="end"
           orientation={layout.orientation}
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
           <Volume />
-          <Workspaces verticalState={isVertical} />
         </box>
       </centerbox>
     </window>

@@ -7,7 +7,7 @@ import type { SecondaryBarOptions } from "./type";
 const secondaryBar = stem((opt): SecondaryBarOptions =>
   graft(
     {
-      enable: opt(true),
+      enable: opt(false),
       position: opt<BarLocation>("left", { scss: true, hyprland: true }),
       margin: opt<number[]>([0, 0, 0, 0]),
       /** Visual styling options (exported to SCSS). Inspired by HyprPanel's bar theming knobs. */
