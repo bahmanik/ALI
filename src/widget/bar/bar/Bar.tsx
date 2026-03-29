@@ -26,6 +26,7 @@ import type { Gdk, Gtk } from "ags/gtk4";
 import type { BarLocation } from "src/lib/options/types";
 import type { BarOptionGroup as BarOptionGroupT, BarKind } from "./helpers";
 import type { Opt } from "src/lib/options";
+import Cpu from "./_components/cpu";
 
 type BarOptionGroup = BarOptionGroupT & {
   position: { get(): BarLocation; subscribe(cb: () => void): any; as?: any };
@@ -122,6 +123,7 @@ export default function Bar({
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
+          <Cpu />
         </box>
 
         <box
