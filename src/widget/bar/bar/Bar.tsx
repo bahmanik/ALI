@@ -14,6 +14,8 @@ import {
   Clipboard,
   Cpu,
   CpuTemp,
+  Ram,
+  KbLayout,
 } from "./_components";
 import {
   createBarWindowBinds,
@@ -125,7 +127,7 @@ export default function Bar({
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
-          <CpuTemp />
+          <Ram />
         </box>
 
         <box
@@ -134,8 +136,7 @@ export default function Bar({
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
-          <Clipboard />
-          <Windowtitle />
+          <KbLayout />
         </box>
 
         <box
