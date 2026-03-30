@@ -6,3 +6,4 @@ export { default as Volume } from "./volume";
 export { default as Battery } from "./battery";
 export { default as Workspaces } from "./workspaces";
 export { default as Windowtitle } from "./windowtitle";
+export { default as Clipboard } from "./clipboard";

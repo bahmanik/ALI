@@ -10,7 +10,8 @@ import {
   Clock,
   Media,
   Tray,
-  Wireless
+  Wireless,
+  Clipboard
 } from "./_components";
 import {
   createBarWindowBinds,
@@ -132,6 +133,7 @@ export default function Bar({
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
+          <Clipboard />
           <Windowtitle />
         </box>
 
