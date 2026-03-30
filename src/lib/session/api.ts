@@ -8,7 +8,6 @@ import GLib from "gi://GLib?version=2.0";
 
 export const USER = GLib.get_user_name();
 
-// NOTE: keep legacy on-disk layout
 export const CONFIG_DIR = `${GLib.get_user_config_dir()}/ALI`;
 export const CONFIG_FILE = `${CONFIG_DIR}/config.json`;
 

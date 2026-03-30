@@ -5,7 +5,6 @@ export const Cpu = () => {
   const cpu = new CpuObserver
   const labelBinding = createPoll(0, 1000, () => cpu.getCpuUsage())
 
-
   return <box>
     <label label={labelBinding(String)} />
   </box>;
