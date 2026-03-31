@@ -16,6 +16,7 @@ import {
   CpuTemp,
   Ram,
   KbLayout,
+  Storage,
 } from "./_components";
 import {
   createBarWindowBinds,
@@ -136,7 +137,7 @@ export default function Bar({
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
-          <KbLayout />
+          <Storage />
         </box>
 
         <box

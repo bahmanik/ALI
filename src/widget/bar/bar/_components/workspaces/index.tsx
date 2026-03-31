@@ -2,10 +2,7 @@ import AstalHyprland from "gi://AstalHyprland"
 import { createBinding, createEffect, createState } from "ags"
 import { Gtk } from "ags/gtk4"
 import type { Opt } from "src/lib/options"
-
-export function range(max: number) {
-  return Array.from({ length: max + 1 }, (_, i) => i)
-}
+import { range } from "src/lib/array"
 
 type WsButtonProps = JSX.IntrinsicElements["button"] & {
   ws: AstalHyprland.Workspace

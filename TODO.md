@@ -6,7 +6,7 @@ BUGS
 there is a bug that when the setting returns to default the opts gets saved config.js
 for example if the bar.position changes to right and then changes back to default(top) the bar.position top stays on config
 
-in clipboard module it doesnt show pictures
+in the clipboard module the pictures arent shown currectly
 
 FEATURES
 on right click on apps in applauncher it should pin it to launcher favorites

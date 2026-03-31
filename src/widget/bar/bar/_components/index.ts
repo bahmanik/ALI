@@ -11,3 +11,4 @@ export { default as Cpu } from "./cpu";
 export { default as CpuTemp } from "./cpuTemp";
 export { default as Ram } from "./ram";
 export { default as KbLayout } from "./kbLayout";
+export { default as Storage } from "./storage";
