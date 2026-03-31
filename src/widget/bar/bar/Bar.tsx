@@ -17,6 +17,7 @@ import {
   Ram,
   KbLayout,
   Storage,
+  Hyprsunset
 } from "./_components";
 import {
   createBarWindowBinds,
@@ -137,7 +138,7 @@ export default function Bar({
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
-          <Storage />
+          <Hyprsunset />
         </box>
 
         <box

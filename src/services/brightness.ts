@@ -84,7 +84,7 @@ export default class BrightnessService extends GObject.Object {
       return
     }
 
-    // ✅ resolve at runtime, not module scope
+    // resolve at runtime, not module scope
     const { heartbeatPoll, heartbeatPollMs } = options.osd.brightness
     this.#hb.enabled = Boolean(heartbeatPoll.get())
     const initHbMs = Number(heartbeatPollMs.get())
