@@ -10,3 +10,5 @@ python-lxml python-cssselect python-requests
     at-spi2-core
 yay
 playwright
+hypridle
+hyprsunset

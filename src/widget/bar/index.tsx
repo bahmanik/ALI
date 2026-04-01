@@ -4,7 +4,6 @@ import Corner from "./corner/Corner";
 import { With } from "ags"
 import type { Gdk } from "ags/gtk4"
 
-
 export function PrimaryBar(monitor: Gdk.Monitor) {
     return (
         <Bar

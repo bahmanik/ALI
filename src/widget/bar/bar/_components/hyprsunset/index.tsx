@@ -1,5 +1,6 @@
-import { checkSunsetStatus, isActive, toggleSunset } from './helpers';
+import HyprsunsetService from 'src/services/hyprsunset';
 import { hyprsunsetOptions } from './options';
+import { createState } from 'gnim';
 
 const {
   label,
@@ -10,11 +11,16 @@ const {
   temperature,
 } = hyprsunsetOptions
 
-checkSunsetStatus();
-toggleSunset(true)
-
 const Hyprsunset = () => {
-  return <box></box>
+  const sunset = new HyprsunsetService()
+  const [enable, setEnable] = createState(false)
+  const labelBinding = enable((c) => c ? "on" : "off")
+  return <button
+    onClicked={() => {
+      setEnable(c => !c)
+      enable.peek() ? sunset.enable(temperature) : sunset.disable()
+    }}
+  ><label label={labelBinding} /></button>
 }
 
 export default Hyprsunset

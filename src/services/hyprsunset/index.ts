@@ -1,1 +1,105 @@
-class HyprsunsetService { }
+import { exec, execAsync } from "ags/process";
+import GObject, { register, getter, setter } from "ags/gobject";
+import GLib from "gi://GLib";
+import { SystemUtilities } from "src/lib/system/SystemUtilities";
+
+// hyprsunset must exist in PATH
+const available = SystemUtilities.checkDependencies("hyprsunset");
+
+function isRunning() {
+  try {
+    const out = exec("pidof hyprsunset")?.trim();
+    return out.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+@register({ GTypeName: "Hyprsunset" })
+export default class HyprsunsetService extends GObject.Object {
+  static instance: HyprsunsetService;
+  static get_default() {
+    if (!this.instance) this.instance = new HyprsunsetService();
+    return this.instance;
+  }
+
+  #available = available;
+  #enabled = false;
+  #temperature: number = 6000;  // default fallback
+
+  @getter(Boolean)
+  get available() {
+    return this.#available;
+  }
+
+  @getter(Boolean)
+  get enabled() {
+    return this.#enabled;
+  }
+
+  @getter(Number)
+  get temperature() {
+    return this.#temperature;
+  }
+
+  @setter(Boolean)
+  set enabled(v) {
+    if (!this.#available) return;
+
+    if (v) {
+      this.enable();
+    } else {
+      this.disable();
+    }
+  }
+
+  @setter(Number)
+  set temperature(t) {
+    if (!this.#available) return;
+
+    if (t < 800) t = 800;
+    if (t > 6500) t = 6500;
+
+    this.#temperature = t;
+    this.notify("temperature");
+
+    if (this.#enabled) {
+      SystemUtilities.bash(`hyprsunset -t ${t}`);
+    }
+  }
+
+  constructor() {
+    super();
+
+    // Initial state sync
+    this.#enabled = isRunning();
+
+    // Poll hyprsunset status every 2s
+    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 2000, () => {
+      const running = isRunning();
+      if (running !== this.#enabled) {
+        this.#enabled = running;
+        this.notify("enabled");
+      }
+      return GLib.SOURCE_CONTINUE;
+    });
+  }
+
+  enable(temp: number = this.#temperature) {
+    if (!this.#available) return;
+
+    execAsync(`hyprsunset -t ${temp}`).then(() => {
+      this.#enabled = true;
+      this.notify("enabled");
+    }).catch((err) => { console.log(err) })
+  }
+
+  disable() {
+    if (!this.#available) return;
+
+    execAsync("pkill hyprsunset").then(() => {
+      this.#enabled = false;
+      this.notify("enabled");
+    })
+  }
+}

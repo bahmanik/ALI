@@ -1,5 +1,5 @@
 export const hyprsunsetOptions = {
-  temperature: '6000k',
+  temperature: 3000,
   label: true,
   onIcon: '󱩌',
   offIcon: '󰛨',
