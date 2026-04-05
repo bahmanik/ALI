@@ -55,16 +55,12 @@ export default class HyprsunsetService extends GObject.Object {
 
   @setter(Number)
   set temperature(t) {
-    if (!this.#available) return;
-
-    if (t < 800) t = 800;
-    if (t > 6500) t = 6500;
-
     this.#temperature = t;
     this.notify("temperature");
 
     if (this.#enabled) {
-      SystemUtilities.bash(`hyprsunset -t ${t}`);
+      console.log('hyprsunset is enable')
+      SystemUtilities.bash(`hyprctl hyprsunset temperature ${t}`).then(e => { console.log(e) }).catch(e => { console.warn(e) });
     }
   }
 
