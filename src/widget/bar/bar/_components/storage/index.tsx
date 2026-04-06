@@ -15,15 +15,17 @@ const {
 } = storageOptions
 
 
-const Storage = () => {
+function Storage() {
   const storage = new StorageService({})
   const sizeUnits = units !== 'auto' ? units : undefined;
 
   const labelBinding = createPoll('', 1000, () => renderResourceLabel(labelType, storage.getDriveUsage('/'), round, sizeUnits))
 
-  return <box>
-    <label label={labelBinding(String)} />
-  </box>;
+  return (
+    <box>
+      <label label={labelBinding(String)} />
+    </box>
+  )
 }
 
 export default Storage

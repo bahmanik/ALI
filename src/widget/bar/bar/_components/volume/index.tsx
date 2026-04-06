@@ -1,65 +1,14 @@
 import AstalWp from "gi://AstalWp"
-import { createBinding, createComputed, For } from "ags"
-import { Gtk } from "ags/gtk4";
 import Pango from "gi://Pango?version=1.0";
 import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
 import icons from "src/lib/icons/icons";
 import app from "ags/gtk4/app";
+import { createBinding, For } from "ags"
+import { Gtk } from "ags/gtk4";
+import { MicrophoneIcon, SpeackerIcon } from "./_components";
 
 const wp = AstalWp.get_default()!;
-
-const speaker = wp?.audio.defaultSpeaker!;
-const microphone = wp?.audio.defaultMicrophone!;
-
-const speakerVar = createComputed([
-  createBinding(speaker, "description"),
-  createBinding(speaker, "volume"),
-  createBinding(speaker, "mute"),
-]);
-
-const micVar = createComputed([
-  createBinding(microphone, "description"),
-  createBinding(microphone, "volume"),
-  createBinding(microphone, "mute"),
-]);
-
-export function getVolumeIcon(speaker?: AstalWp.Endpoint) {
-  let volume = speaker?.volume;
-  let muted = speaker?.mute;
-  let speakerIcon = speaker?.icon;
-  if (volume == null || speakerIcon == null) return "";
-
-  if (volume === 0 || muted) {
-    return icons.audio.volume.muted;
-  } else if (volume < 0.33) {
-    return icons.audio.volume.low;
-  } else if (volume < 0.66) {
-    return icons.audio.volume.medium;
-  } else {
-    return icons.audio.volume.high;
-  }
-}
-
-export function getMicIcon(mic?: AstalWp.Endpoint) {
-  let microphone = mic?.volume;
-  let muted = mic?.mute;
-  let speakerIcon = mic?.icon;
-  if (microphone == null || speakerIcon == null) return "";
-
-  if (microphone === 0 || muted) {
-    return icons.audio.mic.muted;
-  } else if (microphone < 0.33) {
-    return icons.audio.mic.low;
-  } else if (microphone < 0.66) {
-    return icons.audio.mic.medium;
-  } else {
-    return icons.audio.mic.high;
-  }
-}
-
-export const VolumeIcon = speakerVar(() => getVolumeIcon(speaker));
-export const MicIcon = micVar(() => getMicIcon(microphone));
 
 function StreamsList() {
   const audio = wp.audio!;
@@ -177,12 +126,7 @@ function DefaultOutput() {
         spacing={10}
         valign={Gtk.Align.CENTER}
       >
-        <image
-          iconName={VolumeIcon}
-          pixelSize={20}
-          valign={Gtk.Align.CENTER}
-          halign={Gtk.Align.START}
-        />
+        <SpeackerIcon />
         <slider
           onChangeValue={({ value }) => defaultOutput.set_volume(value)}
           hexpand
@@ -252,12 +196,7 @@ function DefaultMicrophone() {
         spacing={10}
         valign={Gtk.Align.CENTER}
       >
-        <image
-          iconName={MicIcon}
-          pixelSize={20}
-          valign={Gtk.Align.CENTER}
-          halign={Gtk.Align.START}
-        />
+        <MicrophoneIcon />
         <slider
           onChangeValue={({ value }) =>
             defaultMicrophone.set_volume(value)
@@ -301,21 +240,6 @@ export function VolumeModule({ showArrow = false }: { showArrow?: boolean }) {
   );
 }
 
-export default function Volume() {
-  const { defaultSpeaker: speaker } = AstalWp.get_default()!
-
-  return (
-    <menubutton>
-      <image iconName={createBinding(speaker, "volumeIcon")} />
-      <popover>
-        <box>
-          <VolumeModule />
-        </box>
-      </popover>
-    </menubutton>
-  )
-}
-
 function Header({ showArrow = false }: { showArrow?: boolean }) {
   return (
     <box class={"header"} spacing={10}>
@@ -335,4 +259,19 @@ function Header({ showArrow = false }: { showArrow?: boolean }) {
       <box hexpand />
     </box>
   );
+}
+
+export default function Volume() {
+  const { defaultSpeaker: speaker } = AstalWp.get_default()!
+
+  return (
+    <menubutton>
+      <image iconName={createBinding(speaker, "volumeIcon")} />
+      <popover>
+        <box>
+          <VolumeModule />
+        </box>
+      </popover>
+    </menubutton>
+  )
 }

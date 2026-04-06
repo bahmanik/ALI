@@ -1,6 +1,7 @@
 import Gio from "gi://Gio?version=2.0";
-import { Gtk } from "ags/gtk4";
 import Cliphist from "src/services/cliphist";
+import { Gtk } from "ags/gtk4";
+
 const clipboard = Cliphist.get_default();
 
 const config = {

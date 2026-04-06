@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 import type { Opt } from "src/lib/options"
 
-export default function Clock({ verticalState }: { verticalState: Opt<boolean> }) {
+function Clock({ verticalState }: { verticalState: Opt<boolean> }) {
   const fmt = verticalState.as(v => (v ? "%H\n%M\n%S" : "%H:%M:%S"))
 
   const time = createPoll("", 1000, () => {
@@ -20,3 +20,5 @@ export default function Clock({ verticalState }: { verticalState: Opt<boolean> }
     </button>
   )
 }
+
+export default Clock

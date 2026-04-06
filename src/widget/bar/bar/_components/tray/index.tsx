@@ -2,7 +2,7 @@ import AstalTray from "gi://AstalTray"
 import { For, createBinding } from "ags"
 import type { Gtk } from "ags/gtk4"
 
-export default function Tray() {
+function Tray() {
   const tray = AstalTray.get_default()
   const items = createBinding(tray, "items")
 
@@ -26,3 +26,5 @@ export default function Tray() {
     </box>
   )
 }
+
+export default Tray

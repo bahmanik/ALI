@@ -1,11 +1,9 @@
 import app from "ags/gtk4/app";
-import { Gtk } from "ags/gtk4";
-import { createComputed, createState, For, onCleanup } from "ags";
-import { ClipText } from "./text";
-import { ClipImage } from "./image";
-import { ClipColor } from "./color";
 import icons from "src/lib/icons/icons";
 import Cliphist from "src/services/cliphist";
+import { Gtk } from "ags/gtk4";
+import { createComputed, createState, For, onCleanup } from "ags";
+import { ClipImage, ClipColor, ClipText } from "./_components";
 import { options } from "src/services/cliphist/options";
 import { isColor } from "src/lib/valisation/colors";
 
@@ -140,7 +138,7 @@ function NotFound() {
   );
 }
 
-export default function Clipboard() {
+function Clipboard() {
   return (
     <menubutton visible={true} hexpand={false} halign={Gtk.Align.CENTER}>
       <box>
@@ -163,3 +161,5 @@ export default function Clipboard() {
     </menubutton>
   );
 }
+
+export default Clipboard

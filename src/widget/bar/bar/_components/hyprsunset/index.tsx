@@ -12,7 +12,7 @@ const {
   temperature,
 } = hyprsunsetOptions
 
-const Hyprsunset = () => {
+function Hyprsunset() {
   const sunset = new HyprsunsetService()
   const [enable, setEnable] = createState(false)
   const labelBinding = enable((c) => c ? "on" : "off")

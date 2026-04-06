@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { For, With, createBinding } from "ags"
 import { execAsync } from "ags/process"
 
-export default function Wireless() {
+function Wireless() {
   const network = AstalNetwork.get_default()
   const wifi = createBinding(network, "wifi")
 
@@ -54,3 +54,5 @@ export default function Wireless() {
     </box>
   )
 }
+
+export default Wireless

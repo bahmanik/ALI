@@ -18,21 +18,22 @@ function getLayout(): string {
   }
 }
 
-const KbLayout = () => {
+function KbLayout() {
   const [layoutName, setLayoutName] = createState<string>(getLayout())
-  return <box
-    $={() => {
-      hyprland.connect("keyboard-layout",
-        (_, __, kblayout) => {
-          console.log("keyboard name: ", kblayout)
-          setLayoutName(kblayout)
-        },
-      )
-    }}
-  >
-    <label label={layoutName} />
-  </box>;
-
+  return (
+    <box
+      $={() => {
+        hyprland.connect("keyboard-layout",
+          (_, __, kblayout) => {
+            console.log("keyboard name: ", kblayout)
+            setLayoutName(kblayout)
+          },
+        )
+      }}
+    >
+      <label label={layoutName} />
+    </box>
+  )
 }
 
 export default KbLayout

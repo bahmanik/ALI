@@ -1,6 +1,7 @@
 import Pango from "gi://Pango?version=1.0";
-import { Gtk } from "ags/gtk4";
 import Cliphist from "src/services/cliphist";
+import { Gtk } from "ags/gtk4";
+
 const clipboard = Cliphist.get_default();
 
 export function ClipText({ id, content }: { id: string; content: string }) {

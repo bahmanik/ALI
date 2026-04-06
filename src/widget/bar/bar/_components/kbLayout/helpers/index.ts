@@ -1,5 +1,6 @@
-import { LayoutKeys, layoutMap, LayoutValues } from './layouts';
-import { KbLabelType, HyprctlDeviceLayout, HyprctlKeyboard } from './types';
+import { layoutMap } from './layouts'
+import type { LayoutKeys, LayoutValues } from './layouts';
+import type { KbLabelType, HyprctlDeviceLayout, HyprctlKeyboard } from './types';
 
 /**
  * Retrieves the keyboard layout from a given JSON string and format.

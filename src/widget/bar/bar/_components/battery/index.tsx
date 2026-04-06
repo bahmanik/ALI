@@ -4,7 +4,7 @@ import { Gtk } from "ags/gtk4"
 import { createBinding } from "ags"
 import type { Opt } from "src/lib/options"
 
-export default function Battery({ verticalState }: { verticalState: Opt<boolean> }) {
+function Battery({ verticalState }: { verticalState: Opt<boolean> }) {
   const battery = AstalBattery.get_default()
   const powerprofiles = AstalPowerProfiles.get_default()
 
@@ -41,3 +41,5 @@ export default function Battery({ verticalState }: { verticalState: Opt<boolean>
     </menubutton>
   )
 }
+
+export default Battery

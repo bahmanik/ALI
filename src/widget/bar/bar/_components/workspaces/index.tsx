@@ -1,8 +1,8 @@
 import AstalHyprland from "gi://AstalHyprland"
 import { createBinding, createEffect, createState } from "ags"
 import { Gtk } from "ags/gtk4"
-import type { Opt } from "src/lib/options"
 import { range } from "src/lib/array"
+import type { Opt } from "src/lib/options"
 
 type WsButtonProps = JSX.IntrinsicElements["button"] & {
   ws: AstalHyprland.Workspace
@@ -57,7 +57,7 @@ function WorkspaceButton({ ws, ...props }: WsButtonProps) {
   )
 }
 
-export default function Workspaces({ verticalState }: { verticalState: Opt<boolean> }) {
+function Workspaces({ verticalState }: { verticalState: Opt<boolean> }) {
   return (
     <box
       orientation={
@@ -71,3 +71,5 @@ export default function Workspaces({ verticalState }: { verticalState: Opt<boole
     </box>
   )
 }
+
+export default Workspaces
