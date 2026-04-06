@@ -5,15 +5,23 @@ import Pango from "gi://Pango?version=1.0";
 import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
 import icons from "src/lib/icons/icons";
+import app from "ags/gtk4/app";
 
 const wp = AstalWp.get_default()!;
 
 const speaker = wp?.audio.defaultSpeaker!;
+const microphone = wp?.audio.defaultMicrophone!;
 
 const speakerVar = createComputed([
   createBinding(speaker, "description"),
   createBinding(speaker, "volume"),
   createBinding(speaker, "mute"),
+]);
+
+const micVar = createComputed([
+  createBinding(microphone, "description"),
+  createBinding(microphone, "volume"),
+  createBinding(microphone, "mute"),
 ]);
 
 export function getVolumeIcon(speaker?: AstalWp.Endpoint) {
@@ -33,7 +41,25 @@ export function getVolumeIcon(speaker?: AstalWp.Endpoint) {
   }
 }
 
+export function getMicIcon(mic?: AstalWp.Endpoint) {
+  let microphone = mic?.volume;
+  let muted = mic?.mute;
+  let speakerIcon = mic?.icon;
+  if (microphone == null || speakerIcon == null) return "";
+
+  if (microphone === 0 || muted) {
+    return icons.audio.mic.muted;
+  } else if (microphone < 0.33) {
+    return icons.audio.mic.low;
+  } else if (microphone < 0.66) {
+    return icons.audio.mic.medium;
+  } else {
+    return icons.audio.mic.high;
+  }
+}
+
 export const VolumeIcon = speakerVar(() => getVolumeIcon(speaker));
+export const MicIcon = micVar(() => getMicIcon(microphone));
 
 function StreamsList() {
   const audio = wp.audio!;
@@ -119,6 +145,7 @@ function DefaultOutput() {
               audio.speakers[speakerIndex].set_is_default(true);
             }
           });
+          app.add_action(action);
 
           audio.speakers.forEach((speaker, index) => {
             menu.append(
@@ -225,12 +252,12 @@ function DefaultMicrophone() {
         spacing={10}
         valign={Gtk.Align.CENTER}
       >
-        { /* <image
-          iconName={icons.microphone.default}
+        <image
+          iconName={MicIcon}
           pixelSize={20}
           valign={Gtk.Align.CENTER}
           halign={Gtk.Align.START}
-        /> */ }
+        />
         <slider
           onChangeValue={({ value }) =>
             defaultMicrophone.set_volume(value)
@@ -297,7 +324,7 @@ function Header({ showArrow = false }: { showArrow?: boolean }) {
           cssClasses={["qs-header-button", "qs-page-prev"]}
           focusOnClick={false}
         >
-          { /* <image iconName={icons.ui.arrow.down} pixelSize={20} /> */}
+          <image iconName={icons.ui.arrow.down} pixelSize={20} />
         </button>
       )}
       <label
