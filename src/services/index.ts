@@ -3,6 +3,7 @@ import CountdownService from "./countdown";
 import { MatugenPaletteService } from "./matugenPalette";
 import { WallpaperService } from "./wallpaper/WallpaperService";
 import { getNetwork } from "./network";
+import warnOnLowBattery from "../lib/observers/batteryWarning";
 
 /**
  * Composition root: single place that wires options -> runtimes.
@@ -40,4 +41,7 @@ export async function bootServices(): Promise<void> {
 
   // Countdown: global actions only. Heavy watchers/timers are widget-owned.
   await services.countdown.ensureStartedMinimal();
+
+  // this is a simple function
+  warnOnLowBattery()
 }
