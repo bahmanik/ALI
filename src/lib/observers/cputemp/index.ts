@@ -1,5 +1,5 @@
 import GLib from "gi://GLib?version=2.0";
-import { CpuTempSensorDiscovery } from "./sensorDiscovery";
+import { CpuTempSensorDiscovery } from "./helpers/sensorDiscovery";
 
 export class CpuTempObserver {
   private _resolvedSensorPath?: string;
