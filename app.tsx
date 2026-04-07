@@ -11,6 +11,7 @@ import { bootSession } from "src/lib/session";
 import { bootOptions } from "src/lib/options/runtime";
 import { bootNotif } from "src/lib/notiofication";
 import { boot } from "src/boot";
+import PowerWindow from "src/widget/power";
 
 function mountUI() {
   const monitors = app.get_monitors();
@@ -27,6 +28,7 @@ function mountUI() {
     KeyboardBrightnessOsd,
     CalendarWindow,
     CountdownWindow,
+    PowerWindow,
   ] as const;
 
   for (const mk of perMonitor) monitors.map(mk);
