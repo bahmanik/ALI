@@ -1,0 +1,186 @@
+export type Pattern = { path: string; size: number };
+
+export type TransitionType =
+    | "none"
+    | "simple"
+    | "fade"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "wipe"
+    | "wave"
+    | "grow"
+    | "center"
+    | "any"
+    | "outer"
+    | "random";
+
+export type TransitionPos =
+    | "cursor"
+    | "center"
+    | "top"
+    | "bottom"
+    | "left"
+    | "right"
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right";
+
+export type BarLocation = "top" | "bottom" | "left" | "right";
+export type BarBorderLocation =
+    | "none"
+    | "top"
+    | "bottom"
+    | "left"
+    | "right"
+    | "horizontal"
+    | "vertical"
+    | "full";
+
+export type ImageTechnique = "none" | "negative" | "grayscale" | "sepia";
+export type HexColor = `#${string}`;
+export type CornerFill = "image" | "solid" | "pattern";
+
+export type weekDays = "Sun" | "Mon" | "Tues" | "Wed" | "thurs" | "Fri" | "Sat";
+
+export type CalendarBorderLocation = "none" | "full";
+
+export type calendar =
+    | "Gregorian"
+    | "Jalali"
+    | "Hijri"
+    | "Hebrew"
+    | "Buddhist"
+    | "Japanese"
+    | "Indian"
+    | "ROC"
+    | "Chinese";
+
+export type LauncherBorderLocation = "none" | "full";
+
+export type ThemeMode = "dark" | "light";
+
+export type MatugenType =
+    | "scheme-tonal-spot"
+    | "scheme-neutral"
+    | "scheme-vibrant"
+    | "scheme-expressive"
+    | "scheme-content"
+    | "scheme-fidelity";
+
+export type MatugenResizeFilter =
+    | "nearest"
+    | "triangle"
+    | "catmull-rom"
+    | "gaussian"
+    | "lanczos3"
+    | "none";
+
+// -----------------------------------------------------------------------------
+// Shared layout + transitions (GTK4 widgets)
+// -----------------------------------------------------------------------------
+
+/**
+ * Shared layout names used by popup-like widgets (Launcher/OSD).
+ *
+ * We accept both HyprPanel-style "top-left" and internal underscore variants
+ * ("top_left") to avoid duplicating enums across subsystems.
+ */
+export type AnchorLayout =
+    | "top-left"
+    | "top-center"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-center"
+    | "bottom-right"
+    | "top"
+    | "bottom"
+    | "left"
+    | "right"
+    | "center"
+    | "full"
+    | "top_left"
+    | "top_center"
+    | "top_right"
+    | "bottom_left"
+    | "bottom_center"
+    | "bottom_right";
+
+/** Names mapped to Gtk.RevealerTransitionType (GTK4). */
+export type GtkRevealerTransitionName =
+    | "NONE"
+    | "CROSSFADE"
+    | "SLIDE_RIGHT"
+    | "SLIDE_LEFT"
+    | "SLIDE_UP"
+    | "SLIDE_DOWN"
+    | "SWING_RIGHT"
+    | "SWING_LEFT"
+    | "SWING_UP"
+    | "SWING_DOWN";
+
+export type StackTransition =
+    | "NONE"
+    | "CROSSFADE"
+    | "SLIDE_RIGHT"
+    | "SLIDE_LEFT"
+    | "SLIDE_UP"
+    | "SLIDE_DOWN"
+    | "SLIDE_LEFT_RIGHT"
+    | "SLIDE_UP_DOWN"
+    | "OVER_UP"
+    | "OVER_DOWN"
+    | "OVER_LEFT"
+    | "OVER_RIGHT"
+    | "UNDER_UP"
+    | "UNDER_DOWN"
+    | "UNDER_LEFT"
+    | "UNDER_RIGHT"
+    | "OVER_UP_DOWN"
+    | "OVER_DOWN_UP"
+    | "OVER_LEFT_RIGHT"
+    | "OVER_RIGHT_LEFT"
+    | "ROTATE_LEFT"
+    | "ROTATE_RIGHT"
+    | "ROTATE_LEFT_RIGH"
+
+export type RevealTransitionWithAuto = "AUTO" | GtkRevealerTransitionName;
+
+export type OsdOrientation = "vertical" | "horizontal";
+
+export type BarModule =
+    | 'battery'
+    | 'workspaces'
+    | 'media'
+    | 'volume'
+    | 'network'
+    | 'clock'
+    | 'systray'
+    | 'windowtitle'
+    | 'clipboard'
+    | 'ram'
+    | 'cpu'
+    | 'cputemp'
+    | 'kbinput'
+//  | 'storage'
+//  | 'hypridle'
+//  | 'quicktheme'
+//  | 'power'
+//  | 'hyprsunset'
+//  | 'notifications'
+//  | 'updates'
+//  | 'dashboard'
+//  | 'netstat'
+//  | 'bluetooth'
+
+export type BarLayout = {
+    left: BarModule[];
+    middle: BarModule[];
+    right: BarModule[];
+    extends?: string;
+};
+export type BarLayouts = {
+    [key: string]: BarLayout;
+};

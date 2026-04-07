@@ -4,7 +4,7 @@ import type {
   GtkRevealerTransitionName,
   HexColor,
   OsdOrientation,
-} from "src/lib/options/types";
+} from "src/configuration/types";
 import type { OsdBrightnessOptions } from "./brightness/type";
 
 export interface OsdOptions {

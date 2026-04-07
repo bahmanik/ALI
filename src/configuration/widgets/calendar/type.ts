@@ -1,5 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { AnchorLayout, calendar, RevealTransitionWithAuto, weekDays } from "src/lib/options/types";
+import type { AnchorLayout, calendar, RevealTransitionWithAuto, weekDays } from "src/configuration/types";
 
 export interface CalendarOptions {
   calendar: Opt<calendar>;

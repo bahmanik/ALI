@@ -1,5 +1,5 @@
+import type { CornerFill, ImageTechnique, Pattern } from "src/configuration/types";
 import type { Opt } from "src/lib/options";
-import type { CornerFill, ImageTechnique, Pattern } from "src/lib/options/types";
 
 export interface BarCornerOptions {
   enable: Opt<boolean>;

@@ -1,15 +1,16 @@
 import { startOnce } from "src/services/startOnce";
 import type { ConfigManager } from "./configManager";
 import type { OptionRegistry } from "./optionRegistry";
+import { OptionsObject } from "./types";
 
 let _configManager: ConfigManager | null = null;
-let _registry: OptionRegistry<any> | null = null;
+let _registry: OptionRegistry<OptionsObject> | null = null;
 
 /**
  * Called by mkOptions() to expose runtime state to the boot layer.
  * No IO, no monitoring.
  */
-export function registerOptionsRuntime(registry: OptionRegistry<any>, configManager: ConfigManager): void {
+export function registerOptionsRuntime(registry: OptionRegistry<OptionsObject>, configManager: ConfigManager): void {
   _registry = registry;
   _configManager = configManager;
 }

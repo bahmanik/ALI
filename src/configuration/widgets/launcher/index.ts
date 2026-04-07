@@ -1,10 +1,13 @@
-import { stem } from "src/configuration/helper";
+import { opt } from "src/lib/options";
 import type { LauncherOptions } from "./type";
-import type { HexColor, LauncherBorderLocation, RevealTransitionWithAuto } from "src/lib/options/types";
+import type { GtkRevealerTransitionName, HexColor, LauncherBorderLocation, RevealTransitionWithAuto } from "src/configuration/types";
 
-const launcher = stem((opt): LauncherOptions => ({
+const launcher: LauncherOptions = {
   localScale: opt(true),
-  scale: opt(12, { scss: true, hyprland: true }),
+  scale: opt(12,
+    {
+      scss: true, hyprland: true
+    }),
   revealTransition: opt<RevealTransitionWithAuto>("SWING_DOWN"),
   transitionDuration: opt(0.4),
   maxItems: opt(5),
@@ -78,7 +81,7 @@ const launcher = stem((opt): LauncherOptions => ({
     hoverOpacity: opt(55, { scss: true }),
   },
 
-  animateResults: opt("CROSSFADE"),
+  animateResults: opt<GtkRevealerTransitionName>("CROSSFADE"),
   animateDuration: opt(0.4),
   animInDelayMs: opt(0),
 
@@ -90,7 +93,7 @@ const launcher = stem((opt): LauncherOptions => ({
     "Hiddify",
     "Dolphin",
   ]),
-}));
+};
 
 declare module "src/lib/options/root" {
   interface OptionsRoot {

@@ -1,10 +1,10 @@
+import type { GtkRevealerTransitionName, HexColor, LauncherBorderLocation, RevealTransitionWithAuto } from "src/configuration/types";
 import type { Opt } from "src/lib/options";
-import type { GtkRevealerTransitionName, HexColor } from "src/lib/options/types";
 
 export interface LauncherOptions {
   localScale: Opt<boolean>;
   scale: Opt<number>;
-  revealTransition: Opt<GtkRevealerTransitionName>;
+  revealTransition: Opt<RevealTransitionWithAuto>;
   transitionDuration: Opt<number>;
   maxItems: Opt<number>;
 
@@ -21,7 +21,7 @@ export interface LauncherOptions {
     padding: Opt<number>;
 
     borderEnable: Opt<boolean>;
-    borderLocation: Opt<"none" | "full">;
+    borderLocation: Opt<LauncherBorderLocation>;
     borderWidth: Opt<number>;
     borderColor: Opt<HexColor>;
 

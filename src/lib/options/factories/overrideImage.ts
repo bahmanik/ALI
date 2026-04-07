@@ -1,28 +1,28 @@
-import { dep } from "..";
-import type { Opt, OptFactory } from "..";
+import { opt } from "..";
 import type { ImageTechnique, OptExports } from "../types";
 
-export interface OverrideImage<_Root, _Self> {
-    useLocalOuterImage: Opt<boolean>;
-    localOuterImage: Opt<string>;
+const at = (o: any, path: string) =>
+    path.split('.').reduce((acc: any, key: string) => acc?.[key], o);
 
-    enableTechnique: Opt<boolean>;
-    technique: Opt<ImageTechnique>;
-
-    outerImage: Opt<string>;
-}
-
-export function overrideImage<Root, Self>(
-    opt: OptFactory<Root, Self>,
-    params: {
-        defaultUseLocal?: boolean;
-        defaultLocal?: string;
-        defaultEnableTechnique?: boolean;
-        defaultTechnique?: ImageTechnique;
-        exports?: { outerImage?: OptExports };
-    }
-): OverrideImage<Root, Self> {
+/**
+ * "Override" factory for a single image path that normally inherits from the global wallpaper.
+ *
+ * - If useLocalOuterImage=false => outerImage derives from display.wallpaper.file
+ * - If useLocalOuterImage=true  => outerImage derives from localOuterImage
+ *
+ * Additionally exposes an ImageMagick-style technique selector.
+ * (Actual processing is done by widgets/services; this factory only provides configuration.)
+ */
+export function overrideImage(params: {
+    widgetId: string; // e.g. "corner"
+    defaultUseLocal?: boolean;
+    defaultLocal?: string;
+    defaultEnableTechnique?: boolean;
+    defaultTechnique?: ImageTechnique;
+    exports?: { outerImage?: OptExports };
+}) {
     const {
+        widgetId,
         defaultUseLocal = false,
         defaultLocal = "",
         defaultEnableTechnique = false,
@@ -30,26 +30,23 @@ export function overrideImage<Root, Self>(
         exports = { outerImage: { scss: true } },
     } = params;
 
-    const useLocalOuterImage = opt(defaultUseLocal);
-    const localOuterImage = opt<string>(defaultLocal);
+    return {
+        useLocalOuterImage: opt(defaultUseLocal),
+        localOuterImage: opt<string>(defaultLocal),
 
-    const enableTechnique = opt(defaultEnableTechnique);
-    const technique = opt<ImageTechnique>(defaultTechnique);
+        enableTechnique: opt(defaultEnableTechnique),
+        technique: opt<ImageTechnique>(defaultTechnique),
 
-    const outerImage = opt<string>("", {
-        ...(exports.outerImage ?? {}),
-        deps: [
-            dep.root((r: any) => r.display.wallpaper.file),
-            dep.opt(useLocalOuterImage),
-            dep.opt(localOuterImage),
-        ],
-        derive: ({ root }) => {
-            const d = (root as any).display;
-            return useLocalOuterImage.get()
-                ? localOuterImage.get()
-                : d.wallpaper.file.get();
-        },
-    });
-
-    return { useLocalOuterImage, localOuterImage, enableTechnique, technique, outerImage };
+        // Effective image path
+        outerImage: opt<string>("", {
+            ...(exports.outerImage ?? {}),
+            deps: ["display.wallpaper.file", `${widgetId}.useLocalOuterImage`, `${widgetId}.localOuterImage`],
+            derive: ({ root }) => {
+                const w = at(root, widgetId);
+                return w.useLocalOuterImage.value
+                    ? w.localOuterImage.value
+                    : root.display.wallpaper.file.value;
+            },
+        }),
+    };
 }

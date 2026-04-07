@@ -16,6 +16,6 @@ export async function boot(): Promise<void> {
   await bootSession();
   await bootOptions();
   await bootStyle();
-  await bootHyprland();
+  // await bootHyprland();
   await bootServices();
 }

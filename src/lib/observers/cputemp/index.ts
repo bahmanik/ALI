@@ -32,7 +32,6 @@ export class CpuTempObserver {
    */
   public getCpuTemp(): number {
     if (!this._resolvedSensorPath) return 0;
-    console.log(this._resolvedSensorPath)
 
     try {
       const [success, tempBytes] = GLib.file_get_contents(this._resolvedSensorPath);

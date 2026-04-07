@@ -25,7 +25,6 @@ function KbLayout() {
       $={() => {
         hyprland.connect("keyboard-layout",
           (_, __, kblayout) => {
-            console.log("keyboard name: ", kblayout)
             setLayoutName(kblayout)
           },
         )

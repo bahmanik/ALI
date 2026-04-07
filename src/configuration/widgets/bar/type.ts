@@ -1,5 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { BarBorderLocation, BarLocation, HexColor, Pattern } from "src/lib/options/types";
+import type { BarBorderLocation, BarLocation, HexColor, Pattern } from "src/configuration/types";
 import type { SecondaryBarOptions } from "./secondaryBar/type";
 import type { BarCornerOptions } from "./corner/type";
 

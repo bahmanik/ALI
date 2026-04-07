@@ -1,5 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { BarBorderLocation, BarLocation, HexColor, Pattern } from "src/lib/options/types";
+import type { BarBorderLocation, BarLocation, HexColor, Pattern } from "src/configuration/types";
 
 export interface SecondaryBarOptions {
   enable: Opt<boolean>;

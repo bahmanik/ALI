@@ -1,30 +1,5 @@
 import type { Opt } from 'src/lib/options'
-import type { AnchorLayout, RevealTransitionWithAuto } from 'src/lib/options/types'
-
-export type CountdownStackTransition =
-  "NONE" |
-  "CROSSFADE" |
-  "SLIDE_RIGHT" |
-  "SLIDE_LEFT" |
-  "SLIDE_UP" |
-  "SLIDE_DOWN" |
-  "SLIDE_LEFT_RIGHT" |
-  "SLIDE_UP_DOWN" |
-  "OVER_UP" |
-  "OVER_DOWN" |
-  "OVER_LEFT" |
-  "OVER_RIGHT" |
-  "UNDER_UP" |
-  "UNDER_DOWN" |
-  "UNDER_LEFT" |
-  "UNDER_RIGHT" |
-  "OVER_UP_DOWN" |
-  "OVER_DOWN_UP" |
-  "OVER_LEFT_RIGHT" |
-  "OVER_RIGHT_LEFT" |
-  "ROTATE_LEFT" |
-  "ROTATE_RIGHT" |
-  "ROTATE_LEFT_RIGHT"
+import type { AnchorLayout, RevealTransitionWithAuto, StackTransition } from 'src/configuration/types'
 
 export interface CountdownStyleOptions {
   bg: Opt<string>
@@ -51,7 +26,7 @@ export interface CountdownOptions {
   }
 
   stack: {
-    transition: Opt<CountdownStackTransition>
+    transition: Opt<StackTransition>
     duration: Opt<number>
   }
 

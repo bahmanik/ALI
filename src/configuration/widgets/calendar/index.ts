@@ -1,8 +1,8 @@
-import { stem } from "src/configuration/helper";
-import type { calendar, CalendarBorderLocation, RevealTransitionWithAuto, weekDays } from "src/lib/options/types";
+import { opt } from "src/lib/options";
+import type { AnchorLayout, calendar, CalendarBorderLocation, RevealTransitionWithAuto, weekDays } from "src/configuration/types";
 import type { CalendarOptions } from "./type";
 
-const calendarModule = stem((opt): CalendarOptions => ({
+const calendarModule: CalendarOptions = {
   /** Which calendar system to display in the widget. */
   calendar: opt<calendar>("Gregorian"),
   /**
@@ -25,7 +25,7 @@ const calendarModule = stem((opt): CalendarOptions => ({
     width: opt(420, { scss: true }),
     height: opt(420, { scss: true }),
     margin: opt(12, { scss: true }),
-    layout: opt("top_right"),
+    layout: opt<AnchorLayout>("top_right"),
     revealTransition: opt<RevealTransitionWithAuto>("SWING_DOWN"),
     transitionDuration: opt(0.18),
   },
@@ -69,7 +69,7 @@ const calendarModule = stem((opt): CalendarOptions => ({
     selectedBg: opt("rgba(27,147,253,0.22)", { scss: true }),
     hoverBg: opt("rgba(255,255,255,0.06)", { scss: true }),
   },
-}));
+};
 
 declare module "src/lib/options/root" {
   interface OptionsRoot {

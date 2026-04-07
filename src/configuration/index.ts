@@ -1,19 +1,16 @@
-import { mkOptions, type OptionsRoot } from "src/lib/options";
-
+import { mkOptions } from "src/lib/options";
+import {
+    bar,
+    calendar,
+    countdown,
+    launcher,
+    osd,
+} from "./widgets";
 import global from "./global";
 import display from "./display";
 import colors from "./colors";
-import hyprland from "./hyprland";
 
-import {
-    osd,
-    bar,
-    launcher,
-    calendar,
-    countdown
-} from "./widgets";
-
-const options = mkOptions<OptionsRoot>({
+const options = mkOptions({
     global,
     countdown,
     display,
@@ -22,7 +19,7 @@ const options = mkOptions<OptionsRoot>({
     bar,
     launcher,
     calendar,
-    hyprland,
+    //hyprland,
 });
 
 export default options;

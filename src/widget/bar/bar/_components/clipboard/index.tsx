@@ -105,7 +105,6 @@ function Header() {
 }
 
 function List() {
-  console.log(list.peek())
   return (
     <scrolledwindow class={"apps-list"} $={(self) => (scrolled = self)
     }>

@@ -1,21 +1,19 @@
-import { stem } from "src/configuration/helper";
-import { dep } from "src/lib/options";
+import { opt } from "src/lib/options";
 import type { OsdBrightnessOptions } from "./type";
 
-const brightnessModule = stem((opt): OsdBrightnessOptions => ({
+const brightnessModule: OsdBrightnessOptions = {
   heartbeatPollUser: opt(true),
 
   heartbeatPoll: opt(true, {
     deps: [
-      dep.root((r) => r.osd.enable),
-      dep.root((r) => r.osd.sources.brightness),
-      dep.root((r) => r.osd.sources.keyboardBrightness),
-      dep.self((s) => s.heartbeatPollUser),
+      'osd.enable',
+      'osd.sources.brightness',
+      'osd.sources.keyboardBrightness',
+      'osd.brightness.heartbeatPollUser',
     ],
-
-    derive: ({ root, self }) => {
+    derive: ({ root }) => {
       if (!root.osd.enable.get()) return false;
-      if (!self.heartbeatPollUser.get()) return false;
+      if (!root.osd.brightness.heartbeatPollUser.get()) return false;
 
       return Boolean(
         root.osd.sources.brightness.get() ||
@@ -25,6 +23,6 @@ const brightnessModule = stem((opt): OsdBrightnessOptions => ({
   }),
 
   heartbeatPollMs: opt(1000),
-}));
+};
 
 export default brightnessModule;

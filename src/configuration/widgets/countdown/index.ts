@@ -1,16 +1,17 @@
-import { stem } from "src/configuration/helper"
+import { opt } from 'src/lib/options'
 import type { CountdownOptions } from './type'
+import type { AnchorLayout, RevealTransitionWithAuto, StackTransition } from 'src/configuration/types'
 
-const countdown = stem((opt): CountdownOptions => ({
+const countdown: CountdownOptions = {
   window: {
-    layout: opt('top-right'),
-    revealTransition: opt('CROSSFADE'),
+    layout: opt<AnchorLayout>('top-right'),
+    revealTransition: opt<RevealTransitionWithAuto>('CROSSFADE'),
     transitionDuration: opt(1.6),
     margin: opt(12),
   },
 
   stack: {
-    transition: opt('SLIDE_RIGHT'),
+    transition: opt<StackTransition>('SLIDE_RIGHT'),
     duration: opt(220),
   },
 
@@ -32,7 +33,7 @@ const countdown = stem((opt): CountdownOptions => ({
     timerSize: opt(14, { scss: true }),
     navSize: opt(18, { scss: true }),
   },
-}))
+}
 
 declare module 'src/lib/options/root' {
   interface OptionsRoot {
