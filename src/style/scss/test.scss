@@ -1,0 +1,89 @@
+$radius: 12px;
+$margin: 8px;
+$transition: cubic-bezier(0.390, 0.575, 0.565, 1);
+$duration: 0.5s;
+
+.test1{
+  border-radius: $radius;
+  background-color: red;
+  margin: $margin
+}
+
+.test2{
+  border-radius: $radius;
+  background-color: blue;
+  margin: $margin
+}
+
+.test3{
+  border-radius: $radius;
+  background-color: green;
+  margin: $margin
+}
+
+.test4{
+  border-radius: $radius;
+  background-color: orange;
+  margin: $margin
+}
+
+.test5{
+  border-radius: $radius;
+  background-color: tomato;
+  margin: $margin
+}
+
+.test6{
+  border-radius: $radius;
+  background-color: violet;
+  margin: $margin
+}
+
+.test7{
+  border-radius: $radius;
+  background-color: yellow;
+  margin: $margin
+}
+
+.test8{
+  border-radius: $radius;
+  background-color: purple;
+  margin: $margin
+}
+
+.test9{
+  border-radius: $radius;
+  background-color: gold;
+  margin: $margin
+}
+
+.test10{
+  border-radius: $radius;
+  background-color: white;
+  margin: $margin
+}
+
+.scale-start{
+  animation: scale $duration $transition both;
+  animation-delay: 1s;
+  transform-origin: 0% 50%;
+}
+
+.scale-center{
+  animation: scale $duration $transition both;
+}
+
+.scale-end{
+  animation: scale $duration $transition both;
+  transform-origin: 100% 50%;
+}
+
+@keyframes scale{
+  0% {
+    transform: scale(0.8)
+  }
+
+  100% {
+    transform: scale(1)
+  }
+}

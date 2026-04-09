@@ -12,6 +12,7 @@ import { bootOptions } from "src/lib/options/runtime";
 import { bootNotif } from "src/lib/notiofication";
 import { boot } from "src/boot";
 import PowerWindow from "src/widget/power";
+import DashboardWindows from "src/widget/dashboard";
 
 function mountUI() {
   const monitors = app.get_monitors();
@@ -29,6 +30,7 @@ function mountUI() {
     CalendarWindow,
     CountdownWindow,
     PowerWindow,
+    DashboardWindows,
   ] as const;
 
   for (const mk of perMonitor) monitors.map(mk);
