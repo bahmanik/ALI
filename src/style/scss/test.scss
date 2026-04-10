@@ -65,7 +65,6 @@ $duration: 0.5s;
 
 .scale-start{
   animation: scale $duration $transition both;
-  animation-delay: 1s;
   transform-origin: 0% 50%;
 }
 

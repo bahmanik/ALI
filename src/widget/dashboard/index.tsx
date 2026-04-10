@@ -1,5 +1,5 @@
 import { Astal, Gdk } from "ags/gtk4"
-import Frame from "./_component/frame";
+import Frame from "./frame";
 
 const FULL_ANCHOR: Astal.WindowAnchor =
   Astal.WindowAnchor.TOP |
