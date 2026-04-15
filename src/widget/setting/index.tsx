@@ -1,21 +1,25 @@
 import { Gtk } from "ags/gtk4";
-import Dashboard from "./dashboard";
+import app from "ags/gtk4/app";
+import { Header } from "./_component/header";
+import { createState } from "gnim";
+import PageContent from "./_component/pageContent";
+import Tabs from "./_component/tabs";
+import { SettingPage } from "./pages";
 
 function SettingWindow() {
+  const [page, setPage] = createState<SettingPage>("Dashboard")
+
   return (
     <Gtk.Window
-      visible={true}
-      name={'test'}
+      name="setting"
+      application={app}
       title={'settings'}
-      $={(self) => {
-        self.connect('destroy', () => {
-          self.hide();
-          return true;
-        });
-        self.set_default_size(200, 300);
-      }}
     >
-      <Dashboard />
+      <box orientation={Gtk.Orientation.VERTICAL}>
+        <Header />
+        <Tabs setPage={setPage} />
+        <PageContent page={page} />
+      </box>
     </Gtk.Window>
   )
 }

@@ -30,6 +30,7 @@ function mountUI() {
     CalendarWindow,
     CountdownWindow,
     PowerWindow,
+    SettingWindow,
     // DashboardWindows,
   ] as const;
 
@@ -37,7 +38,6 @@ function mountUI() {
 
   // Singleton windows
   NotificationPopups();
-  SettingWindow()
 }
 
 function bootPhase1() {

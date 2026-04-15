@@ -1,12 +1,12 @@
 import { Gtk } from "ags/gtk4"
-import { Accessor, createState, For } from "gnim"
+import { Accessor, createState } from "gnim"
 import options from "src/configuration"
 import { ALL_MODULES, isDashboardModule } from "src/widget/dashboard/_component"
 import { ModuleMap } from "./helpers"
 
-let cellCounter = 1
+type DashboardProps = JSX.IntrinsicElements["box"]
 
-function Dashboard() {
+function Dashboard(props: DashboardProps) {
   const { rows, cols, modulesList } = options.dashboard
   const moduleMap = new ModuleMap(modulesList.get())
 
@@ -62,7 +62,6 @@ function Dashboard() {
   }
 
   const renderGrid = (): JSX.Element => {
-
     const B = ({ row, col }: { row: number, col: number }) => <box
       class='cell'
       orientation={Gtk.Orientation.HORIZONTAL}
@@ -102,13 +101,16 @@ function Dashboard() {
           }
         }}
       >
-
       </Gtk.Grid>
     )
   }
 
   return (
-    <box halign={Gtk.Align.CENTER} class='dashboard-frame'>
+    <box
+      halign={Gtk.Align.CENTER}
+      class='dashboard-frame'
+      {...props}
+    >
       {renderModuleButtons()}
       {renderGrid()}
     </box>
