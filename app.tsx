@@ -12,6 +12,7 @@ import { bootNotif } from "src/lib/notiofication";
 import { boot as bootPhase2 } from "src/boot";
 import PowerWindow from "src/widget/power";
 import DashboardWindows from "src/widget/dashboard";
+import SettingWindow from "src/widget/setting";
 
 function mountUI() {
   const monitors = app.get_monitors();
@@ -29,13 +30,14 @@ function mountUI() {
     CalendarWindow,
     CountdownWindow,
     PowerWindow,
-    DashboardWindows,
+    // DashboardWindows,
   ] as const;
 
   for (const mk of perMonitor) monitors.map(mk);
 
   // Singleton windows
   NotificationPopups();
+  SettingWindow()
 }
 
 function bootPhase1() {

@@ -5,7 +5,7 @@
  * @returns An array of numbers within the specified range
  */
 export function range(max: number) {
-  return Array.from({ length: max + 1 }, (_, i) => i)
+  return Array.from({ length: max }, (_, i) => i)
 }
 
 /**

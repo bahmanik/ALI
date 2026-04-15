@@ -1,0 +1,17 @@
+.cell{
+  background-color: red;
+  padding: 5px;
+  margin: 5px;
+
+  &:hover {
+    background-color: violet;
+  }
+}
+
+.clicked{
+  background-color: yellow;
+}
+
+.frame{
+  background-color: black;
+}

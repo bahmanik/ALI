@@ -3,6 +3,7 @@ import {
     bar,
     calendar,
     countdown,
+    dashboard,
     launcher,
     osd,
 } from "./widgets";
@@ -20,6 +21,7 @@ const options = mkOptions({
     launcher,
     calendar,
     //hyprland,
+    dashboard
 });
 
 export default options;
