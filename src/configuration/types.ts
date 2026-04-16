@@ -1,3 +1,5 @@
+import { BarModules } from "src/widget/bar/bar/modules";
+
 export type Pattern = { path: string; size: number };
 
 export type TransitionType =
@@ -150,35 +152,10 @@ export type RevealTransitionWithAuto = "AUTO" | GtkRevealerTransitionName;
 
 export type OsdOrientation = "vertical" | "horizontal";
 
-export type BarModule =
-    | 'battery'
-    | 'workspaces'
-    | 'media'
-    | 'volume'
-    | 'network'
-    | 'clock'
-    | 'systray'
-    | 'windowtitle'
-    | 'clipboard'
-    | 'ram'
-    | 'cpu'
-    | 'cputemp'
-    | 'kbinput'
-//  | 'storage'
-//  | 'hypridle'
-//  | 'quicktheme'
-//  | 'power'
-//  | 'hyprsunset'
-//  | 'notifications'
-//  | 'updates'
-//  | 'dashboard'
-//  | 'netstat'
-//  | 'bluetooth'
-
 export type BarLayout = {
-    left: BarModule[];
-    middle: BarModule[];
-    right: BarModule[];
+    left: BarModules[];
+    middle: BarModules[];
+    right: BarModules[];
     extends?: string;
 };
 export type BarLayouts = {

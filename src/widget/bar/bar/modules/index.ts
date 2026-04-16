@@ -13,3 +13,31 @@ export { default as Ram } from "./ram";
 export { default as KbLayout } from "./kbLayout";
 export { default as Storage } from "./storage";
 export { default as Hyprsunset } from "./hyprsunset";
+
+export const barModules = [
+  'Clock',
+  'Media',
+  'Tray',
+  'Wireless',
+  'Volume',
+  'Battery',
+  'Workspaces',
+  'Windowtitle',
+  'Clipboard',
+  'Cpu',
+  'Cputemp',
+  'Ram',
+  'Kbinput',
+  'Storage',
+  'Hyprsunset',
+  //  | 'Hypridle'
+  //  | 'Quicktheme'
+  //  | 'Power'
+  //  | 'Notifications'
+  //  | 'Updates'
+  //  | 'QuickAction'
+  //  | 'Netstat'
+  //  | 'Bluetooth'
+]
+
+export type BarModules = (typeof barModules)[number]

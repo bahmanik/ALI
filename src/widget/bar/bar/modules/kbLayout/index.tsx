@@ -5,7 +5,7 @@ import { options } from "./options";
 
 const hyprland = AstalHyprland.get_default();
 
-//TODO: fix the type bug 
+//WARNING: fix the type bug 
 //and also find better name for getlayout 
 //and use create computed to write a better state variable 
 //and wire code and layout name switch with options

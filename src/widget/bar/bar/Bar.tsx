@@ -18,7 +18,8 @@ import {
   KbLayout,
   Storage,
   Hyprsunset
-} from "./_components";
+} from "./modules";
+
 import {
   createBarWindowBinds,
   computeBarRect,
@@ -30,9 +31,9 @@ import {
 } from "./helpers";
 
 import type { Gdk, Gtk } from "ags/gtk4";
-import type { BarLocation } from "src/lib/options/types";
 import type { BarOptionGroup as BarOptionGroupT, BarKind } from "./helpers";
 import type { Opt } from "src/lib/options";
+import { BarLocation } from "src/configuration/types";
 
 type BarOptionGroup = BarOptionGroupT & {
   position: { get(): BarLocation; subscribe(cb: () => void): any; as?: any };
@@ -138,7 +139,7 @@ export default function Bar({
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
-          <Hyprsunset />
+          <Clipboard />
         </box>
 
         <box

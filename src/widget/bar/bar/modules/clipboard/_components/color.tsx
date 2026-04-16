@@ -22,9 +22,7 @@ export function ClipColor({ id, content }: { id: string; content: string }) {
           widthRequest={20}
           heightRequest={20}
           valign={Gtk.Align.CENTER}
-          css={`
-                background: ${isValid ? content : "transparent"};
-               `}
+          css={`background: ${isValid ? content : "transparent"};`}
         />
         <label
           hexpand
