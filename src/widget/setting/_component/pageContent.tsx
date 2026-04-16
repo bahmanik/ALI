@@ -1,9 +1,8 @@
 import { Gtk } from 'ags/gtk4';
-import { Accessor, createState, onCleanup } from 'gnim';
-import { SettingPages } from '..';
-import { Dashboard, Global } from '../pages';
+import { Accessor, onCleanup } from 'gnim';
+import { Dashboard, Global, SettingPage } from '../pages';
 
-function PageContent({ page }: { page: Accessor<SettingPages> }): JSX.Element {
+function PageContent({ page }: { page: Accessor<SettingPage> }): JSX.Element {
   return (
     <stack
       class="themes-menu-stack"
@@ -19,13 +18,13 @@ function PageContent({ page }: { page: Accessor<SettingPages> }): JSX.Element {
         onCleanup(() => unsub());
       }}
     >
-      <Dashboard
-        $type={"named"}
-        name="Global"
-      />
       <Global
         $type={"named"}
         name="Global"
+      />
+      <Dashboard
+        $type={"named"}
+        name="Dashboard"
       />
     </stack>
   );
