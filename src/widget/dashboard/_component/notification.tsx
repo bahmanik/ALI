@@ -1,11 +1,11 @@
 import Cell from "./cell"
 
-function AppLauncher() {
+function Notification() {
   return (
     <Cell className="test1">
-      AppLauncher
+      Notification
     </Cell>
   )
 }
 
-export default AppLauncher
+export default Notification
