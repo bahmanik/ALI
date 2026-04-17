@@ -1,5 +1,5 @@
 // Define module values as const first
-const MODULE_VALUES = [
+const DASHBOARD_MODULE_VALUES = [
   "Observer",
   "AppLauncher",
   "Avatar",
@@ -12,14 +12,14 @@ const MODULE_VALUES = [
 ] as const
 
 // Export the type derived from values
-export type DashboardModules = typeof MODULE_VALUES[number]
+export type DashboardModules = typeof DASHBOARD_MODULE_VALUES[number]
 
 // Export the values
-export const ALL_MODULES: DashboardModules[] = [...MODULE_VALUES]
+export const ALL_DASHBOARD_MODULES: DashboardModules[] = [...DASHBOARD_MODULE_VALUES]
 
 // Type guard
 export const isDashboardModule = (val: unknown): val is DashboardModules => {
-  return typeof val === 'string' && ALL_MODULES.includes(val as DashboardModules)
+  return typeof val === 'string' && ALL_DASHBOARD_MODULES.includes(val as DashboardModules)
 }
 
 export { default as Observer } from './observer'

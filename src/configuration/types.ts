@@ -1,4 +1,5 @@
 import { BarModules } from "src/widget/bar/bar/modules";
+import { DashboardModules } from "src/widget/dashboard/_component";
 
 export type Pattern = { path: string; size: number };
 
@@ -161,3 +162,13 @@ export type BarLayout = {
 export type BarLayouts = {
     [key: string]: BarLayout;
 };
+
+export type GridChild = {
+    module: DashboardModules;
+    column: number;
+    row: number;
+    width: number;
+    height: number
+}
+
+export type ModuleMapArray = Array<GridChild>

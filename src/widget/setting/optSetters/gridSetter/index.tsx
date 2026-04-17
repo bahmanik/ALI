@@ -96,7 +96,7 @@ function GridSetter({ rows, cols, modulesMap, modulesList }: DashboardProps) {
             self.attach(<M moduleName={module.module} />, module.column, module.row, module.width, module.height)
           }
 
-          const bm = currentMap.getBitMap(5, 10)
+          const bm = currentMap.getBitMap(rows.get(), cols.get())
           // render the empty Spaces
           for (let i = 0; i < rows.get(); i++) {
             for (let j = 0; j < cols.get(); j++) {

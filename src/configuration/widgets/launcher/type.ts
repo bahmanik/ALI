@@ -8,6 +8,12 @@ export interface LauncherOptions {
   transitionDuration: Opt<number>;
   maxItems: Opt<number>;
 
+  grid: {
+    rows: Opt<number>,
+    cols: Opt<number>,
+    modulesList: Opt<ModuleMapArray>,
+  }
+
   window: {
     width: Opt<number>;
     height: Opt<number>;

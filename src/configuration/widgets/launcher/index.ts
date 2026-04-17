@@ -4,13 +4,20 @@ import type { GtkRevealerTransitionName, HexColor, LauncherBorderLocation, Revea
 
 const launcher: LauncherOptions = {
   localScale: opt(true),
+  revealTransition: opt<RevealTransitionWithAuto>("SWING_DOWN"),
+  transitionDuration: opt(0.4),
+  maxItems: opt(5),
+
+  grid: {
+    rows: opt(5),
+    cols: opt(10),
+    modulesList: opt<ModuleMapArray>([]),
+  },
+
   scale: opt(12,
     {
       scss: true, hyprland: true
     }),
-  revealTransition: opt<RevealTransitionWithAuto>("SWING_DOWN"),
-  transitionDuration: opt(0.4),
-  maxItems: opt(5),
 
   // --- Window + panel theming (SCSS exported) ---
   window: {

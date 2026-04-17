@@ -1,6 +1,6 @@
 import { Gtk } from 'ags/gtk4';
 import { Accessor, onCleanup } from 'gnim';
-import { Dashboard, Global, SettingPage } from '../pages';
+import { Dashboard, Global, SettingPage, Launcher } from '../pages';
 
 function PageContent({ page }: { page: Accessor<SettingPage> }): JSX.Element {
   return (
@@ -25,6 +25,10 @@ function PageContent({ page }: { page: Accessor<SettingPage> }): JSX.Element {
       <Dashboard
         $type={"named"}
         name="Dashboard"
+      />
+      <Launcher
+        $type={"named"}
+        name="Launcher"
       />
     </stack>
   );
