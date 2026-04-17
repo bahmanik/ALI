@@ -22,11 +22,17 @@ export function LauncherPanel({
   setQuery,
   hideWindow,
 }: LauncherPanelProps) {
+  const entry = <LauncherEntry apps={apps} list={list} setQuery={setQuery} hideWindow={hideWindow} />
+  const favorite = <FavoritesRow apps={apps} hideWindow={hideWindow} />
+  const appList = <LauncherAppList list={list} query={query} />
+
   return (
-    <box cssClasses={["launcher-panel"]} orientation={Gtk.Orientation.VERTICAL}>
-      <LauncherEntry apps={apps} list={list} setQuery={setQuery} hideWindow={hideWindow} />
-      <FavoritesRow apps={apps} hideWindow={hideWindow} />
-      <LauncherAppList list={list} query={query} />
-    </box>
+    <Gtk.Grid
+      class="launcher-panel"
+      $={(self) => {
+        self.attach(entry, 0, 0, 1, 1)
+        self.attach(favorite, 0, 1, 1, 1)
+        self.attach(appList, 0, 2, 1, 1)
+      }} />
   )
 }

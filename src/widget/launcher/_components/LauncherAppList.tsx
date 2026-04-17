@@ -4,7 +4,6 @@ import { For, type Accessor } from "gnim"
 import options from "src/configuration"
 import type AstalApps from "gi://AstalApps?version=0.1"
 
-import { numMin } from "../helpers"
 import { AnimatedAppRow } from "./AnimatedAppRow"
 
 export type LauncherAppListProps = {
@@ -13,9 +12,9 @@ export type LauncherAppListProps = {
 }
 
 export function LauncherAppList({ list, query }: LauncherAppListProps) {
-  const spacing = numMin(0, options.launcher.list.spacing.get(), 8)
-  const iconPx = numMin(8, options.launcher.icons.app.get(), 36)
-  const itemGap = numMin(0, options.launcher.list.itemGap.get(), 14)
+  const spacing = options.launcher.list.spacing.get()
+  const iconPx = options.launcher.icons.app.get()
+  const itemGap = options.launcher.list.itemGap.get()
   const showDescription = Boolean(options.launcher.list.showDescription.get())
 
   return (

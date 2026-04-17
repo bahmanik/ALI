@@ -21,3 +21,6 @@ you should add a list that people can toggle to get what they want from launcher
  - clipboard
 
 create a temperature slider for hyprsunset with hyprsunset service
+
+DEPRICATED
+refactor createComputed
