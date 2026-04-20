@@ -1,4 +1,3 @@
 export * from "./arrays";
 export * from "./classes";
 export * from "./dates";
-export * from "./revealer";

@@ -1,5 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { AnchorLayout, calendar, RevealTransitionWithAuto, weekDays } from "src/configuration/types";
+import type { AnchorLayout, calendar, HexColor, RevealTransitionWithAuto, weekDays } from "src/configuration/types";
 
 export interface CalendarOptions {
   calendar: Opt<calendar>;
@@ -23,20 +23,20 @@ export interface CalendarOptions {
   };
 
   style: {
-    bg: Opt<string>;
+    bg: Opt<HexColor>;
     bgOpacity: Opt<number>;
     radius: Opt<number>;
     padding: Opt<number>;
     borderEnable: Opt<boolean>;
     borderLocation: Opt<"none" | "full">;
     borderWidth: Opt<number>;
-    borderColor: Opt<string>;
+    borderColor: Opt<HexColor>;
     shadowEnable: Opt<boolean>;
     shadowX: Opt<number>;
     shadowY: Opt<number>;
     shadowBlur: Opt<number>;
     shadowSpread: Opt<number>;
-    shadowColor: Opt<string>;
+    shadowColor: Opt<HexColor>;
   };
 
   header: {

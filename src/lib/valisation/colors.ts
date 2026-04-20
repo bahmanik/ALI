@@ -1,4 +1,4 @@
-import type { HexColor } from "../options/types";
+import { HexColor } from "src/configuration/types";
 
 const colorPatterns = {
   hex: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,

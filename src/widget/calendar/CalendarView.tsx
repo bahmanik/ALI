@@ -1,15 +1,15 @@
+import options from "src/configuration";
 import { Gtk } from "ags/gtk4";
 import { createState, onCleanup } from "gnim";
-import type { Accessor } from "gnim";
-
-import options from "src/configuration";
 import { buildMonthGrid, shiftMonth } from "src/lib/calendar";
+import type { Accessor } from "gnim";
 import type { DayCell, MonthGrid } from "src/lib/calendar";
 
 import { CalendarGrid, CalendarHeader, CalendarWeekdays } from "./_components";
 import { chunk7 } from "./helpers";
 
 export function CalendarView(): JSX.Element {
+  const { calendar, startOfWeek, weekend, showOutsideDays, showSecondaryDate, secondaryCalendar, locale } = options.calendar
   const [viewDate, setViewDate] = createState<Date>(new Date());
   const [selected, setSelected] = createState<Date | null>(null);
   const [rev, setRev] = createState(0);
@@ -18,26 +18,26 @@ export function CalendarView(): JSX.Element {
 
   // Recompute when calendar-related options change (live settings UX).
   const unsubs = [
-    options.calendar.calendar.subscribe(bump),
-    options.calendar.locale.subscribe(bump),
-    options.calendar.startOfWeek.subscribe(bump),
-    options.calendar.weekend.subscribe(bump),
-    options.calendar.showOutsideDays.subscribe(bump),
-    options.calendar.showSecondaryDate.subscribe(bump),
-    options.calendar.secondaryCalendar.subscribe(bump),
+    calendar.subscribe(bump),
+    locale.subscribe(bump),
+    startOfWeek.subscribe(bump),
+    weekend.subscribe(bump),
+    showOutsideDays.subscribe(bump),
+    showSecondaryDate.subscribe(bump),
+    secondaryCalendar.subscribe(bump),
   ];
   onCleanup(() => unsubs.forEach((u) => u()));
 
   const grid: Accessor<MonthGrid> = rev.as(() =>
     buildMonthGrid({
       viewDate: viewDate.peek(),
-      calendar: options.calendar.calendar.get(),
-      locale: options.calendar.locale.get(),
-      startOfWeek: options.calendar.startOfWeek.get(),
-      weekend: options.calendar.weekend.get(),
-      showOutsideDays: options.calendar.showOutsideDays.get(),
-      showSecondaryDate: options.calendar.showSecondaryDate.get(),
-      secondaryCalendar: options.calendar.secondaryCalendar.get(),
+      calendar: calendar.get(),
+      locale: locale.get(),
+      startOfWeek: startOfWeek.get(),
+      weekend: weekend.get(),
+      showOutsideDays: showOutsideDays.get(),
+      showSecondaryDate: showSecondaryDate.get(),
+      secondaryCalendar: secondaryCalendar.get(),
     }),
   );
 
