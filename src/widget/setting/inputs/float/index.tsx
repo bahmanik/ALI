@@ -1,11 +1,12 @@
-import { createState, With } from 'gnim';
+import { Accessor, With } from 'gnim';
 import icons from 'src/lib/icons/icons';
-import { Opt } from 'src/lib/options';
+import { FloatInputterProps } from '../types';
 
-export const FloatInputter = <T extends string | number | boolean | object>({
+function FloatInputter<T extends string | number | boolean | object>({
   opt,
-}: ObjectInputterProps<T>): JSX.Element => {
-  const [isUnsaved, setIsUnsaved] = createState(false)
+  isUnsaved,
+  setIsUnsaved,
+}: FloatInputterProps<T>): JSX.Element {
   return (
     <box>
       <box class="unsaved-icon-container">
@@ -52,6 +53,4 @@ export const FloatInputter = <T extends string | number | boolean | object>({
   );
 };
 
-interface ObjectInputterProps<T> {
-  opt: Opt<T>;
-}
+export default FloatInputter

@@ -1,6 +1,6 @@
 import { Gtk } from 'ags/gtk4';
 import { Accessor, onCleanup } from 'gnim';
-import { Dashboard, Global, SettingPage, Launcher } from '../pages';
+import { SettingPage, settingPages } from '../pages';
 
 function PageContent({ page }: { page: Accessor<SettingPage> }): JSX.Element {
   return (
@@ -11,27 +11,28 @@ function PageContent({ page }: { page: Accessor<SettingPage> }): JSX.Element {
       vexpand={false}
       hexpand
       $={(self) => {
+        // Set the initial page immediately
+        self.set_visible_child_name(page.peek());
+
         const unsub = page.subscribe(() => {
-          console.log("sub is fired")
-          self.set_visible_child_name(page.peek())
+          console.log(`Switching stack to: ${page.peek()}`);
+          self.set_visible_child_name(page.peek());
         });
+
         onCleanup(() => unsub());
       }}
     >
-      <Global
-        $type={"named"}
-        name="Global"
-      />
-      <Dashboard
-        $type={"named"}
-        name="Dashboard"
-      />
-      <Launcher
-        $type={"named"}
-        name="Launcher"
-      />
+      {/* Dynamically iterate over the settingPages object */}
+      {Object.entries(settingPages).map(([name, PageComponent]) => (
+        <box
+          $type="named"
+          name={name}
+        >
+          <PageComponent />
+        </box>
+      ))}
     </stack>
   );
 };
 
-export default PageContent
+export default PageContent;

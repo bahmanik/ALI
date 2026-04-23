@@ -1,13 +1,13 @@
 import { Gtk } from "ags/gtk4";
 import app from "ags/gtk4/app";
-import { Header } from "./_component/header";
+import { WindowTitle } from "./_component/windowTitle";
 import { createState } from "gnim";
 import PageContent from "./_component/pageContent";
 import Tabs from "./_component/tabs";
 import { SettingPage } from "./pages";
 
 function SettingWindow() {
-  const [page, setPage] = createState<SettingPage>("Dashboard")
+  const [page, setPage] = createState<SettingPage>("Global")
 
   return (
     <Gtk.Window
@@ -16,7 +16,7 @@ function SettingWindow() {
       title={'settings'}
     >
       <box orientation={Gtk.Orientation.VERTICAL}>
-        <Header />
+        <WindowTitle />
         <Tabs setPage={setPage} />
         <PageContent page={page} />
       </box>

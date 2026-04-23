@@ -1,15 +1,16 @@
 import { Gtk } from 'ags/gtk4';
-import { Accessor, createState, With } from 'gnim';
+import { Accessor, With } from 'gnim';
 import icons from 'src/lib/icons/icons';
-import { Opt } from 'src/lib/options';
+import { NumberInputterProps } from '../types';
 
-export const NumberInputter = <T extends string | number | boolean | object>({
+function NumberInputter<T extends string | number | boolean | object>({
   opt,
   min,
   max,
   increment = 1,
-}: NumberInputterProps<T>): JSX.Element => {
-  const [isUnsaved, setIsUnsaved] = createState(false)
+  isUnsaved,
+  setIsUnsaved,
+}: NumberInputterProps<T>): JSX.Element {
   return (
     <box>
       <box class="unsaved-icon-container" halign={Gtk.Align.START}>
@@ -49,9 +50,4 @@ export const NumberInputter = <T extends string | number | boolean | object>({
   );
 };
 
-interface NumberInputterProps<T> {
-  opt: Opt<T>
-  min: number
-  max: number
-  increment?: number
-}
+export default NumberInputter

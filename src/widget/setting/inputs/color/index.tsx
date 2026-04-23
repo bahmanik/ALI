@@ -1,9 +1,9 @@
 import { Gdk, Gtk } from 'ags/gtk4';
-import { Opt } from 'src/lib/options';
+import { ColorInputterProps } from '../types';
 
-export const ColorInputter = <T extends string | number | boolean | object>({
+function ColorInputter<T extends string | number | boolean | object>({
   opt,
-}: ColorInputterProps<T>): JSX.Element => {
+}: ColorInputterProps<T>): JSX.Element {
   return (
     <Gtk.ColorButton
       useAlpha={false}
@@ -28,6 +28,4 @@ export const ColorInputter = <T extends string | number | boolean | object>({
   );
 };
 
-interface ColorInputterProps<T> {
-  opt: Opt<T>;
-}
+export default ColorInputter

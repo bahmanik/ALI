@@ -1,6 +1,6 @@
 import options from "src/configuration"
-import GridSetter from "../../optSetters/gridSetter"
 import { ALL_DASHBOARD_MODULES } from "src/widget/dashboard/_component"
+import GridSetter from "../../inputs/gridSetter"
 
 type DashboardProps = JSX.IntrinsicElements["box"]
 

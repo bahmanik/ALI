@@ -1,6 +1,6 @@
 import options from "src/configuration"
-import GridSetter from "../../optSetters/gridSetter"
 import { ALL_Launcher_MODULES } from "src/widget/launcher/_components"
+import GridSetter from "../../inputs/gridSetter"
 
 type LauncherProps = JSX.IntrinsicElements["box"]
 

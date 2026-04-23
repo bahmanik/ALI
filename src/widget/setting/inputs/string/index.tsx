@@ -1,11 +1,12 @@
-import { createState, With } from 'gnim';
+import { onCleanup, With } from 'gnim';
 import icons from 'src/lib/icons/icons';
-import { Opt } from 'src/lib/options';
+import { StringInputterProps } from '../types';
 
-export const StringInputter = <T extends string | number | boolean | object>({
+function StringInputter<T extends string | number | boolean | object>({
   opt,
-}: StringInputterProps<T>): JSX.Element => {
-  const [isUnsaved, setIsUnsaved] = createState(false)
+  isUnsaved,
+  setIsUnsaved,
+}: StringInputterProps<T>): JSX.Element {
   return (
     <box>
       <box class="unsaved-icon-container">
@@ -34,14 +35,16 @@ export const StringInputter = <T extends string | number | boolean | object>({
           setIsUnsaved(false);
 
           //WARNING: you should hook this
-          self.text = opt.get() as string;
-          setIsUnsaved(false);
+          const unsub = opt.subscribe(() => {
+            self.text = opt.get() as string;
+            setIsUnsaved(false);
+          })
+
+          onCleanup(() => unsub())
         }}
       />
     </box>
   );
 };
 
-interface StringInputterProps<T> {
-  opt: Opt<T>;
-}
+export default StringInputter
