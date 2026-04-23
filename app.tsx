@@ -11,8 +11,9 @@ import { bootOptions } from "src/lib/options/runtime";
 import { bootNotif } from "src/lib/notiofication";
 import { boot as bootPhase2 } from "src/boot";
 import PowerWindow from "src/widget/power";
-import DashboardWindows from "src/widget/dashboard";
+import DashboardWindow from "src/widget/dashboard";
 import SettingWindow from "src/widget/setting";
+import TestWindow from "src/widget/test";
 
 function mountUI() {
   const monitors = app.get_monitors();
@@ -32,6 +33,7 @@ function mountUI() {
     PowerWindow,
     SettingWindow,
     // DashboardWindows,
+    // TestWindow
   ] as const;
 
   for (const mk of perMonitor) monitors.map(mk);

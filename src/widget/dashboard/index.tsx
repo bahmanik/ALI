@@ -7,7 +7,7 @@ const FULL_ANCHOR: Astal.WindowAnchor =
   Astal.WindowAnchor.LEFT |
   Astal.WindowAnchor.RIGHT;
 
-function DashboardWindows(gdkmonitor: Gdk.Monitor) {
+function DashboardWindow(gdkmonitor: Gdk.Monitor) {
   return (
     <window
       name={"dashboard"}
@@ -25,4 +25,4 @@ function DashboardWindows(gdkmonitor: Gdk.Monitor) {
   )
 }
 
-export default DashboardWindows
+export default DashboardWindow
