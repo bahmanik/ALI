@@ -31,7 +31,7 @@ interface UseAnimationOpts {
  * A spring-physics animation loop built on GLib.timeout_add.
  * Returns { start, reset } controls.
  */
-export function useAnimation(opts: UseAnimationOpts) {
+function useAnimation(opts: UseAnimationOpts) {
   const { t, target = 2, stiffness = 0.10, damping = 0.78, onFrame } = opts
   const velocity = useRef(0)
   const running = useRef(false)
@@ -215,7 +215,7 @@ function drawHandleGlow(
 // Widget
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const SliderAnimation = () => {
+export const SliderAnimationV1 = () => {
   // ── Layout ────────────────────────────────────────────────────────────────
   const overlay = new Gtk.Overlay()
   const box = new Gtk.Box({
@@ -256,16 +256,17 @@ export const SliderAnimation = () => {
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
   /** Returns the pixel position of a slider's handle relative to the overlay */
-  const getHandlePos = (slider: Gtk.Scale): Point => {
+  const getHandlePos = (slider: Gtk.Scale): [number, number] => {
     const alloc = slider.get_allocation()
     const adj = slider.get_adjustment()
-    const pct =
-      (slider.get_value() - adj.get_lower()) /
+    const pct = (slider.get_value() - adj.get_lower()) /
       (adj.get_upper() - adj.get_lower())
-    return [
-      alloc.x + pct * alloc.width,
-      alloc.y + alloc.height / 2,
-    ]
+    const pad = 8
+    const localX = pad + pct * (alloc.width - pad * 2)
+    const localY = alloc.height / 2
+    // translate_coordinates returns [success, destX, destY]
+    const [ok, ox, oy] = slider.translate_coordinates(overlay, localX, localY)
+    return ok ? [ox, oy] : [localX, localY]
   }
 
   // ── Drawing area ──────────────────────────────────────────────────────────
@@ -336,3 +337,5 @@ export const SliderAnimation = () => {
 
   return overlay
 }
+
+export default SliderAnimationV1

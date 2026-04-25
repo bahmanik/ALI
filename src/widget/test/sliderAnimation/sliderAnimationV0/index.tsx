@@ -2,7 +2,7 @@ import Gtk from "gi://Gtk?version=4.0"
 import GLib from "gi://GLib"
 import giCairo from "cairo"
 
-export const SliderAnimation = () => {
+const SliderAnimationV0 = () => {
   const overlay = new Gtk.Overlay()
   const box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 20 })
   const area = new Gtk.DrawingArea()
@@ -123,3 +123,5 @@ export const SliderAnimation = () => {
 
   return overlay
 }
+
+export default SliderAnimationV0

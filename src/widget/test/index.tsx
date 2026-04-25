@@ -1,6 +1,5 @@
 import { Astal, Gdk } from "ags/gtk4"
 import { createState } from "gnim";
-import { SliderAnimation } from "./SliderAnimation";
 
 const FULL_ANCHOR: Astal.WindowAnchor =
   Astal.WindowAnchor.TOP |
@@ -31,7 +30,6 @@ function TestWindow(gdkmonitor: Gdk.Monitor) {
       anchor={FULL_ANCHOR}
       css="background-color: black;"
     >
-      <SliderAnimation />
     </window>
   )
 }
