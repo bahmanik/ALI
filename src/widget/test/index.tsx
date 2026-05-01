@@ -1,5 +1,6 @@
 import { Astal, Gdk } from "ags/gtk4"
 import { createState } from "gnim";
+import FusedRect from "./adaptiveRect";
 
 const FULL_ANCHOR: Astal.WindowAnchor =
   Astal.WindowAnchor.TOP |
@@ -28,7 +29,7 @@ function TestWindow(gdkmonitor: Gdk.Monitor) {
       keymode={Astal.Keymode.NONE}
       visible={true}
       anchor={FULL_ANCHOR}
-      css="background-color: black;"
+    // css="background-color: black;"
     >
     </window>
   )

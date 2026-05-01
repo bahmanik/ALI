@@ -1,0 +1,31 @@
+sliderAnimation has three iterations i tried for slider animation, i liked the use animation of the second itteration, its genralized and i can use it anywere. but what i dont like is the math calculations. can you explain to me how the onTick work in orbital and in sliderAnimationV2? orbital looks like spring animation and sliderAnimationV2 looks like linear animation, how do i tweek them or create my own spring or linear or cubic-bezier?
+
+animation arent starting on the handels, i tried
+const getHandlePos = (slider: Gtk.Scale): [number, number] => {
+  const alloc = slider.get_allocation()
+  const adj = slider.get_adjustment()
+  const pct = (slider.get_value() - adj.get_lower()) / (adj.get_upper() - adj.get_lower())
+  const pad = 8
+  return [alloc.x + pad + pct * (alloc.width - pad * 2), alloc.y + alloc.height / 2]
+}
+and the glow points are at the top left
+
+i also tried this
+const getHandlePos = (slider: Gtk.Scale): [number, number] => {
+  const alloc = slider.get_allocation()
+    const adj = slider.get_adjustment()
+    const pct = (slider.get_value() - adj.get_lower()) /
+    (adj.get_upper() - adj.get_lower())
+    const pad = 8
+    const localX = pad + pct * (alloc.width - pad * 2)
+    const localY = alloc.height / 2
+    // translate_coordinates returns [success, destX, destY]
+    const [ok, ox, oy] = slider.translate_coordinates(overlay, localX, localY)
+    return ok ? [ox, oy] : [localX, localY]
+}
+and the glow points are at the bottom right
+
+in sliderAnimationV2 i cant control lightning speed how much it curve, how many branch does it have and ...
+can you explain it to me? i want to slowly decrease the curves branches and in general the intencity of lighning effect in phase two of animan but i dont know how.
+
+in some widgets i can have images, patterns and solid colors. and i created TechniqueImageService that uses ImageMagick to create "none" | "negative" | "grayscale" | "sepia" vertions of a image to use in bar/corner. but my solutions arent scalable enoth and now corner codes are a mess, the names are only good for bar corner and i dont have a clear flow for saving and monitoring images, can you first read my files then suggest changes and full plan to create a solution for caching and saving images, loading images, a better and more clear factory than overrideImage and override pattern that includes "image" | "solid" | "pattern", applying the thecniques to the images and overall a clear flow for the images?

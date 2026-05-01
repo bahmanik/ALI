@@ -33,7 +33,7 @@ function mountUI() {
     PowerWindow,
     SettingWindow,
     // DashboardWindows,
-    // TestWindow
+    TestWindow
   ] as const;
 
   for (const mk of perMonitor) monitors.map(mk);

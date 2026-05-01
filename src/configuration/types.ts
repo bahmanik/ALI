@@ -46,20 +46,7 @@ export type ImageTechnique = "none" | "negative" | "grayscale" | "sepia";
 export type HexColor = `#${string}`;
 export type CornerFill = "image" | "solid" | "pattern";
 
-export type weekDays = "Sun" | "Mon" | "Tues" | "Wed" | "thurs" | "Fri" | "Sat";
-
 export type CalendarBorderLocation = "none" | "full";
-
-export type calendar =
-    | "Gregorian"
-    | "Jalali"
-    | "Hijri"
-    | "Hebrew"
-    | "Buddhist"
-    | "Japanese"
-    | "Indian"
-    | "ROC"
-    | "Chinese";
 
 export type LauncherBorderLocation = "none" | "full";
 

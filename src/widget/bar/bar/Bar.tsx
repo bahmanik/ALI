@@ -148,7 +148,7 @@ export default function Bar({
           halign={layout.start.halign}
           valign={layout.start.valign}
         >
-          <Volume />
+          <Wireless />
         </box>
       </centerbox>
     </window>

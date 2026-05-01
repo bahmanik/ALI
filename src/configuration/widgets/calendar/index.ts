@@ -1,25 +1,25 @@
 import { opt } from "src/lib/options";
-import type { AnchorLayout, calendar, CalendarBorderLocation, RevealTransitionWithAuto, weekDays } from "src/configuration/types";
-import type { CalendarOptions } from "./type";
+import type { AnchorLayout, CalendarBorderLocation, RevealTransitionWithAuto } from "src/configuration/types";
+import type { CalendarOptions, CalendarEnum, WeekDaysEnum } from "./type";
 
 const calendarModule: CalendarOptions = {
   /** Which calendar system to display in the widget. */
-  calendar: opt<calendar>("Gregorian"),
+  calendar: opt<CalendarEnum>("Gregorian"),
   /**
    * Locale used for labels (month title, weekday labels) when Intl is available.
    * Empty string => system default.
    */
   locale: opt(""),
 
-  startOfWeek: opt<weekDays>("Sun"),
-  weekend: opt<Array<weekDays>>(["Fri", "Sat"]),
+  startOfWeek: opt<WeekDaysEnum>("Sun"),
+  weekend: opt<Array<WeekDaysEnum>>(["Fri", "Sat"]),
 
   showOutsideDays: opt(true),
   showWeekNumbers: opt(false),
 
   /** Optional 2nd tiny label in each cell (usually Gregorian while showing another calendar). */
   showSecondaryDate: opt(false),
-  secondaryCalendar: opt<calendar>("Gregorian"),
+  secondaryCalendar: opt<CalendarEnum>("Gregorian"),
 
   window: {
     width: opt(420, { scss: true }),

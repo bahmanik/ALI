@@ -24,12 +24,10 @@ function PageContent({ page }: { page: Accessor<SettingPage> }): JSX.Element {
     >
       {/* Dynamically iterate over the settingPages object */}
       {Object.entries(settingPages).map(([name, PageComponent]) => (
-        <box
+        <PageComponent
           $type="named"
           name={name}
-        >
-          <PageComponent />
-        </box>
+        />
       ))}
     </stack>
   );

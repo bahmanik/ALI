@@ -1,8 +1,8 @@
 import { Accessor } from 'gnim';
 import { Opt } from 'src/lib/options';
-import { Inputter } from './settingInput';
 import { PropertyLabel } from './propertyLabel';
 import { ResetButton } from './resetButton';
+import Inputter from '../inputs';
 
 export interface LabelSettingProps {
   title: string;
@@ -45,11 +45,10 @@ export const Option = <T extends string | number | boolean | object>({
       class="option-item"
       hexpand
       onDestroy={() => {
-        isUnsaved.drop();
       }}
     >
       <PropertyLabel title={props.title} subtitle={props.subtitle} subtitleLink={props.subtitleLink} />
-      <Inputter isUnsaved={isUnsaved} className={className} {...props} />
+      <Inputter {...props} />
       <ResetButton {...props} />
     </box>
   );

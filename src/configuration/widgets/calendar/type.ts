@@ -1,17 +1,29 @@
 import type { Opt } from "src/lib/options";
-import type { AnchorLayout, calendar, HexColor, RevealTransitionWithAuto, weekDays } from "src/configuration/types";
+import type { AnchorLayout, HexColor, RevealTransitionWithAuto } from "src/configuration/types";
+
+export enum CalendarEnum {
+  "Gregorian", "Jalali", "Hijri", "Hebrew", "Buddhist", "Japanese", "Indian", "ROC", "Chinese"
+}
+
+export enum WeekDaysEnum {
+  "Sun", "Mon", "Tues", "Wed", "thurs", "Fri", "Sat"
+}
+
+export enum BorderLocationEnum {
+  "none", "full"
+}
 
 export interface CalendarOptions {
-  calendar: Opt<calendar>;
+  calendar: Opt<CalendarEnum>;
   locale: Opt<string>;
-  startOfWeek: Opt<weekDays>;
-  weekend: Opt<weekDays[]>;
+  startOfWeek: Opt<WeekDaysEnum>;
+  weekend: Opt<WeekDaysEnum[]>;
 
   showOutsideDays: Opt<boolean>;
   showWeekNumbers: Opt<boolean>;
 
   showSecondaryDate: Opt<boolean>;
-  secondaryCalendar: Opt<calendar>;
+  secondaryCalendar: Opt<CalendarEnum>;
 
   window: {
     width: Opt<number>;
@@ -28,7 +40,7 @@ export interface CalendarOptions {
     radius: Opt<number>;
     padding: Opt<number>;
     borderEnable: Opt<boolean>;
-    borderLocation: Opt<"none" | "full">;
+    borderLocation: Opt<BorderLocationEnum>;
     borderWidth: Opt<number>;
     borderColor: Opt<HexColor>;
     shadowEnable: Opt<boolean>;
