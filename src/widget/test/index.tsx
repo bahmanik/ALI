@@ -15,7 +15,7 @@ function TestWindow(gdkmonitor: Gdk.Monitor) {
   setInterval(() => {
     history[1](prev => {
       const next = [...prev, Math.random()]
-      return next.slice(-50) // keep last 50 points
+      return next.slice(-10) // keep last 10 points
     })
   }, 1000)
 
@@ -31,6 +31,7 @@ function TestWindow(gdkmonitor: Gdk.Monitor) {
       anchor={FULL_ANCHOR}
     // css="background-color: black;"
     >
+      <LineGraph variant="stepped" values={history} />
     </window>
   )
 }
