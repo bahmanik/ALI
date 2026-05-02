@@ -43,6 +43,12 @@ export type BarBorderLocation =
     | "full";
 
 export type ImageTechnique = "none" | "negative" | "grayscale" | "sepia";
+
+export type VisualAsset =
+    | { kind: "solid"; color: string; opacity?: number }
+    | { kind: "image"; path: string; technique?: ImageTechnique }
+    | { kind: "pattern"; path: string; size: number }
+
 export type HexColor = `#${string}`;
 export type CornerFill = "image" | "solid" | "pattern";
 
