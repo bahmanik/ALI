@@ -1,3 +1,6 @@
+import GLib from "gi://GLib?version=2.0"
+import useRef from "./useRef"
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  useAnimation(fps?)
 //
@@ -15,10 +18,6 @@
 //  can safely call it without guarding.  If you need to update state that a
 //  running tick reads (e.g. a spring target), just mutate the ref — the
 //  in-flight tick will pick it up automatically on the next frame.
-
-import GLib from "gi://GLib?version=2.0"
-import { useRef } from "./useRef"
-
 // ─────────────────────────────────────────────────────────────────────────────
 const useAnimation = (fps = 60) => {
   const active = useRef(false)

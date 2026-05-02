@@ -15,7 +15,7 @@ function TestWindow(gdkmonitor: Gdk.Monitor) {
   setInterval(() => {
     history[1](prev => {
       const next = [...prev, Math.random()]
-      return next.slice(-10) // keep last 10 points
+      return next.slice(-11) // keep last 10 points
     })
   }, 1000)
 

@@ -4,7 +4,7 @@ import { monitorFile } from "ags/file"
 import { execAsync } from "ags/process"
 import { Timer, timeout } from "ags/time"
 import { ensureDirectory } from "src/lib/session/api"
-import { joinPath, normalizeToAbsolutePath } from "src/lib/path/helpers"
+import { normalizeToAbsolutePath } from "src/lib/path/helpers"
 import { SystemUtilities } from "src/lib/system/SystemUtilities"
 import { AssetCacheService } from "./AssetCacheService"
 import type { ImageTechnique, ResolvedAsset, VisualAsset } from "./types"
@@ -37,7 +37,7 @@ export class AssetPipelineService {
     return this._instance
   }
 
-  private constructor() {}
+  private constructor() { }
 
   private readonly _entries = new Map<string, Entry>()
   private _magickBin: string | null | undefined = undefined
@@ -52,14 +52,14 @@ export class AssetPipelineService {
   public watch(asset: VisualAsset, cb: Subscriber): () => void {
     if (asset.kind === "solid") {
       cb("")
-      return () => {}
+      return () => { }
     }
 
     const entry = this._ensureEntry(asset)
     entry.subs.add(cb)
     this._ensureMonitor(entry)
 
-    void this._ensureFresh(entry).then((out) => cb(out)).catch(() => {})
+    void this._ensureFresh(entry).then((out) => cb(out)).catch(() => { })
 
     return () => {
       entry.subs.delete(cb)

@@ -12,8 +12,10 @@ const corner: BarCornerOptions = {
     widgetId: "bar.corner",
     defaultUseLocal: true,
     defaultLocal: {
-      kind: "solid",
-      color: "#ffffff"
+      kind: "pattern",
+      size: 80,
+      path: "/home/ali/.config/ALI/patter.jpg",
+      technique: "none",
     },
     defaultRemote: ({ display }) => ({
       kind: "image",
