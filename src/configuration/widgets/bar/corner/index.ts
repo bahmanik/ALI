@@ -10,24 +10,18 @@ const corner: BarCornerOptions = {
 
   background: overrideVisualAsset({
     widgetId: "bar.corner",
-
     defaultUseLocal: true,
-
     defaultLocal: {
-      kind: "pattern",
-      size: 100,
-      path: "/home/ali/.config/ALI/patter.jpg",
+      kind: "solid",
+      color: "#ffffff"
     },
-
     defaultRemote: ({ display }) => ({
       kind: "image",
       path: display.wallpaper.file.value,
       technique: "none",
     }),
-
     deps: ["display.wallpaper.file"],
-  })
+  }),
 }
 
-console.log(corner)
 export default corner

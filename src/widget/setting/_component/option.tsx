@@ -1,45 +1,18 @@
-import { Accessor } from 'gnim';
-import { Opt } from 'src/lib/options';
-import { PropertyLabel } from './propertyLabel';
+import { Accessor, createState } from 'gnim';
+import { LabelSettingProps, PropertyLabel } from './propertyLabel';
 import { ResetButton } from './resetButton';
 import Inputter from '../inputs';
+import { InputterProps } from '../inputs/types';
 
-export interface LabelSettingProps {
+export type OptionProps = {
   title: string;
-  subtitle?: string | Accessor<string>;
-  subtitleLink?: string;
-}
+  className?: string;
+} & LabelSettingProps & InputterProps
 
-export interface RowProps<T> {
-  opt: Opt<T>;
-  note?: string;
-  type?: InputType;
-  enums?: T[];
-  max?: number;
-  min?: number;
-  disabledBinding?: Accessor<boolean>;
-  subtitle?: LabelSettingProps['subtitle'];
-  subtitleLink?: string;
-  dependencies?: string[];
-  increment?: number;
-  fontLabel?: Opt<string>;
-}
-
-type InputType =
-  | 'number'
-  | 'color'
-  | 'float'
-  | 'object'
-  | 'string'
-  | 'enum'
-  | 'boolean'
-  | 'img'
-  | 'image'
-
-export const Option = <T extends string | number | boolean | object>({
+export const Option = ({
   className,
   ...props
-}: OptionProps<T>): JSX.Element => {
+}: OptionProps): JSX.Element => {
   return (
     <box
       class="option-item"
@@ -47,14 +20,9 @@ export const Option = <T extends string | number | boolean | object>({
       onDestroy={() => {
       }}
     >
-      <PropertyLabel title={props.title} subtitle={props.subtitle} subtitleLink={props.subtitleLink} />
+      <PropertyLabel {...props} />
       <Inputter {...props} />
       <ResetButton {...props} />
     </box>
   );
 };
-
-interface OptionProps<T> extends RowProps<T> {
-  title: string;
-  className?: string;
-}

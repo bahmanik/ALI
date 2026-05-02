@@ -1,6 +1,6 @@
 import type { Opt } from "src/lib/options";
 import type {
-  AnchorLayout,
+  AnchorLayoutType,
   GtkRevealerTransitionName,
   HexColor,
   OsdOrientation,
@@ -13,7 +13,7 @@ export interface OsdOptions {
   timeoutMs: Opt<number>;
   startupDelayMs: Opt<number>;
 
-  location: Opt<AnchorLayout>;
+  location: Opt<AnchorLayoutType>;
   orientation: Opt<OsdOrientation>;
 
   revealTransition: Opt<"AUTO" | GtkRevealerTransitionName>;

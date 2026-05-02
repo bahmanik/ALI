@@ -1,10 +1,9 @@
 import { Gtk } from 'ags/gtk4';
-import { Opt } from 'src/lib/options';
 import { ImageInputterProps } from '../types';
 
-function ImageInputter<T extends string | number | boolean | object>({
+function ImageInputter({
   opt,
-}: ImageInputterProps<T>): JSX.Element {
+}: ImageInputterProps): JSX.Element {
   return (
     <Gtk.FileChooserWidget
       onNotify={(self) => {

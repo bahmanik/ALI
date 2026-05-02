@@ -1,7 +1,6 @@
 import corner from "./corner";
 import secondaryBar from "./secondaryBar";
 import { overrideScale } from "src/lib/options/factories/overrideScale";
-import { overridePattern } from "src/lib/options/factories/overridePattern";
 import { opt } from "src/lib/options";
 import type { BarBorderLocation, BarLocation, HexColor } from "src/configuration/types";
 import type { BarOptions } from "./type";
@@ -54,17 +53,13 @@ const bar: BarOptions = {
 
     radius: opt(12, { scss: true }), // px
     spacing: opt(4, { scss: true }), // px (horizontal spacing)
-    paddingX: opt(2, { scss: true }), // px
-    paddingY: opt(2, { scss: true }), // px
+    paddingX: opt(0, { scss: true }), // px
+    paddingY: opt(0, { scss: true }), // px
   },
   ...overrideScale({
     widgetId: 'bar',
     defaultLocal: 12,
     exports: { scss: true },
-  }),
-  ...overridePattern({
-    widgetId: 'bar',
-    defaultLocal: { path: "none", size: 12 },
   }),
 }
 

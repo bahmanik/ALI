@@ -1,3 +1,5 @@
+export type ImageTechnique = "none" | "negative" | "grayscale" | "sepia"
+
 export type AssetTransformation =
   | { type: "none" }
   | { type: "negative" }
@@ -9,11 +11,13 @@ export type AssetTransformation =
 export type SolidAsset = {
   kind: "solid"
   color: string
+  opacity?: number
 }
 
 export type ImageAsset = {
   kind: "image"
   path: string
+  technique?: ImageTechnique
   transformations?: AssetTransformation[]
 }
 
@@ -22,11 +26,13 @@ export type PatternAsset = {
   path: string
   size?: number
   opacity?: number
+  technique?: ImageTechnique
+  transformations?: AssetTransformation[]
 }
 
 export type VisualAsset = SolidAsset | ImageAsset | PatternAsset
 
 export type ResolvedAsset = {
   asset: VisualAsset
-  renderPath?: string
+  renderPath?: string | null
 }

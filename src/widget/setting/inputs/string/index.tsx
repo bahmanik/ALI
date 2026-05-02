@@ -1,12 +1,12 @@
-import { onCleanup, With } from 'gnim';
+import { createState, onCleanup, With } from 'gnim';
 import icons from 'src/lib/icons/icons';
 import { StringInputterProps } from '../types';
 
-function StringInputter<T extends string | number | boolean | object>({
+function StringInputter({
   opt,
-  isUnsaved,
-  setIsUnsaved,
-}: StringInputterProps<T>): JSX.Element {
+}: StringInputterProps): JSX.Element {
+  const [isUnsaved, setIsUnsaved] = createState(false)
+
   return (
     <box>
       <box class="unsaved-icon-container">
@@ -28,15 +28,15 @@ function StringInputter<T extends string | number | boolean | object>({
           setIsUnsaved(currentText !== optValue);
         }}
         onActivate={(self) => {
-          opt.set(self.text as T);
+          opt.set(self.text);
         }}
         $={(self) => {
-          self.text = opt.get() as string;
+          self.text = opt.get()
           setIsUnsaved(false);
 
           //WARNING: you should hook this
           const unsub = opt.subscribe(() => {
-            self.text = opt.get() as string;
+            self.text = opt.get()
             setIsUnsaved(false);
           })
 

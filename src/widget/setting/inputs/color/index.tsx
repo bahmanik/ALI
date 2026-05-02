@@ -1,9 +1,9 @@
 import { Gdk, Gtk } from 'ags/gtk4';
 import { ColorInputterProps } from '../types';
 
-function ColorInputter<T extends string | number | boolean | object>({
+function ColorInputter({
   opt,
-}: ColorInputterProps<T>): JSX.Element {
+}: ColorInputterProps): JSX.Element {
   return (
     <Gtk.ColorButton
       useAlpha={false}
@@ -11,7 +11,7 @@ function ColorInputter<T extends string | number | boolean | object>({
 
         //WARNING: you should hook this
         const rgba = new Gdk.RGBA();
-        rgba.parse(opt.get() as string);
+        rgba.parse(opt.get());
         self.set_rgba(rgba);
 
         self.connect('color-set', () => {
@@ -21,7 +21,7 @@ function ColorInputter<T extends string | number | boolean | object>({
             return c.length === 1 ? `0${c}` : c;
           };
 
-          opt.set(`#${hex(rgba.red)}${hex(rgba.green)}${hex(rgba.blue)}` as T);
+          opt.set(`#${hex(rgba.red)}${hex(rgba.green)}${hex(rgba.blue)}`);
         });
       }}
     />

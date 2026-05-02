@@ -21,7 +21,6 @@ export class Opt<T = unknown> {
      * Dependency prefixes for derived options.
      * When any option whose id starts with one of these prefixes changes,
      * the registry recomputes this option.
-
      */
     public readonly deps: string[];
     constructor(

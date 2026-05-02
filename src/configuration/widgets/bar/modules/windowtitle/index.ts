@@ -22,7 +22,7 @@ const window: BarCornerOptions = {
       technique: "none",
     }),
     deps: ["display.wallpaper.file"],
-  }).background,
+  }),
 }
 
 export default window

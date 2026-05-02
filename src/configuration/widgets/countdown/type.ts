@@ -1,5 +1,5 @@
 import type { Opt } from 'src/lib/options'
-import type { AnchorLayout, RevealTransitionWithAuto, StackTransition } from 'src/configuration/types'
+import type { AnchorLayoutType, RevealTransitionWithAuto, StackTransition } from 'src/configuration/types'
 
 export interface CountdownStyleOptions {
   bg: Opt<string>
@@ -19,7 +19,7 @@ export interface CountdownStyleOptions {
 
 export interface CountdownOptions {
   window: {
-    layout: Opt<AnchorLayout>
+    layout: Opt<AnchorLayoutType>
     revealTransition: Opt<RevealTransitionWithAuto>
     transitionDuration: Opt<number>
     margin: Opt<number>

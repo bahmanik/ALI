@@ -1,7 +1,6 @@
-import { CONFIG_DIR } from "src/lib/session";
 import { opt } from "src/lib/options";
 import type { GlobalOptions } from "./type";
-import type { HexColor, Pattern } from "src/configuration/types";
+import type { HexColor } from "src/configuration/types";
 
 const global: GlobalOptions = {
     scale: opt(32),
@@ -10,10 +9,6 @@ const global: GlobalOptions = {
     enumTest: opt<"test1" | "test2" | "test3">("test1"),
     colorTest: opt<HexColor>("#8d9199", { scss: true }),
     floatTest: opt(1),
-    pattern: opt<Pattern>({
-        path: `${CONFIG_DIR}/patter.jpg`,
-        size: 12,
-    }),
 }
 
 declare module "src/lib/options/root" {
@@ -23,4 +18,3 @@ declare module "src/lib/options/root" {
 }
 
 export default global;
-

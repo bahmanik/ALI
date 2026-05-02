@@ -2,9 +2,9 @@ import { Gtk } from 'ags/gtk4';
 import icons from 'src/lib/icons/icons';
 import { Opt } from 'src/lib/options';
 
-export const ResetButton = <T extends string | number | boolean | object>({
+export const ResetButton = ({
   opt
-}: { opt: Opt<T> }): JSX.Element => {
+}: { opt: Opt<any> }): JSX.Element => {
   return (
     <button
       class={'reset-options'}

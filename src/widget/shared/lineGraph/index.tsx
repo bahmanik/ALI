@@ -3,7 +3,7 @@ import giCairo from "cairo"
 import { State } from "gnim"
 
 type Props = {
-  values: number[] | State<number[]>
+  values: State<number[]>
   width?: number
   height?: number
   thickness?: number
@@ -20,14 +20,15 @@ export const LineGraph = ({
   area.set_content_width(width)
   area.set_content_height(height)
 
-  const getValues = () =>
-    Array.isArray(values) ? values : values[0].peek()
-  console.log(getValues())
+  const getValues = (): number[] => {
+    return values[0].peek()
+  }
 
   const clamp = (v: number) => Math.max(0, Math.min(1, v))
 
   area.set_draw_func((_, ctx: giCairo.Context, w, h) => {
     const data = getValues()
+
     if (data.length < 2) return
 
     const stepX = w / (data.length - 1)
@@ -37,7 +38,7 @@ export const LineGraph = ({
     ctx.setLineJoin(giCairo.LineJoin.ROUND)
     ctx.setLineCap(giCairo.LineCap.ROUND)
 
-    data.forEach((v, i) => {
+    data.forEach((v: number, i: number) => {
       const x = i * stepX
       const y = h - clamp(v) * h
 
@@ -51,10 +52,7 @@ export const LineGraph = ({
     ctx.stroke()
   })
 
-  // reactive updates
-  if (!Array.isArray(values)) {
-    values[0].subscribe(() => area.queue_draw())
-  }
+  values[0].subscribe(() => area.queue_draw())
 
   return area
 }

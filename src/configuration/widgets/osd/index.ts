@@ -2,7 +2,7 @@ import { opt } from "src/lib/options";
 import brightness from "./brightness";
 import type { OsdOptions } from "./type";
 import type {
-  AnchorLayout,
+  AnchorLayoutType,
   HexColor,
   OsdOrientation,
   RevealTransitionWithAuto,
@@ -15,7 +15,7 @@ const osd: OsdOptions = {
   startupDelayMs: opt(250),
 
   // HyprPanel-style location names (also accept underscore variants).
-  location: opt<AnchorLayout>("bottom-right"),
+  location: opt<AnchorLayoutType>("bottom-right"),
   orientation: opt<OsdOrientation>("horizontal"),
 
   // Transition options.

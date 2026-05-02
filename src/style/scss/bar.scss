@@ -52,7 +52,6 @@ window.bar {
     );
 
     padding: $panel-pad-y $panel-pad-x;
-    background: $bar-panel-bg;
     border-radius: if($bar-style-floating, $panel-radius, 0px);
 
     // shadow + border are optional, but together they give the HyprPanel vibe

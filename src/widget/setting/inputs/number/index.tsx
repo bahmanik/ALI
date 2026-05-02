@@ -1,16 +1,16 @@
 import { Gtk } from 'ags/gtk4';
-import { Accessor, With } from 'gnim';
+import { Accessor, createState, With } from 'gnim';
 import icons from 'src/lib/icons/icons';
 import { NumberInputterProps } from '../types';
 
-function NumberInputter<T extends string | number | boolean | object>({
+function NumberInputter({
   opt,
   min,
   max,
   increment = 1,
-  isUnsaved,
-  setIsUnsaved,
-}: NumberInputterProps<T>): JSX.Element {
+}: Required<NumberInputterProps>): JSX.Element {
+  const [isUnsaved, setIsUnsaved] = createState(false)
+
   return (
     <box>
       <box class="unsaved-icon-container" halign={Gtk.Align.START}>
@@ -31,7 +31,7 @@ function NumberInputter<T extends string | number | boolean | object>({
           setIsUnsaved(currentText !== optValue);
         }}
         onActivate={(self) => {
-          opt.set(self.value as T);
+          opt.set(self.value);
         }}
         $={(self) => {
           self.set_range(min, max);
@@ -41,7 +41,7 @@ function NumberInputter<T extends string | number | boolean | object>({
           });
 
           //WARNING: you should hook this
-          self.set_value(opt.get() as number);
+          self.set_value(opt.get());
           setIsUnsaved(Number(self.get_text()) !== opt.get());
 
         }}

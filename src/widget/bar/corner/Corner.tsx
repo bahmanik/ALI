@@ -6,7 +6,7 @@ import type { Gtk } from "ags/gtk4"
 
 import { barsGeometry } from "../shared"
 import type { BarsOnMonitor } from "../shared"
-import { VisualAssetImageService } from "src/services/assets/VisualAssetImageService"
+import { AssetPipelineService } from "src/services/assets/AssetPipelineService"
 
 import {
   clearToTransparent,
@@ -27,7 +27,7 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
   let da: Gtk.DrawingArea
 
   const monitorId = gdkmonitor.connector
-  const assetSvc = VisualAssetImageService.getInstance()
+  const assetSvc = AssetPipelineService.getInstance()
 
   let backgroundSurface: giCairo.ImageSurface | null = null
   let backgroundW = 1
@@ -81,7 +81,7 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
 
     if (asset.kind === "solid") return
 
-    unwatchBackground = assetSvc.watch(asset, "bar-corner-background", (outPath) => {
+    unwatchBackground = assetSvc.watch(asset, (outPath) => {
       loadBackgroundFrom(outPath, gen)
     })
   }

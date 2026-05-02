@@ -1,10 +1,10 @@
 import { opt } from 'src/lib/options'
 import type { CountdownOptions } from './type'
-import type { AnchorLayout, RevealTransitionWithAuto, StackTransition } from 'src/configuration/types'
+import type { AnchorLayoutType, RevealTransitionWithAuto, StackTransition } from 'src/configuration/types'
 
 const countdown: CountdownOptions = {
   window: {
-    layout: opt<AnchorLayout>('top-right'),
+    layout: opt<AnchorLayoutType>('top-right'),
     revealTransition: opt<RevealTransitionWithAuto>('CROSSFADE'),
     transitionDuration: opt(1.6),
     margin: opt(12),

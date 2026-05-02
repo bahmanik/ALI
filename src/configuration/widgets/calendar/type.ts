@@ -1,35 +1,24 @@
 import type { Opt } from "src/lib/options";
-import type { AnchorLayout, HexColor, RevealTransitionWithAuto } from "src/configuration/types";
-
-export enum CalendarEnum {
-  "Gregorian", "Jalali", "Hijri", "Hebrew", "Buddhist", "Japanese", "Indian", "ROC", "Chinese"
-}
-
-export enum WeekDaysEnum {
-  "Sun", "Mon", "Tues", "Wed", "thurs", "Fri", "Sat"
-}
-
-export enum BorderLocationEnum {
-  "none", "full"
-}
+import type { AnchorLayoutType, HexColor, RevealTransitionWithAuto } from "src/configuration/types";
+import type { BorderLocationType, CalendarType, WeekDaysType } from "./enums";
 
 export interface CalendarOptions {
-  calendar: Opt<CalendarEnum>;
+  calendar: Opt<CalendarType>;
   locale: Opt<string>;
-  startOfWeek: Opt<WeekDaysEnum>;
-  weekend: Opt<WeekDaysEnum[]>;
+  startOfWeek: Opt<WeekDaysType>;
+  weekend: Opt<WeekDaysType[]>;
 
   showOutsideDays: Opt<boolean>;
   showWeekNumbers: Opt<boolean>;
 
   showSecondaryDate: Opt<boolean>;
-  secondaryCalendar: Opt<CalendarEnum>;
+  secondaryCalendar: Opt<CalendarType>;
 
   window: {
     width: Opt<number>;
     height: Opt<number>;
     margin: Opt<number>;
-    layout: Opt<AnchorLayout>;
+    layout: Opt<AnchorLayoutType>;
     revealTransition: Opt<RevealTransitionWithAuto>;
     transitionDuration: Opt<number>;
   };
@@ -40,7 +29,7 @@ export interface CalendarOptions {
     radius: Opt<number>;
     padding: Opt<number>;
     borderEnable: Opt<boolean>;
-    borderLocation: Opt<BorderLocationEnum>;
+    borderLocation: Opt<BorderLocationType>;
     borderWidth: Opt<number>;
     borderColor: Opt<HexColor>;
     shadowEnable: Opt<boolean>;
@@ -64,8 +53,8 @@ export interface CalendarOptions {
     cellGap: Opt<number>;
     outsideOpacity: Opt<number>;
     weekendOpacity: Opt<number>;
-    todayBg: Opt<string>;
-    selectedBg: Opt<string>;
-    hoverBg: Opt<string>;
+    todayBg: Opt<HexColor>;
+    selectedBg: Opt<HexColor>;
+    hoverBg: Opt<HexColor>;
   };
 }

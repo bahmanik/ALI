@@ -2,6 +2,12 @@ import { Gtk } from "ags/gtk4";
 import { execAsync } from "ags/process";
 import { Accessor } from "gnim";
 
+export interface LabelSettingProps {
+  title: string;
+  subtitle?: string | Accessor<string>;
+  subtitleLink?: string;
+}
+
 export const Label = ({
   title: name,
   subtitle: sub = '',
@@ -43,11 +49,6 @@ export const Label = ({
   );
 };
 
-export interface LabelSettingProps {
-  title: string;
-  subtitle?: string | Accessor<string>;
-  subtitleLink?: string;
-}
 export const PropertyLabel = ({ title, subtitle, subtitleLink }: LabelSettingProps): JSX.Element => {
   return (
     <box halign={Gtk.Align.START} valign={Gtk.Align.START} hexpand>

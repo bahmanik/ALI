@@ -1,6 +1,6 @@
 import { Astal, Gdk } from "ags/gtk4"
 import { createState } from "gnim";
-import FusedRect from "./adaptiveRect";
+import { LineGraph } from "../shared/lineGraph";
 
 const FULL_ANCHOR: Astal.WindowAnchor =
   Astal.WindowAnchor.TOP |

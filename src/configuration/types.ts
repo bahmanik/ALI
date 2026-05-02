@@ -1,7 +1,6 @@
 import { BarModules } from "src/widget/bar/bar/modules";
 import { DashboardModules } from "src/widget/dashboard/_component";
 
-export type Pattern = { path: string; size: number };
 
 export type TransitionType =
     | "none"
@@ -32,6 +31,20 @@ export type TransitionPos =
     | "bottom-right";
 
 export type BarLocation = "top" | "bottom" | "left" | "right";
+
+export type {
+    AssetTransformation,
+    ImageTechnique,
+    VisualAsset,
+    ResolvedAsset,
+} from "src/services/assets/types"
+
+export type HexColor = `#${string}`;
+
+export type CalendarBorderLocation = "none" | "full";
+
+export type LauncherBorderLocation = "none" | "full";
+
 export type BarBorderLocation =
     | "none"
     | "top"
@@ -41,20 +54,6 @@ export type BarBorderLocation =
     | "horizontal"
     | "vertical"
     | "full";
-
-export type ImageTechnique = "none" | "negative" | "grayscale" | "sepia";
-
-export type VisualAsset =
-    | { kind: "solid"; color: string; opacity?: number }
-    | { kind: "image"; path: string; technique?: ImageTechnique }
-    | { kind: "pattern"; path: string; size: number }
-
-export type HexColor = `#${string}`;
-export type CornerFill = "image" | "solid" | "pattern";
-
-export type CalendarBorderLocation = "none" | "full";
-
-export type LauncherBorderLocation = "none" | "full";
 
 export type ThemeMode = "dark" | "light";
 
@@ -84,25 +83,28 @@ export type MatugenResizeFilter =
  * We accept both HyprPanel-style "top-left" and internal underscore variants
  * ("top_left") to avoid duplicating enums across subsystems.
  */
-export type AnchorLayout =
-    | "top-left"
-    | "top-center"
-    | "top-right"
-    | "bottom-left"
-    | "bottom-center"
-    | "bottom-right"
-    | "top"
-    | "bottom"
-    | "left"
-    | "right"
-    | "center"
-    | "full"
-    | "top_left"
-    | "top_center"
-    | "top_right"
-    | "bottom_left"
-    | "bottom_center"
-    | "bottom_right";
+export const AnchorLayoutValues = [
+    "top-left",
+    "top-center",
+    "top-right",
+    "bottom-left",
+    "bottom-center",
+    "bottom-right",
+    "top",
+    "bottom",
+    "left",
+    "right",
+    "center",
+    "full",
+    "top_left",
+    "top_center",
+    "top_right",
+    "bottom_left",
+    "bottom_center",
+    "bottom_right"
+] as const
+
+export type AnchorLayoutType = (typeof AnchorLayoutValues)[number]
 
 /** Names mapped to Gtk.RevealerTransitionType (GTK4). */
 export type GtkRevealerTransitionName =

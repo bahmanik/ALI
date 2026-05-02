@@ -1,3 +1,4 @@
+import { Gtk } from "ags/gtk4";
 import BooleanInputter from "./boolean";
 import NumberInputter from "./number";
 import StringInputter from "./string";
@@ -5,59 +6,41 @@ import ColorInputter from "./color";
 import FloatInputter from "./float";
 import ImageInputter from "./image";
 import EnumInputter from "./enum";
-import { Accessor, createState } from "gnim";
 import { InputterProps } from "./types";
-import { Gtk } from "ags/gtk4";
 
-function Inputter<T extends string | number | boolean | object>({
-  opt,
-  type = typeof opt.get() as InputterProps<T>['type'],
-  enums = [],
-  min = 0,
-  max = 1000000,
-  increment = 1,
-}: InputterProps<T>): JSX.Element {
-  const [isUnsaved, setIsUnsaved] = createState(false)
-
+function Inputter(props: InputterProps): JSX.Element {
   const renderInput = () => {
-    switch (type) {
+    switch (props.type) {
       case 'number':
         return (
           <NumberInputter
-            opt={opt}
-            min={min}
-            max={max}
-            increment={increment}
-            isUnsaved={isUnsaved}
-            setIsUnsaved={setIsUnsaved}
+            opt={props.opt}
+            min={props.min ?? 0}
+            max={props.max ?? 100}
+            increment={props.increment ?? 1}
           />
-        )
-
+        );
       case 'float':
-        return <FloatInputter opt={opt} isUnsaved={isUnsaved} setIsUnsaved={setIsUnsaved} />
-
+        return <FloatInputter opt={props.opt} />
       case 'string':
-        return <StringInputter opt={opt} isUnsaved={isUnsaved} setIsUnsaved={setIsUnsaved} />
-
+        return <StringInputter opt={props.opt} />
       case 'enum':
-        return <EnumInputter opt={opt} values={enums} />
-
+        return <EnumInputter opt={props.opt} values={props.values ?? []} />;
       case 'boolean':
-        return <BooleanInputter opt={opt} />
-
-      case 'img':
-        return <ImageInputter opt={opt} />
-
+        return <BooleanInputter opt={props.opt} />;
+      case 'image':
+        return <ImageInputter opt={props.opt} />;
       case 'color':
-        return <ColorInputter opt={opt} />
-
-      default:
-        return <label label={`No setter with type ${type}`} />
+        return <ColorInputter opt={props.opt} />;
     }
   }
 
   return (
-    <box class="inputter-container" valign={Gtk.Align.START} halign={Gtk.Align.END}>
+    <box
+      class="inputter-container"
+      valign={Gtk.Align.START}
+      halign={Gtk.Align.END}
+    >
       {renderInput()}
     </box>
   )

@@ -1,5 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { BarBorderLocation, BarLocation, HexColor, Pattern } from "src/configuration/types";
+import type { BarBorderLocation, BarLocation, HexColor } from "src/configuration/types";
 
 export interface SecondaryBarOptions {
   enable: Opt<boolean>;
@@ -50,11 +50,4 @@ export interface SecondaryBarOptions {
   useLocalScale: Opt<boolean>;
   localScale: Opt<number>;
   scale: Opt<number>;
-
-  // overridePattern
-  patternEnable: Opt<boolean>;
-  useLocalPattern: Opt<boolean>;
-  localPattern: Opt<Pattern>;
-  patternPath: Opt<string>;
-  patternSize: Opt<number>;
 }

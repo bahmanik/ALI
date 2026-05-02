@@ -1,5 +1,4 @@
 import { overrideScale } from "src/lib/options/factories/overrideScale";
-import { overridePattern } from "src/lib/options/factories/overridePattern";
 import { opt } from "src/lib/options";
 import type { BarBorderLocation, BarLocation, HexColor } from "src/configuration/types";
 import type { SecondaryBarOptions } from "./type";
@@ -58,11 +57,6 @@ const secondaryBar: SecondaryBarOptions = {
     widgetId: 'bar.secondaryBar',
     defaultLocal: 12,
     exports: { scss: true },
-  }),
-
-  ...overridePattern({
-    widgetId: 'bar.secondaryBar',
-    defaultLocal: { path: "none", size: 12 },
   }),
 }
 

@@ -1,10 +1,10 @@
 import icons from 'src/lib/icons/icons';
 import { EnumInputterProps } from '../types';
 
-function EnumInputter<T extends string | number | boolean | object>({
+function EnumInputter<T extends string>({
   opt,
   values,
-}: EnumInputterProps<T>): JSX.Element {
+}: Required<EnumInputterProps<T>>): JSX.Element {
   const step = (dir: 1 | -1): void => {
     const indexOfCurrentValue = values.findIndex((index) => index === opt.get());
 

@@ -1,72 +1,53 @@
-import { Accessor, Setter } from "gnim";
+import type { Accessor } from "gnim";
+import { HexColor } from "src/configuration/types";
 import { Opt } from "src/lib/options";
 
-export type BooleanInputterProps<T> = {
-  opt: Opt<T>;
+export type BooleanInputterProps = {
+  opt: Opt<boolean>;
 }
 
-export type ColorInputterProps<T> = {
-  opt: Opt<T>;
+export type ColorInputterProps = {
+  opt: Opt<HexColor>;
 }
 
-export type EnumInputterProps<T> = {
+export type EnumInputterProps<T extends string = string> = {
   opt: Opt<T>;
-  values: T[];
+  values?: readonly T[] | T[]
 }
 
-export type FloatInputterProps<T> = {
-  opt: Opt<T>;
-  isUnsaved: Accessor<boolean>
-  setIsUnsaved: Setter<boolean>
+export type FloatInputterProps = {
+  opt: Opt<number>;
 }
 
-export type ImageInputterProps<T> = {
-  opt: Opt<T>;
+export type ImageInputterProps = {
+  opt: Opt<string>;
 }
 
-export type NumberInputterProps<T> = {
-  opt: Opt<T>
-  min: number
-  max: number
+export type NumberInputterProps = {
+  opt: Opt<number>
+  min?: number
+  max?: number
   increment?: number
-  isUnsaved: Accessor<boolean>
-  setIsUnsaved: Setter<boolean>
 }
 
-export type StringInputterProps<T> = {
-  opt: Opt<T>;
-  isUnsaved: Accessor<boolean>
-  setIsUnsaved: Setter<boolean>
+export type StringInputterProps = {
+  opt: Opt<string>;
 }
 
-export interface InputterProps<T> {
-  opt: Opt<T>;
-  type?: InputType;
-  note?: string;
-  enums?: T[];
-  max?: number;
-  min?: number;
+type InputterBaseProps = {
   disabledBinding?: Accessor<boolean>;
-  subtitle?: LabelSettingProps['subtitle'];
-  subtitleLink?: string;
-  dependencies?: string[];
-  increment?: number;
-  fontLabel?: Opt<string>;
 }
 
-type InputType =
-  | 'number'
-  | 'color'
-  | 'float'
-  | 'object'
-  | 'string'
-  | 'enum'
-  | 'boolean'
-  | 'img'
-  | 'image'
-
-export interface LabelSettingProps {
-  title: string;
-  subtitle?: string | Accessor<string>;
-  subtitleLink?: string;
-}
+//NOTE: EnumInputterProps<any> is intentional — Opt<T> is invariant due to Setter<T>
+// being contravariant (gnim). Opt<AnchorLayoutType> cannot structurally satisfy
+// Opt<string>, so <any> is the boundary escape hatch. EnumInputter<T> itself
+// remains fully type-safe; the any does not leak into implementation.
+export type InputterProps = (
+  | { type: "boolean" } & BooleanInputterProps
+  | { type: 'color' } & ColorInputterProps
+  | { type: 'enum' } & EnumInputterProps<any>
+  | { type: 'float' } & FloatInputterProps
+  | { type: 'image' } & ImageInputterProps
+  | { type: 'number' } & NumberInputterProps
+  | { type: 'string' } & StringInputterProps
+) & InputterBaseProps
