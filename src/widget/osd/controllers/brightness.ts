@@ -17,7 +17,7 @@ export class BrightnessController extends OsdController {
     this.#started = true;
 
     try {
-      const brightness = BrightnessService.getInstance();
+      const brightness = BrightnessService.get_default();
       this.#brightness = brightness;
 
       const update = () => {
@@ -36,7 +36,7 @@ export class BrightnessController extends OsdController {
         });
       };
 
-      void brightness.ensureStarted().then(() => {
+      void brightness.start().then(() => {
         brightness.connect?.("notify::screen", update);
         update();
       });

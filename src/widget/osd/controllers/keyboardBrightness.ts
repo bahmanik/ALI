@@ -17,7 +17,7 @@ export class KeyboardBrightnessController extends OsdController {
     this.#started = true;
 
     try {
-      const brightness = BrightnessService.getInstance();
+      const brightness = BrightnessService.get_default();
       this.#brightness = brightness;
 
       const update = () => {
@@ -35,7 +35,7 @@ export class KeyboardBrightnessController extends OsdController {
         });
       };
 
-      void brightness.ensureStarted().then(() => {
+      void brightness.start().then(() => {
         brightness.connect?.("notify::kbd-percent", update);
         update();
       });

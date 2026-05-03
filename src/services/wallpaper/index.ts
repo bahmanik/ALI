@@ -7,7 +7,7 @@ import { execAsync } from "ags/process"
 
 import { SwwwDaemon } from "./SwwwDaemon"
 import { createDebouncer } from "../../lib/time/debounce"
-import { startOnce } from "../../services/startOnce"
+import { ServiceBase } from "../ServiceBase"
 import type { Opt } from "../../lib/options"
 import options from "src/configuration"
 
@@ -30,12 +30,12 @@ type WallpaperOptions = {
   }
 }
 
-export class WallpaperService {
-  private static _instance: WallpaperService | undefined
+export class WallpaperService extends ServiceBase {
+  private static _default: WallpaperService | null = null
 
-  public static getInstance(): WallpaperService {
-    if (!this._instance) this._instance = new WallpaperService()
-    return this._instance
+  public static get_default(): WallpaperService {
+    if (!this._default) this._default = new WallpaperService()
+    return this._default
   }
 
   private _daemon = new SwwwDaemon()
@@ -46,8 +46,9 @@ export class WallpaperService {
   private _opts: WallpaperOptions | null = null
   private _managedFile = ""
 
-  private readonly _ensureStarted = startOnce(async () => {
-    // ✅ resolve at runtime, not module scope
+  /** Explicit runtime start. Idempotent. */
+  protected async _boot(): Promise<void> {
+    // resolve at runtime, not module scope
     const { wallpaper } = options.display
     const opts = (this._opts ??= wallpaper as unknown as WallpaperOptions)
 
@@ -75,13 +76,10 @@ export class WallpaperService {
     opts.transition.pos.subscribe(() => this.scheduleApply())
 
     await this._syncDaemon()
-  })
+  }
 
   private constructor() {
-  }
-  /** Explicit runtime start. Idempotent. */
-  public async ensureStarted(): Promise<void> {
-    await this._ensureStarted()
+    super()
   }
 
   public get isRunning(): boolean {

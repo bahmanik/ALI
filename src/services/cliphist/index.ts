@@ -1,4 +1,5 @@
-import GObject, { register } from "ags/gobject";
+import { register } from "ags/gobject";
+import { ServiceBase } from "../ServiceBase";
 import { createState } from "ags";
 import { monitorFile } from "ags/file";
 import GLib from "gi://GLib?version=2.0";
@@ -19,22 +20,22 @@ export interface ClipboardEntry {
 
 //WARNING: wire options later
 @register({ GTypeName: "Cliphist" })
-export default class Cliphist extends GObject.Object {
-  static instance: Cliphist;
+export default class CliphistService extends ServiceBase {
+  private static _default: CliphistService | null = null;
 
   static get_default() {
-    if (!this.instance) this.instance = new Cliphist();
-    return this.instance;
+    if (!this._default) this._default = new CliphistService();
+    return this._default;
   }
 
   #list = createState<string[]>([]);
 
   constructor() {
     super();
-    if (options.clipboard.enabled) this.start();
   }
 
-  async start() {
+  protected async _boot() {
+    if (!options.clipboard.enabled) return;
     if (!SystemUtilities.checkDependencies("wl-paste", "cliphist")) return;
 
     try {

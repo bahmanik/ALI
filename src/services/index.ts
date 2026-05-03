@@ -1,9 +1,7 @@
 import BrightnessService from "./brightness";
 import CountdownService from "./countdown";
 import { MatugenPaletteService } from "./matugenPalette";
-import { WallpaperService } from "./wallpaper/WallpaperService";
-import { getNetwork } from "./network";
-import warnOnLowBattery from "../lib/observers/batteryWarning";
+import { WallpaperService } from "./wallpaper";
 
 /**
  * Composition root: single place that wires options -> runtimes.
@@ -12,36 +10,17 @@ import warnOnLowBattery from "../lib/observers/batteryWarning";
  */
 export const services = {
   get brightness(): BrightnessService {
-    return BrightnessService.getInstance();
+    return BrightnessService.get_default();
   },
   get wallpaper(): WallpaperService {
-    return WallpaperService.getInstance();
+    return WallpaperService.get_default();
   },
   get matugenPalette(): MatugenPaletteService {
-    return MatugenPaletteService.getInstance();
+    return MatugenPaletteService.get_default();
   },
   get countdown(): CountdownService {
-    return CountdownService.getInstance();
-  },
-  get network() {
-    return getNetwork();
+    return CountdownService.get_default();
   },
 };
 
-/**
- * Deterministic startup of startup-critical services.
- * Idempotent by virtue of each service's ensureStarted*().
- */
-export async function bootServices(): Promise<void> {
-  // Wallpaper was previously started in src/initService.ts (apply() at startup).
-  await services.wallpaper.ensureStarted();
-  await services.wallpaper.apply();
-  // Matugen palette was previously started in src/initService.ts.
-  await services.matugenPalette.ensureStarted();
-
-  // Countdown: global actions only. Heavy watchers/timers are widget-owned.
-  await services.countdown.ensureStartedMinimal();
-
-  // this is a simple function
-  warnOnLowBattery()
-}
+// TODO: removed — boot is now owned by LifecycleManager (see src/lib/lifecycle)

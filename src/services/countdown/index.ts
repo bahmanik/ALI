@@ -5,7 +5,7 @@ import AstalNotifd from 'gi://AstalNotifd';
 import { readFile, writeFile } from 'ags/file';
 import { execAsync } from 'ags/process';
 import { timeout } from 'ags/time';
-import { startOnce } from 'src/services/startOnce';
+import { ServiceBase } from "../ServiceBase";
 import { notify, type NotificationAction } from 'src/lib/notiofication';
 import { CACHE, ensureDirectory, ensureParentDir, fileExists } from 'src/lib/session/api';
 import { extFromPath, joinPath } from 'src/lib/path/helpers';
@@ -16,7 +16,7 @@ import type { Timer } from 'ags/time';
 // Types
 // ---------------------------------
 
-//NOTE:not yet implemented and may never be imokemented
+//NOTE:not yet implemented and may never be implemented
 export type IsoInstant = string; // e.g. 2026-12-25T00:00:00.000Z
 export type IsoLocalDateTime = string; // e.g. 2026-03-01T21:00:00 (in tzid)
 
@@ -482,12 +482,12 @@ function parseActionId(actionId: string): ParsedAction {
   return { kind: 'unknown' };
 }
 
-export default class CountdownService {
-  private static _instance: CountdownService | null = null;
+export default class CountdownService extends ServiceBase {
+  private static _default: CountdownService | null = null;
 
-  public static getInstance(): CountdownService {
-    if (!CountdownService._instance) CountdownService._instance = new CountdownService();
-    return CountdownService._instance;
+  public static get_default(): CountdownService {
+    if (!CountdownService._default) CountdownService._default = new CountdownService();
+    return CountdownService._default;
   }
 
   private _timer: Timer | undefined;
@@ -498,15 +498,15 @@ export default class CountdownService {
   private _rescanScheduled = false;
   private _fullStarted = false;
 
-  private readonly _ensureStartedMinimal = startOnce(async () => {
+  /**
+   * Full start: binds notification handlers, enables cache watching, and starts the scheduler.
+   * Idempotent.
+   */
+  protected async _boot(): Promise<void> {
     this._notifd ??= AstalNotifd.get_default()
 
     // global, cheap: binds notification action handlers
     this._bindNotificationActions();
-  });
-
-  private readonly _ensureStartedFull = startOnce(async () => {
-    await this._ensureStartedMinimal();
 
     // heavy: cache dirs + watchers + timer-based scheduler
     ensureCacheDirs();
@@ -514,27 +514,12 @@ export default class CountdownService {
 
     this._fullStarted = true;
     this.refresh();
-  });
+  }
 
   private constructor() {
+    super()
+
     // cheap constructor: no IO/monitors/timers/subprocess
-  }
-
-
-  /**
-   * Minimal global start: binds notification action handlers only.
-   * Idempotent.
-   */
-  public async ensureStartedMinimal(): Promise<void> {
-    await this._ensureStartedMinimal();
-  }
-
-  /**
-   * Full start: enables cache watching + scheduler/timers.
-   * Idempotent.
-   */
-  public async ensureStartedFull(): Promise<void> {
-    await this._ensureStartedFull();
   }
 
   // -----------------------------

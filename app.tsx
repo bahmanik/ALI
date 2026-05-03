@@ -20,18 +20,18 @@ function mountUI() {
 
   // Per-monitor windows
   const perMonitor = [
-    Corner,
-    PrimaryBar,
-    SecondaryBar,
-    AppLauncherWindow,
-    SoundOsd,
-    MicOsd,
+    // Corner,
+    // PrimaryBar,
+    // SecondaryBar,
+    // AppLauncherWindow,
+    // SoundOsd,
+    // MicOsd,
     BrightnessOsd,
-    KeyboardBrightnessOsd,
-    CalendarWindow,
-    CountdownWindow,
-    PowerWindow,
-    SettingWindow,
+    // KeyboardBrightnessOsd,
+    // CalendarWindow,
+    // CountdownWindow,
+    // PowerWindow,
+    // SettingWindow,
     // DashboardWindows,
     // TestWindow
   ] as const;

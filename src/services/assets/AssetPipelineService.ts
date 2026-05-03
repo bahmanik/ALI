@@ -3,10 +3,10 @@ import Gio from "gi://Gio?version=2.0"
 import { monitorFile } from "ags/file"
 import { execAsync } from "ags/process"
 import { Timer, timeout } from "ags/time"
-import { ensureDirectory } from "src/lib/session/api"
-import { normalizeToAbsolutePath } from "src/lib/path/helpers"
+import { CACHE, ensureDirectory } from "src/lib/session/api"
+import { joinPath, normalizeToAbsolutePath } from "src/lib/path/helpers"
 import { SystemUtilities } from "src/lib/system/SystemUtilities"
-import { AssetCacheService } from "./AssetCacheService"
+import { ServiceBase } from "../ServiceBase"
 import type { ImageTechnique, ResolvedAsset, VisualAsset } from "./types"
 
 type Subscriber = (outPath: string) => void
@@ -29,15 +29,39 @@ type Entry = {
   gen: number
 }
 
-export class AssetPipelineService {
-  private static _instance: AssetPipelineService | undefined
+class AssetCache {
+  static VERSION = 1
 
-  public static getInstance(): AssetPipelineService {
-    if (!this._instance) this._instance = new AssetPipelineService()
-    return this._instance
+  static getCachePath(signature: object, extension = 'png') {
+    const json = JSON.stringify({ version: this.VERSION, ...signature })
+
+    const hash = GLib.compute_checksum_for_string(
+      GLib.ChecksumType.SHA256,
+      json,
+      -1,
+    ).slice(0, 16)
+
+    const dir = joinPath(CACHE, 'assets')
+
+    ensureDirectory(dir)
+
+    return joinPath(dir, `${hash}.${extension}`)
+  }
+}
+
+export class AssetPipelineService extends ServiceBase {
+  private static _default: AssetPipelineService | null = null
+
+  public static get_default(): AssetPipelineService {
+    if (!this._default) this._default = new AssetPipelineService()
+    return this._default
   }
 
-  private constructor() { }
+  private constructor() {
+    super()
+  }
+
+  protected async _boot(): Promise<void> { }
 
   private readonly _entries = new Map<string, Entry>()
   private _magickBin: string | null | undefined = undefined
@@ -105,7 +129,7 @@ export class AssetPipelineService {
 
   private _entryKey(asset: Extract<VisualAsset, { kind: "image" | "pattern" }>): string {
     return JSON.stringify({
-      version: AssetCacheService.VERSION,
+      version: AssetCache.VERSION,
       ...this._signature(asset),
     })
   }
@@ -120,7 +144,7 @@ export class AssetPipelineService {
     if (existing) return existing
 
     const signature = this._signature(asset)
-    const outPath = AssetCacheService.getCachePath(signature)
+    const outPath = AssetCache.getCachePath(signature)
     const outDir = GLib.path_get_dirname(outPath)
 
     ensureDirectory(outDir)
