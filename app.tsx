@@ -17,13 +17,13 @@ function mountUI() {
   const monitors = app.get_monitors()
 
   const perMonitor = [
-    // Corner,
-    // PrimaryBar,
-    // AppLauncherWindow,
-    // CalendarWindow,
-    // CountdownWindow,
-    // PowerWindow,
-    // SettingWindow,
+    Corner,
+    PrimaryBar,
+    AppLauncherWindow,
+    CalendarWindow,
+    CountdownWindow,
+    PowerWindow,
+    SettingWindow,
     TestWindow,
   ] as const
 

@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0"
 import giCairo from "cairo"
+import GLib from "gi://GLib?version=2.0";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  useDrawingArea(draw, opts?)
@@ -15,35 +16,45 @@ import giCairo from "cairo"
 //  expand (default false)
 //    false → no hexpand/vexpand. Use this for fixed-size canvases
 //            (CircularProgress, LineGraph, etc.) that set their own
-//            content_width/content_height. Leaving expand off prevents
-//            the widget from requesting "all available space" during the
-//            very first GTK allocation — which happens before the
-//            layer-shell configure roundtrip completes. If expand were true
-//            on a sized widget, GTK would allocate the parent window at a
-//            fallback geometry (~200×200 @ 0,0) and render one bad frame
-//            before the compositor sends the real monitor dimensions.
+//            content_width/content_height.
 //    true  → set both hexpand and vexpand. Use only when the canvas is
 //            meant to fill its parent container (fullscreen overlays, etc.).
-//            In those cases the parent window is sized by layer-shell anchors
-//            rather than the child's size request, so the expand flag does
-//            not affect the window's initial allocation.
+//
+//  Startup flash fix
+//    GTK invokes the draw function before the Wayland layer-shell configure
+//    roundtrip completes, so the first frame arrives at the compositor's
+//    fallback geometry (~200×200) rather than the real monitor dimensions.
+//    The first draw call is intentionally skipped and rescheduled via
+//    GLib.idle_add(PRIORITY_DEFAULT_IDLE), which runs after GDK has processed
+//    the configure event and the widget has its real allocated size.
 //
 //  The draw callback receives a typed Cairo.Context plus the widget's current
 //  pixel dimensions, so you never need to query them separately.
 // ─────────────────────────────────────────────────────────────────────────────
+
 const useDrawingArea = (
   draw: (cr: giCairo.Context, w: number, h: number) => void,
   { interactive = false, expand = false }: { interactive?: boolean; expand?: boolean } = {},
 ) => {
   const area = new Gtk.DrawingArea()
-  if (expand) {
-    area.set_hexpand(true)
-    area.set_vexpand(true)
-  }
+  area.set_hexpand(expand)
+  area.set_vexpand(expand)
   area.set_can_target(interactive)
-  area.set_draw_func((_, cr, w, h) =>
-    draw(cr as unknown as giCairo.Context, w, h),
-  )
+
+  let configured = false
+
+  area.set_draw_func((_, cr, w, h) => {
+    if (!configured) {
+      configured = true
+      GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+        area.queue_draw()
+        return GLib.SOURCE_REMOVE
+      })
+      return
+    }
+    draw(cr as unknown as giCairo.Context, w, h)
+  })
+
   return {
     widget: area,
     redraw: () => area.queue_draw(),
