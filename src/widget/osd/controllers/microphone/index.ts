@@ -1,8 +1,6 @@
 import AstalWp from "gi://AstalWp";
-
 import icons from "src/lib/icons/icons";
-
-import { clamp01, OsdController, osdEnabled, sourceEnabled, VOLUME_MAX } from "./shared";
+import { clamp01, OsdController, osdEnabled, sourceEnabled, VOLUME_MAX } from "../shared";
 
 export class MicController extends OsdController {
   #started = false;
@@ -18,7 +16,7 @@ export class MicController extends OsdController {
     this.#started = true;
 
     try {
-      const wp = AstalWp.get_default?.();
+      const wp = AstalWp.get_default();
       const mic = (wp as any)?.defaultMicrophone ?? (wp as any)?.audio?.defaultMicrophone;
       if (!mic) return;
 
@@ -81,4 +79,9 @@ export class MicController extends OsdController {
   }
 }
 
-export const micController = new MicController();
+let _micController: MicController | null = null;
+
+export function getMicController(): MicController {
+  if (!_micController) _micController = new MicController();
+  return _micController;
+}

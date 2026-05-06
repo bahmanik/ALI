@@ -1,7 +1,6 @@
 import BrightnessService from "src/services/brightness";
 import icons from "src/lib/icons/icons";
-
-import { clamp01, OsdController, osdEnabled, sourceEnabled } from "./shared";
+import { clamp01, OsdController, osdEnabled, sourceEnabled } from "../shared";
 
 export class BrightnessController extends OsdController {
   #started = false;
@@ -36,10 +35,9 @@ export class BrightnessController extends OsdController {
         });
       };
 
-      void brightness.start().then(() => {
-        brightness.connect?.("notify::screen", update);
-        update();
-      });
+      brightness.connect?.("notify::screen", update);
+      update();
+      console.log("brightness")
     } catch (err) {
       console.warn("[OSD] Brightness controller unavailable:", err);
     }
@@ -62,4 +60,9 @@ export class BrightnessController extends OsdController {
   }
 }
 
-export const brightnessController = new BrightnessController();
+let _brightnessController: BrightnessController | null = null;
+
+export function getBrightnessController(): BrightnessController {
+  if (!_brightnessController) _brightnessController = new BrightnessController();
+  return _brightnessController;
+}

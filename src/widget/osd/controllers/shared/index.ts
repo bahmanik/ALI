@@ -1,6 +1,5 @@
 import app from "ags/gtk4/app";
 import Gdk from "gi://Gdk?version=4.0";
-
 import options from "src/configuration";
 
 export type OsdKind = "sound" | "mic" | "brightness" | "keyboardBrightness";

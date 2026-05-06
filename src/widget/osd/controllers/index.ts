@@ -1,29 +1,21 @@
-export * from "./shared";
-
-export * from "./sound";
-export * from "./mic";
-export * from "./brightness";
-export * from "./keyboardBrightness";
-
 import type { OsdKind } from "./shared";
 import { OsdController } from "./shared";
-
-import { soundController } from "./sound";
-import { micController } from "./mic";
-import { brightnessController } from "./brightness";
-import { keyboardBrightnessController } from "./keyboardBrightness";
+import { getSoundController } from "./sound";
+import { getKdBrightnessController } from "./kbBrightness";
+import { getBrightnessController } from "./brightness";
+import { getMicController } from "./microphone";
 
 export function controllerForKind(kind: OsdKind): OsdController {
   switch (kind) {
     case "sound":
-      return soundController;
+      return getSoundController();
     case "mic":
-      return micController;
+      return getMicController();
     case "brightness":
-      return brightnessController;
+      return getBrightnessController();
     case "keyboardBrightness":
-      return keyboardBrightnessController;
+      return getKdBrightnessController();
     default:
-      return soundController;
+      return getSoundController();
   }
 }

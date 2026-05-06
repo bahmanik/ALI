@@ -8,7 +8,7 @@ import CountdownWindow from "src/widget/countdown/CountdownWindow";
 
 import { bootSession } from "src/lib/session";
 import { bootOptions } from "src/lib/options/runtime";
-import { bootNotif } from "src/lib/notiofication";
+import AstalNotifd from "gi://AstalNotifd?version=0.1";
 import { boot as bootPhase2 } from "src/boot";
 import PowerWindow from "src/widget/power";
 import DashboardWindow from "src/widget/dashboard";
@@ -48,7 +48,7 @@ function bootPhase1() {
     try {
       await bootSession();
       await bootOptions();
-      await bootNotif();
+      AstalNotifd.get_default();
     } catch (e) {
       console.error("[boot] phase1 failed", e);
     }

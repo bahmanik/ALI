@@ -1,12 +1,7 @@
 import type Gdk from "gi://Gdk?version=4.0";
 
 import Osd from "./Osd";
-import {
-  soundController,
-  micController,
-  brightnessController,
-  keyboardBrightnessController,
-} from "./controllers";
+import { controllerForKind } from "./controllers";
 
 export function SoundOsd(monitor: Gdk.Monitor) {
   return (
@@ -15,7 +10,7 @@ export function SoundOsd(monitor: Gdk.Monitor) {
       gdkmonitor={monitor}
       namespace="osd"
       kind="sound"
-      controller={soundController}
+      controller={controllerForKind("sound")}
     />
   );
 }
@@ -27,7 +22,7 @@ export function MicOsd(monitor: Gdk.Monitor) {
       gdkmonitor={monitor}
       namespace="mic-osd"
       kind="mic"
-      controller={micController}
+      controller={controllerForKind("mic")}
     />
   );
 }
@@ -39,7 +34,7 @@ export function BrightnessOsd(monitor: Gdk.Monitor) {
       gdkmonitor={monitor}
       namespace="brightness-osd"
       kind="brightness"
-      controller={brightnessController}
+      controller={controllerForKind("brightness")}
     />
   );
 }
@@ -51,7 +46,7 @@ export function KeyboardBrightnessOsd(monitor: Gdk.Monitor) {
       gdkmonitor={monitor}
       namespace="kbd-osd"
       kind="keyboardBrightness"
-      controller={keyboardBrightnessController}
+      controller={controllerForKind("keyboardBrightness")}
     />
   );
 }
