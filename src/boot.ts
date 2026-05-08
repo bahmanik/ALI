@@ -1,4 +1,3 @@
-import { bootServices } from "src/services";
 import { bootStyle } from "src/style";
 
 /**
@@ -12,5 +11,4 @@ import { bootStyle } from "src/style";
 export async function boot(): Promise<void> {
   await bootStyle();
   // await bootHyprland();
-  await bootServices();
 }

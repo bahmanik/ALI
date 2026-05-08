@@ -1,7 +1,8 @@
 import { exec, execAsync } from "ags/process";
-import GObject, { register, getter, setter } from "ags/gobject";
+import { register, getter, setter } from "ags/gobject";
 import GLib from "gi://GLib";
 import { SystemUtilities } from "src/lib/system/SystemUtilities";
+import { GServiceBase } from "../ServiceBase";
 
 // hyprsunset must exist in PATH
 const available = SystemUtilities.checkDependencies("hyprsunset");
@@ -16,11 +17,11 @@ function isRunning() {
 }
 
 @register({ GTypeName: "Hyprsunset" })
-export default class HyprsunsetService extends GObject.Object {
-  static instance: HyprsunsetService;
+export default class HyprsunsetService extends GServiceBase {
+  private static _default: HyprsunsetService | null = null;
   static get_default() {
-    if (!this.instance) this.instance = new HyprsunsetService();
-    return this.instance;
+    if (!this._default) this._default = new HyprsunsetService();
+    return this._default;
   }
 
   #available = available;
@@ -66,7 +67,9 @@ export default class HyprsunsetService extends GObject.Object {
 
   constructor() {
     super();
+  }
 
+  protected async _boot() {
     // Initial state sync
     this.#enabled = isRunning();
 

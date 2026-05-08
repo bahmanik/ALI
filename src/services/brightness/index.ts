@@ -1,14 +1,12 @@
 import GLib from "gi://GLib"
 import Gio from "gi://Gio"
 import options from "src/configuration";
-import GObject, { register, getter, setter } from "gnim/gobject"
+import { register, getter, setter } from "gnim/gobject"
 import { monitorFile, readFileAsync } from "ags/file"
 import { execAsync } from "ags/process"
 import { Timer, timeout } from "ags/time"
-import { startOnce } from "../startOnce";
+import { GServiceBase } from "../ServiceBase"
 import { SystemUtilities } from "src/lib/system/SystemUtilities";
-
-
 
 type BrightnessServiceOptions = {
   screenDevice?: string
@@ -17,21 +15,12 @@ type BrightnessServiceOptions = {
 }
 
 @register({ GTypeName: "Brightness" })
-export default class BrightnessService extends GObject.Object {
-  public static instance: BrightnessService | undefined
+export default class BrightnessService extends GServiceBase {
+  private static _default: BrightnessService | null = null
 
-  public static getInstance(opts: BrightnessServiceOptions = {}): BrightnessService {
-    if (!this.instance) this.instance = new BrightnessService(opts)
-    return this.instance
-  }
-
-  /**
-   * Explicit runtime start. Idempotent.
-   *
-   * This wires timers/monitors/subscriptions that were previously started in the constructor.
-   */
-  public async ensureStarted(): Promise<void> {
-    await this.#ensureStarted()
+  public static get_default(opts: BrightnessServiceOptions = {}): BrightnessService {
+    if (!this._default) this._default = new BrightnessService(opts)
+    return this._default
   }
 
   // NOTE: must be public for @register typing (private constructor breaks decorators)
@@ -77,7 +66,12 @@ export default class BrightnessService extends GObject.Object {
   #hbTimer?: Timer
   #hbGen = 0
 
-  #ensureStarted = startOnce(async () => {
+  /**
+   * Explicit runtime start. Idempotent.
+   *
+   * This wires timers/monitors/subscriptions that were previously started in the constructor.
+   */
+  protected async _boot(): Promise<void> {
     this.#available = SystemUtilities.checkDependencies("brightnessctl")
     if (!this.#available) {
       console.warn("[Brightness] brightnessctl not found -> service disabled")
@@ -109,7 +103,7 @@ export default class BrightnessService extends GObject.Object {
     await this.#refreshAll()
     this.#setupMonitors()
     this.#updateHeartbeat()
-  })
+  }
 
   // ----------------- exported GObject properties -----------------
 
@@ -507,4 +501,3 @@ export default class BrightnessService extends GObject.Object {
     }
   }
 }
-

@@ -1,8 +1,6 @@
-import icons from 'src/lib/icons/icons';
 import { ensureDirectory, ensureParentDir } from 'src/lib/session/api';
 import { errorHandler } from 'src/lib/errors/handler';
 import { monitorFile, readFile, writeFile } from 'ags/file';
-import { notify } from 'src/lib/notiofication';
 import type Gio from 'gi://Gio?version=2.0';
 
 /**
@@ -264,12 +262,6 @@ export class ConfigManager {
         const errorMessage = `Failed to load config file: ${error}`;
 
         console.error(errorMessage);
-
-        notify({
-            summary: 'Configuration Error',
-            body: errorMessage,
-            iconName: icons.ui.warning,
-        });
 
         errorHandler(error);
     }

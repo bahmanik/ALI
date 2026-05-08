@@ -1,8 +1,6 @@
 import AstalWp from "gi://AstalWp";
-
 import icons from "src/lib/icons/icons";
-
-import { clamp01, OsdController, osdEnabled, sourceEnabled, VOLUME_MAX } from "./shared";
+import { clamp01, OsdController, osdEnabled, sourceEnabled, VOLUME_MAX } from "../shared";
 
 export class SoundController extends OsdController {
   #started = false;
@@ -88,4 +86,9 @@ export class SoundController extends OsdController {
   }
 }
 
-export const soundController = new SoundController();
+let _soundController: SoundController | null = null;
+
+export function getSoundController(): SoundController {
+  if (!_soundController) _soundController = new SoundController();
+  return _soundController;
+}

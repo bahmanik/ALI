@@ -9,7 +9,7 @@ import { isHexColor } from "src/lib/valisation/colors";
 import { ensureDirectory } from "src/lib/session/api";
 import { createDebouncer } from "src/lib/time/debounce";
 import { SystemUtilities } from "src/lib/system/SystemUtilities";
-import { startOnce } from "src/services/startOnce";
+import { ServiceBase } from "../ServiceBase";
 
 type MatugenJson = Record<string, unknown>;
 
@@ -51,12 +51,12 @@ function hasUsableFile(path: string): boolean {
   }
 }
 
-export class MatugenPaletteService {
-  private static _instance: MatugenPaletteService;
+export class MatugenPaletteService extends ServiceBase {
+  private static _default: MatugenPaletteService | null = null;
 
-  public static getInstance(): MatugenPaletteService {
-    if (!this._instance) this._instance = new MatugenPaletteService();
-    return this._instance;
+  public static get_default(): MatugenPaletteService {
+    if (!this._default) this._default = new MatugenPaletteService();
+    return this._default;
   }
 
   private _debounce = createDebouncer(150);
@@ -66,8 +66,9 @@ export class MatugenPaletteService {
   private _lastPalette: MatugenJson | null = null;
   private _enabled = false;
 
-  private readonly _ensureStarted = startOnce(async () => {
-    // ✅ resolve at runtime, not module scope
+  /** Explicit runtime start. Idempotent. */
+  protected async _boot(): Promise<void> {
+    // resolve at runtime, not module scope
     const { wallpaper } = options.display;
     const colors = options.colors;
 
@@ -125,15 +126,12 @@ export class MatugenPaletteService {
     // Initial state
     syncEnabled();
     if (this._enabled) this.scheduleGenerate(200);
-  });
-
-  private constructor() {
-    // cheap constructor: no IO/monitors/timers/subprocess
   }
 
-  /** Explicit runtime start. Idempotent. */
-  public async ensureStarted(): Promise<void> {
-    await this._ensureStarted();
+  private constructor() {
+    super();
+
+    // cheap constructor: no IO/monitors/timers/subprocess
   }
 
   public get lastPalette(): MatugenJson | null {
