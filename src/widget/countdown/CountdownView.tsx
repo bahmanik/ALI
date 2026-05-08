@@ -12,9 +12,7 @@ import type { CountdownUiSlide } from "src/services/countdown";
 type StackPage = { name: string; slide: CountdownUiSlide };
 
 export default function CountdownView(): JSX.Element {
-  const svc = CountdownService.getInstance();
-  // Start heavy countdown runtime only when the widget is actually mounted.
-  void svc.ensureStartedFull();
+  const svc = CountdownService.get_default();
   const cd = options.countdown; // crash if missing (as requested)
 
   const [slides, setSlides] = createState<StackPage[]>([]);

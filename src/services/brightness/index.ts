@@ -5,7 +5,7 @@ import { register, getter, setter } from "gnim/gobject"
 import { monitorFile, readFileAsync } from "ags/file"
 import { execAsync } from "ags/process"
 import { Timer, timeout } from "ags/time"
-import { ServiceBase } from "../ServiceBase"
+import { GServiceBase } from "../ServiceBase"
 import { SystemUtilities } from "src/lib/system/SystemUtilities";
 
 type BrightnessServiceOptions = {
@@ -15,7 +15,7 @@ type BrightnessServiceOptions = {
 }
 
 @register({ GTypeName: "Brightness" })
-export default class BrightnessService extends ServiceBase {
+export default class BrightnessService extends GServiceBase {
   private static _default: BrightnessService | null = null
 
   public static get_default(opts: BrightnessServiceOptions = {}): BrightnessService {

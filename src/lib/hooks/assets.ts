@@ -53,7 +53,7 @@ function useRasterAsset(
 
       if (!predicate(asset)) return
 
-      stopWatch = AssetPipelineService.getInstance().watch(asset, (outPath) => {
+      stopWatch = AssetPipelineService.get_default().watch(asset, (outPath) => {
         if (currentGen !== generation) return
 
         try {

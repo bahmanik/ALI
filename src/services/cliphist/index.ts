@@ -1,5 +1,5 @@
 import { register } from "ags/gobject";
-import { ServiceBase } from "../ServiceBase";
+import { GServiceBase } from "../ServiceBase";
 import { createState } from "ags";
 import { monitorFile } from "ags/file";
 import GLib from "gi://GLib?version=2.0";
@@ -20,7 +20,7 @@ export interface ClipboardEntry {
 
 //WARNING: wire options later
 @register({ GTypeName: "Cliphist" })
-export default class CliphistService extends ServiceBase {
+export default class CliphistService extends GServiceBase {
   private static _default: CliphistService | null = null;
 
   static get_default() {

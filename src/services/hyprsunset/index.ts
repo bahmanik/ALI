@@ -2,7 +2,7 @@ import { exec, execAsync } from "ags/process";
 import { register, getter, setter } from "ags/gobject";
 import GLib from "gi://GLib";
 import { SystemUtilities } from "src/lib/system/SystemUtilities";
-import { ServiceBase } from "../ServiceBase";
+import { GServiceBase } from "../ServiceBase";
 
 // hyprsunset must exist in PATH
 const available = SystemUtilities.checkDependencies("hyprsunset");
@@ -17,7 +17,7 @@ function isRunning() {
 }
 
 @register({ GTypeName: "Hyprsunset" })
-export default class HyprsunsetService extends ServiceBase {
+export default class HyprsunsetService extends GServiceBase {
   private static _default: HyprsunsetService | null = null;
   static get_default() {
     if (!this._default) this._default = new HyprsunsetService();
