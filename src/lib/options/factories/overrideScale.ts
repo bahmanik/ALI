@@ -5,15 +5,15 @@ const at = (o: any, path: string) =>
     path.split('.').reduce((acc: any, key: string) => acc?.[key], o);
 
 export function overrideScale(params: {
-    widgetId: string;              // "bar", "launcher", ...
+    widgetId: string;
+    defaultLocal: number;          // required — callers always supply a concrete value
     defaultUseLocal?: boolean;
-    defaultLocal?: number;
-    exports?: OptExports;          // typically { scss: true }
+    exports?: OptExports;
 }) {
     const {
         widgetId,
-        defaultUseLocal = false,
         defaultLocal,
+        defaultUseLocal = false,
         exports = {},
     } = params;
 
@@ -21,10 +21,9 @@ export function overrideScale(params: {
         useLocalScale: opt(defaultUseLocal),
         localScale: opt(defaultLocal),
 
-        // Effective (derived) scale used by the widget
         scale: opt(defaultLocal, {
             ...exports,
-            runtime: true, // derived/runtime-only in your engine semantics
+            runtime: true,
             deps: [
                 "global.scale",
                 `${widgetId}.useLocalScale`,
@@ -39,3 +38,6 @@ export function overrideScale(params: {
         }),
     };
 }
+
+/** The shape produced by overrideScale — use this in widget Option interfaces. */
+export type OverrideScaleResult = ReturnType<typeof overrideScale>;

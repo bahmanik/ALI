@@ -2,12 +2,18 @@ import type { Opt } from "src/lib/options";
 import type { BarBorderLocation, BarLocation, HexColor } from "src/configuration/types";
 import type { SecondaryBarOptions } from "./secondaryBar/type";
 import type { BarCornerOptions } from "./corner/type";
+import type { CpuOptions } from "./modules/cpu/type";
+
+export interface BarModulesOptions {
+  cpu: CpuOptions;
+}
 
 export interface BarOptions {
   position: Opt<BarLocation>;
   margin: Opt<number[]>;
   secondaryBar: SecondaryBarOptions;
   corner: BarCornerOptions;
+  modules: BarModulesOptions;
 
   style: {
     floating: Opt<boolean>;

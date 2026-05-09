@@ -1,166 +1,79 @@
 import Gtk from "gi://Gtk?version=4.0"
 import giCairo from "cairo"
-import { State } from "gnim"
+import { Accessor } from "gnim"
 import { useRef, useAnimation, useDrawingArea } from "src/lib/hooks"
 import GLib from "gi://GLib?version=2.0"
+import type { CircularProgressOptions, RGBA } from "./type"
 
 // ═════════════════════════════════════════════════════════════════════════════
-// CONFIG — wire these to your settings/options later
+// Internal types
 // ═════════════════════════════════════════════════════════════════════════════
 
-/** All available visual variants */
-export type CircularProgressVariant =
-  | "simple"      // clean arc, no animation, zero overhead
-  | "glow"        // smooth lerp + gradient fill + pulsing dot at tip
-  | "neon"        // triple-stroke bloom, white-hot tip
-  | "segmented"   // arc made of discrete segment dashes with gaps
-  | "dual"        // two concentric rings (progress outer, remainder inner)
-  | "fill"        // pie-slice fill that grows with value
-  | "wave"        // Catmull-Rom shimmer line inside arc + ripple tip
-
-/** Default variant used when none is specified */
-const DEFAULT_VARIANT: CircularProgressVariant = "simple"
-
-/** Default size (width = height) */
-const DEFAULT_SIZE = 120
-
-/** Default stroke/arc thickness (px) */
-const DEFAULT_THICKNESS = 8
-
-/** Default color [r, g, b, a] — normalised 0..1 */
-const DEFAULT_COLOR: RGBA = [0.2, 0.7, 1, 1]
-
-/**
- * Exponential-smoothing factor for animated variants.
- * 0 = instant snap  |  ~0.3 = slow drift
- */
-const DEFAULT_SMOOTHING = 0.15
-
-/** Animation tick rate */
-const ANIMATION_FPS = 60
-
-// ── Spring animation (used by simple variant on value change) ────────────────
-const SPRING_STIFFNESS = 0.05
-const SPRING_DAMPING = 0.7
-
-// ── Pulse oscillation ────────────────────────────────────────────────────────
-/** Radius growth at pulse peak (px) */
-const PULSE_RADIUS_DELTA = 5
-/** Speed of pulse oscillation per tick */
-const PULSE_SPEED = 0.04
-
-// ── Track (background arc) ───────────────────────────────────────────────────
-const TRACK_ALPHA = 0.15
-
-// ── Glow / fill ──────────────────────────────────────────────────────────────
-const GLOW_FILL_ALPHA = 0.12
-const GLOW_TIP_ALPHA = 0.5
-
-// ── Neon bloom ───────────────────────────────────────────────────────────────
-const NEON_OUTER_WIDTH_MUL = 6
-const NEON_OUTER_ALPHA = 0.08
-const NEON_MID_WIDTH_MUL = 3
-const NEON_MID_ALPHA = 0.18
-const NEON_FLARE_DELTA = 10
-const NEON_FLARE_ALPHA = 0.25
-const NEON_CORE_RADIUS = 4
-const NEON_COLOR_DOT_RADIUS = 2.5
-
-// ── Segmented ────────────────────────────────────────────────────────────────
-/** Total number of segments around the full circle */
-const SEG_COUNT = 32
-/** Gap between segments in radians */
-const SEG_GAP_RAD = 0.04
-/** Alpha of filled segments */
-const SEG_FILL_ALPHA = 0.9
-/** Alpha of empty segments */
-const SEG_EMPTY_ALPHA = 0.1
-
-// ── Dual rings ───────────────────────────────────────────────────────────────
-/** Inner ring radius as a fraction of outer */
-const DUAL_INNER_RATIO = 0.65
-/** Inner ring alpha multiplier */
-const DUAL_INNER_ALPHA = 0.35
-
-// ── Fill (pie slice) ─────────────────────────────────────────────────────────
-/** Fill alpha at the edge */
-const FILL_ALPHA_EDGE = 0.5
-/** Fill alpha at the center */
-const FILL_ALPHA_CENTER = 0.08
-
-// ── Wave shimmer ─────────────────────────────────────────────────────────────
-const WAVE_SHIMMER_ALPHA = 0.18
-const WAVE_SHIMMER_WIDTH_MUL = 0.8
-const WAVE_SHIMMER_OFFSET = 4     // px inward from arc
-
-// ── Center text ──────────────────────────────────────────────────────────────
-const TEXT_FONT_SIZE = 18
-const TEXT_ALPHA = 0.9
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
-
-type RGBA = [number, number, number, number]
 type DrawCtx = { ctx: giCairo.Context; cx: number; cy: number; radius: number }
 type DrawFn = (dc: DrawCtx, progress: number, pulse: number) => void
 
 type Props = {
-  value: number | State<number>
-  variant?: CircularProgressVariant
-  size?: number
-  thickness?: number
-  smoothing?: number
-  color?: RGBA
+  value: Accessor<number>
+  options: CircularProgressOptions
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared helpers
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
+// Helpers
+// ═════════════════════════════════════════════════════════════════════════════
 
 const clamp = (v: number) => Math.max(0, Math.min(1, v))
 const lerp = (a: number, b: number, f: number) => a + (b - a) * f
 const TAU = 2 * Math.PI
-
-/** Start angle: top of circle */
 const START_ANGLE = -Math.PI / 2
 
-const getTarget = (value: number | State<number>) =>
-  clamp(typeof value === "number" ? value : value[0].peek())
+const getTarget = (value: Accessor<number>) => clamp(value.peek())
 
-/** Tip point on the arc at a given progress (0..1) */
 const tipPoint = (cx: number, cy: number, radius: number, progress: number) => {
   const angle = START_ANGLE + progress * TAU
   return [cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius]
 }
 
-/** Draw the track (background full circle) */
-const drawTrack = (ctx: giCairo.Context, cx: number, cy: number, radius: number, thickness: number, r: number, g: number, b: number, a: number) => {
+const drawTrack = (
+  ctx: giCairo.Context, cx: number, cy: number,
+  radius: number, thickness: number,
+  r: number, g: number, b: number,
+  trackAlpha: number, colorAlpha: number,
+) => {
   ctx.setLineWidth(thickness)
-  ctx.setSourceRGBA(r, g, b, TRACK_ALPHA * a)
+  ctx.setSourceRGBA(r, g, b, trackAlpha * colorAlpha)
   ctx.arc(cx, cy, radius, 0, TAU)
   ctx.stroke()
 }
 
-/** Draw center percentage text */
-const drawCenterText = (ctx: giCairo.Context, cx: number, cy: number, progress: number, r: number, g: number, b: number, a: number) => {
-  ctx.setFontSize(TEXT_FONT_SIZE)
-  ctx.setSourceRGBA(r, g, b, TEXT_ALPHA * a)
+const drawCenterText = (
+  ctx: giCairo.Context, cx: number, cy: number,
+  progress: number,
+  r: number, g: number, b: number,
+  colorAlpha: number, textAlpha: number, textFontSize: number,
+) => {
+  ctx.setFontSize(textFontSize)
+  ctx.setSourceRGBA(r, g, b, textAlpha * colorAlpha)
   const label = `${Math.round(progress * 100)}%`
   const te = ctx.textExtents(label)
   ctx.moveTo(cx - te.width / 2 - te.xBearing, cy - te.height / 2 - te.yBearing)
   ctx.showText(label)
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Animated base
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
+// Animated base — shared infrastructure for all lerp-based variants
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ANIMATION_FPS = 60
 
 const makeAnimatedProgress = (
-  { value, size = DEFAULT_SIZE, smoothing = DEFAULT_SMOOTHING }: Props,
+  { value, options }: Props,
   drawFn: DrawFn,
   keepRunning = true,
 ) => {
+  // Read stable opts once (size never changes mid-session in practice)
+  const size = options.size.value
+  const smoothing = options.smoothing.value
+
   const displayed = useRef(getTarget(value))
   const target = useRef(getTarget(value))
   const pulse = useRef(0)
@@ -171,7 +84,9 @@ const makeAnimatedProgress = (
     (ctx, w, h) => {
       const cx = w / 2
       const cy = h / 2
-      const radius = Math.min(w, h) / 2 - (DEFAULT_THICKNESS + PULSE_RADIUS_DELTA + 4)
+      const thickness = options.thickness.value
+      const prd = options.pulseRadiusDelta.value
+      const radius = Math.min(w, h) / 2 - (thickness + prd + 4)
       drawFn({ ctx, cx, cy, radius }, displayed.current, pulse.current)
     },
     { interactive: false },
@@ -191,7 +106,8 @@ const makeAnimatedProgress = (
 
       displayed.current = settled ? tgt : next
 
-      pulse.current += PULSE_SPEED * pulseDir.current
+      const speed = options.pulseSpeed.value
+      pulse.current += speed * pulseDir.current
       if (pulse.current >= 1) { pulse.current = 1; pulseDir.current = -1 }
       if (pulse.current <= 0) { pulse.current = 0; pulseDir.current = 1 }
 
@@ -200,33 +116,44 @@ const makeAnimatedProgress = (
     })
   }
 
+  // Subscribe to value changes; clean up when widget is destroyed
+  let unsubValue: (() => void) | null = null
   if (typeof value !== "number") {
-    value[0].subscribe(() => {
-      target.current = clamp(value[0].peek())
+    unsubValue = value.subscribe(() => {
+      target.current = clamp(value.peek())
       startLoop()
     })
   }
+
+  // Redraw whenever any option changes (covers live setting tweaks)
+  const watchedOpts = [
+    options.size, options.thickness, options.color,
+    options.showText, options.textFontSize, options.textAlpha,
+    options.trackAlpha, options.pulseRadiusDelta, options.pulseSpeed,
+    options.smoothing,
+  ] as const
+  const unsubOpts = watchedOpts.map(o => o.subscribe(() => redraw()))
+
+  area.connect("destroy", () => {
+    anim.stop()
+    unsubValue?.()
+    unsubOpts.forEach(u => u())
+  })
 
   startLoop()
   return area
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 // Variant: simple
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 
-const SimpleProgress = ({
-  value,
-  size = DEFAULT_SIZE,
-  thickness = DEFAULT_THICKNESS,
-  stiffness = SPRING_STIFFNESS,
-  damping = SPRING_DAMPING,
-  color = DEFAULT_COLOR,
-}: Props & { stiffness?: number; damping?: number }) => {
+const SimpleProgress = ({ value, options }: Props) => {
+  const size = options.size.value
+
   const area = new Gtk.DrawingArea()
   area.set_content_width(size)
   area.set_content_height(size)
-  const [r, g, b, a] = color
 
   let current = getTarget(value)
   let velocity = 0
@@ -234,6 +161,8 @@ const SimpleProgress = ({
 
   const step = () => {
     const tgt = getTarget(value)
+    const stiffness = options.springStiffness.value
+    const damping = options.springDamping.value
     const force = (tgt - current) * stiffness
     velocity += force
     velocity *= damping
@@ -247,7 +176,11 @@ const SimpleProgress = ({
   const start = () => {
     if (ticking) return
     ticking = true
-    const tick = () => { if (!step()) return; GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, tick) }
+    const tick = (): boolean => {
+      const running = step()
+      if (!running) { ticking = false; return GLib.SOURCE_REMOVE }
+      return GLib.SOURCE_CONTINUE
+    }
     GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, tick)
   }
 
@@ -255,39 +188,67 @@ const SimpleProgress = ({
     const p = clamp(current)
     const cx = w / 2
     const cy = h / 2
+    const thickness = options.thickness.value
     const radius = Math.min(w, h) / 2 - thickness
+    const [r, g, b, a] = options.color.value as RGBA
+    const trackAlpha = options.trackAlpha.value
+
     ctx.setLineWidth(thickness)
     ctx.setLineCap(giCairo.LineCap.ROUND)
-    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, a)
+    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, trackAlpha, a)
     ctx.setSourceRGBA(r, g, b, a)
     ctx.arc(cx, cy, radius, START_ANGLE, START_ANGLE + p * TAU)
     ctx.stroke()
-    drawCenterText(ctx, cx, cy, p, r, g, b, a)
+
+    if (options.showText.value) {
+      drawCenterText(ctx, cx, cy, p, r, g, b, a, options.textAlpha.value, options.textFontSize.value)
+    }
   })
 
-  if (typeof value !== "number") value[0].subscribe(() => start())
+  // Subscriptions
+  let unsubValue: (() => void) | null = null
+  if (typeof value !== "number") {
+    unsubValue = value.subscribe(() => start())
+  }
+
+  const watchedOpts = [
+    options.size, options.thickness, options.color,
+    options.showText, options.textFontSize, options.textAlpha,
+    options.trackAlpha, options.springStiffness, options.springDamping,
+  ] as const
+  const unsubOpts = watchedOpts.map(o => o.subscribe(() => area.queue_draw()))
+
+  area.connect("destroy", () => {
+    ticking = false
+    unsubValue?.()
+    unsubOpts.forEach(u => u())
+  })
+
   start()
   return area
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 // Variant: glow
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 
 const GlowProgress = (props: Props) => {
-  const { thickness = DEFAULT_THICKNESS, color = DEFAULT_COLOR } = props
-  const [r, g, b, a] = color
-
+  const { options } = props
   return makeAnimatedProgress(props, ({ ctx, cx, cy, radius }, progress, pulse) => {
+    const thickness = options.thickness.value
+    const [r, g, b, a] = options.color.value as RGBA
+    const trackAlpha = options.trackAlpha.value
+    const fillAlpha = options.glowFillAlpha.value
+    const tipAlpha = options.glowTipAlpha.value
+    const prd = options.pulseRadiusDelta.value
+
     ctx.setLineCap(giCairo.LineCap.ROUND)
+    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, trackAlpha, a)
 
-    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, a)
-
-    // Subtle radial gradient fill inside arc
     if (progress > 0) {
       const grad = new giCairo.RadialGradient(cx, cy, 0, cx, cy, radius + thickness)
       grad.addColorStopRGBA(0, r, g, b, 0)
-      grad.addColorStopRGBA(1, r, g, b, GLOW_FILL_ALPHA * a)
+      grad.addColorStopRGBA(1, r, g, b, fillAlpha * a)
       ctx.arc(cx, cy, radius + thickness / 2, START_ANGLE, START_ANGLE + progress * TAU)
       ctx.lineTo(cx, cy)
       ctx.closePath()
@@ -302,41 +263,53 @@ const GlowProgress = (props: Props) => {
 
     if (progress > 0) {
       const [tx, ty] = tipPoint(cx, cy, radius, progress)
-      ctx.arc(tx, ty, PULSE_RADIUS_DELTA + pulse * PULSE_RADIUS_DELTA, 0, TAU)
-      ctx.setSourceRGBA(r, g, b, (1 - pulse) * GLOW_TIP_ALPHA * a)
+      ctx.arc(tx, ty, prd + pulse * prd, 0, TAU)
+      ctx.setSourceRGBA(r, g, b, (1 - pulse) * tipAlpha * a)
       ctx.fill()
       ctx.arc(tx, ty, 3.5, 0, TAU)
       ctx.setSourceRGBA(r, g, b, a)
       ctx.fill()
     }
 
-    drawCenterText(ctx, cx, cy, progress, r, g, b, a)
+    if (options.showText.value) {
+      drawCenterText(ctx, cx, cy, progress, r, g, b, a, options.textAlpha.value, options.textFontSize.value)
+    }
   })
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 // Variant: neon
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 
 const NeonProgress = (props: Props) => {
-  const { thickness = DEFAULT_THICKNESS, color = DEFAULT_COLOR } = props
-  const [r, g, b, a] = color
-
+  const { options } = props
   return makeAnimatedProgress(props, ({ ctx, cx, cy, radius }, progress, pulse) => {
-    ctx.setLineCap(giCairo.LineCap.ROUND)
+    const thickness = options.thickness.value
+    const [r, g, b, a] = options.color.value as RGBA
+    const trackAlpha = options.trackAlpha.value
+    const outerWM = options.outerWidthMul.value
+    const outerA = options.outerAlpha.value
+    const midWM = options.midWidthMul.value
+    const midA = options.midAlpha.value
+    const flareD = options.flareRadiusDelta.value
+    const flareA = options.flareAlpha.value
+    const coreR = options.coreRadius.value
+    const colorDotR = options.colorDotRadius.value
+    const prd = options.pulseRadiusDelta.value
 
-    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, a)
+    ctx.setLineCap(giCairo.LineCap.ROUND)
+    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, trackAlpha, a)
 
     const endAngle = START_ANGLE + progress * TAU
 
     ctx.arc(cx, cy, radius, START_ANGLE, endAngle)
-    ctx.setLineWidth(thickness * NEON_OUTER_WIDTH_MUL)
-    ctx.setSourceRGBA(r, g, b, NEON_OUTER_ALPHA * a)
+    ctx.setLineWidth(thickness * outerWM)
+    ctx.setSourceRGBA(r, g, b, outerA * a)
     ctx.stroke()
 
     ctx.arc(cx, cy, radius, START_ANGLE, endAngle)
-    ctx.setLineWidth(thickness * NEON_MID_WIDTH_MUL)
-    ctx.setSourceRGBA(r, g, b, NEON_MID_ALPHA * a)
+    ctx.setLineWidth(thickness * midWM)
+    ctx.setSourceRGBA(r, g, b, midA * a)
     ctx.stroke()
 
     ctx.arc(cx, cy, radius, START_ANGLE, endAngle)
@@ -346,48 +319,60 @@ const NeonProgress = (props: Props) => {
 
     if (progress > 0) {
       const [tx, ty] = tipPoint(cx, cy, radius, progress)
-      ctx.arc(tx, ty, NEON_CORE_RADIUS + pulse * NEON_FLARE_DELTA, 0, TAU)
-      ctx.setSourceRGBA(r, g, b, (1 - pulse) * NEON_FLARE_ALPHA * a)
+      ctx.arc(tx, ty, coreR + pulse * flareD, 0, TAU)
+      ctx.setSourceRGBA(r, g, b, (1 - pulse) * flareA * a)
       ctx.fill()
-      ctx.arc(tx, ty, NEON_CORE_RADIUS, 0, TAU)
+      ctx.arc(tx, ty, coreR, 0, TAU)
       ctx.setSourceRGBA(1, 1, 1, 0.9 * a)
       ctx.fill()
-      ctx.arc(tx, ty, NEON_COLOR_DOT_RADIUS, 0, TAU)
+      ctx.arc(tx, ty, colorDotR, 0, TAU)
       ctx.setSourceRGBA(r, g, b, a)
+      ctx.fill()
+
+      // Extra tip halo (matching glow / dual behaviour)
+      ctx.arc(tx, ty, prd + pulse * prd, 0, TAU)
+      ctx.setSourceRGBA(r, g, b, (1 - pulse) * 0.2 * a)
       ctx.fill()
     }
 
-    drawCenterText(ctx, cx, cy, progress, r, g, b, a)
+    if (options.showText.value) {
+      drawCenterText(ctx, cx, cy, progress, r, g, b, a, options.textAlpha.value, options.textFontSize.value)
+    }
   })
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 // Variant: segmented
-// Arc made of SEG_COUNT discrete dashes; filled ones glow, empties are dim.
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 
 const SegmentedProgress = (props: Props) => {
-  const { thickness = DEFAULT_THICKNESS, color = DEFAULT_COLOR } = props
-  const [r, g, b, a] = color
-
+  const { options } = props
   return makeAnimatedProgress(props, ({ ctx, cx, cy, radius }, progress, pulse) => {
+    const thickness = options.thickness.value
+    const [r, g, b, a] = options.color.value as RGBA
+    const segCount = options.segmentCount.value
+    const gapRad = options.segmentGapRad.value
+    const fillAlpha = options.segmentFillAlpha.value
+    const emptyAlpha = options.segmentEmptyAlpha.value
+    const prd = options.pulseRadiusDelta.value
+
     ctx.setLineCap(giCairo.LineCap.ROUND)
     ctx.setLineWidth(thickness)
 
-    const filledCount = Math.round(progress * SEG_COUNT)
-    const segSpan = TAU / SEG_COUNT
+    const filledCount = Math.round(progress * segCount)
+    const segSpan = TAU / segCount
 
-    for (let i = 0; i < SEG_COUNT; i++) {
-      const startA = START_ANGLE + i * segSpan + SEG_GAP_RAD / 2
-      const endA = START_ANGLE + (i + 1) * segSpan - SEG_GAP_RAD / 2
+    for (let i = 0; i < segCount; i++) {
+      const startA = START_ANGLE + i * segSpan + gapRad / 2
+      const endA = START_ANGLE + (i + 1) * segSpan - gapRad / 2
       const isFilled = i < filledCount
       const isLatest = i === filledCount - 1
 
       if (isFilled) {
         const brightness = 0.6 + 0.4 * (i / Math.max(filledCount - 1, 1))
-        ctx.setSourceRGBA(r, g, b, SEG_FILL_ALPHA * brightness * a)
+        ctx.setSourceRGBA(r, g, b, fillAlpha * brightness * a)
       } else {
-        ctx.setSourceRGBA(r, g, b, SEG_EMPTY_ALPHA * a)
+        ctx.setSourceRGBA(r, g, b, emptyAlpha * a)
       }
 
       ctx.arc(cx, cy, radius, startA, endA)
@@ -397,50 +382,53 @@ const SegmentedProgress = (props: Props) => {
         const midA = (startA + endA) / 2
         const tx = cx + Math.cos(midA) * radius
         const ty = cy + Math.sin(midA) * radius
-        ctx.arc(tx, ty, thickness / 2 + pulse * PULSE_RADIUS_DELTA, 0, TAU)
+        ctx.arc(tx, ty, thickness / 2 + pulse * prd, 0, TAU)
         ctx.setSourceRGBA(r, g, b, (1 - pulse) * 0.4 * a)
         ctx.fill()
       }
     }
 
-    drawCenterText(ctx, cx, cy, progress, r, g, b, a)
+    if (options.showText.value) {
+      drawCenterText(ctx, cx, cy, progress, r, g, b, a, options.textAlpha.value, options.textFontSize.value)
+    }
   })
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 // Variant: dual
-// Two concentric rings: outer = progress, inner = inverse (remainder).
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 
 const DualProgress = (props: Props) => {
-  const { thickness = DEFAULT_THICKNESS, color = DEFAULT_COLOR } = props
-  const [r, g, b, a] = color
-
+  const { options } = props
   return makeAnimatedProgress(props, ({ ctx, cx, cy, radius }, progress, pulse) => {
+    const thickness = options.thickness.value
+    const [r, g, b, a] = options.color.value as RGBA
+    const trackAlpha = options.trackAlpha.value
+    const innerRatio = options.innerRingRatio.value
+    const innerAlpha = options.innerRingAlpha.value
+    const prd = options.pulseRadiusDelta.value
+
     ctx.setLineCap(giCairo.LineCap.ROUND)
 
-    const innerRadius = radius * DUAL_INNER_RATIO
+    const innerRadius = radius * innerRatio
     const endAngle = START_ANGLE + progress * TAU
     const invAngle = START_ANGLE + (1 - progress) * TAU
 
-    // Outer track + arc
-    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, a)
+    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, trackAlpha, a)
     ctx.setLineWidth(thickness)
     ctx.setSourceRGBA(r, g, b, a)
     ctx.arc(cx, cy, radius, START_ANGLE, endAngle)
     ctx.stroke()
 
-    // Inner track + inverse arc
-    drawTrack(ctx, cx, cy, innerRadius, thickness * 0.6, r, g, b, a)
+    drawTrack(ctx, cx, cy, innerRadius, thickness * 0.6, r, g, b, trackAlpha, a)
     ctx.setLineWidth(thickness * 0.6)
-    ctx.setSourceRGBA(r, g, b, DUAL_INNER_ALPHA * a)
+    ctx.setSourceRGBA(r, g, b, innerAlpha * a)
     ctx.arc(cx, cy, innerRadius, START_ANGLE, invAngle)
     ctx.stroke()
 
-    // Pulse on outer tip
     if (progress > 0) {
       const [tx, ty] = tipPoint(cx, cy, radius, progress)
-      ctx.arc(tx, ty, PULSE_RADIUS_DELTA + pulse * PULSE_RADIUS_DELTA, 0, TAU)
+      ctx.arc(tx, ty, prd + pulse * prd, 0, TAU)
       ctx.setSourceRGBA(r, g, b, (1 - pulse) * 0.45 * a)
       ctx.fill()
       ctx.arc(tx, ty, 3.5, 0, TAU)
@@ -448,31 +436,35 @@ const DualProgress = (props: Props) => {
       ctx.fill()
     }
 
-    drawCenterText(ctx, cx, cy, progress, r, g, b, a)
+    if (options.showText.value) {
+      drawCenterText(ctx, cx, cy, progress, r, g, b, a, options.textAlpha.value, options.textFontSize.value)
+    }
   })
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 // Variant: fill
-// Pie-slice radial fill that grows with value, plus arc border on top.
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 
 const FillProgress = (props: Props) => {
-  const { thickness = DEFAULT_THICKNESS, color = DEFAULT_COLOR } = props
-  const [r, g, b, a] = color
-
+  const { options } = props
   return makeAnimatedProgress(props, ({ ctx, cx, cy, radius }, progress, pulse) => {
-    ctx.setLineCap(giCairo.LineCap.ROUND)
+    const thickness = options.thickness.value
+    const [r, g, b, a] = options.color.value as RGBA
+    const trackAlpha = options.trackAlpha.value
+    const alphaEdge = options.fillAlphaEdge.value
+    const alphaCenter = options.fillAlphaCenter.value
+    const prd = options.pulseRadiusDelta.value
 
-    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, a)
+    ctx.setLineCap(giCairo.LineCap.ROUND)
+    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, trackAlpha, a)
 
     if (progress > 0) {
       const endAngle = START_ANGLE + progress * TAU
 
-      // Pie fill with radial gradient
       const grad = new giCairo.RadialGradient(cx, cy, 0, cx, cy, radius)
-      grad.addColorStopRGBA(0, r, g, b, FILL_ALPHA_CENTER * a)
-      grad.addColorStopRGBA(1, r, g, b, FILL_ALPHA_EDGE * a)
+      grad.addColorStopRGBA(0, r, g, b, alphaCenter * a)
+      grad.addColorStopRGBA(1, r, g, b, alphaEdge * a)
 
       ctx.moveTo(cx, cy)
       ctx.arc(cx, cy, radius, START_ANGLE, endAngle)
@@ -481,15 +473,13 @@ const FillProgress = (props: Props) => {
       ctx.setSource(grad)
       ctx.fill()
 
-      // Arc border on top
       ctx.setLineWidth(thickness)
       ctx.setSourceRGBA(r, g, b, a)
       ctx.arc(cx, cy, radius, START_ANGLE, endAngle)
       ctx.stroke()
 
-      // Pulse tip
       const [tx, ty] = tipPoint(cx, cy, radius, progress)
-      ctx.arc(tx, ty, PULSE_RADIUS_DELTA + pulse * PULSE_RADIUS_DELTA, 0, TAU)
+      ctx.arc(tx, ty, prd + pulse * prd, 0, TAU)
       ctx.setSourceRGBA(r, g, b, (1 - pulse) * 0.4 * a)
       ctx.fill()
       ctx.arc(tx, ty, 3.5, 0, TAU)
@@ -497,17 +487,20 @@ const FillProgress = (props: Props) => {
       ctx.fill()
     }
 
-    drawCenterText(ctx, cx, cy, progress, r, g, b, a)
+    if (options.showText.value) {
+      drawCenterText(ctx, cx, cy, progress, r, g, b, a, options.textAlpha.value, options.textFontSize.value)
+    }
   })
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 // Variant: wave
-// Catmull-Rom shimmer arc slightly inside the progress arc + ripple tip.
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 
-/** Sample N points along the arc for the shimmer polyline */
-const arcPoints = (cx: number, cy: number, radius: number, startA: number, endA: number, steps: number) => {
+const arcPoints = (
+  cx: number, cy: number, radius: number,
+  startA: number, endA: number, steps: number,
+) => {
   const pts: [number, number][] = []
   for (let i = 0; i <= steps; i++) {
     const a = startA + (endA - startA) * (i / steps)
@@ -518,7 +511,8 @@ const arcPoints = (cx: number, cy: number, radius: number, startA: number, endA:
 
 const catmullRomArcTo = (
   ctx: giCairo.Context,
-  p0: [number, number], p1: [number, number], p2: [number, number], p3: [number, number],
+  p0: [number, number], p1: [number, number],
+  p2: [number, number], p3: [number, number],
   alpha = 0.5,
 ) => {
   const cp1x = p1[0] + (p2[0] - p0[0]) * alpha / 3
@@ -529,26 +523,29 @@ const catmullRomArcTo = (
 }
 
 const WaveProgress = (props: Props) => {
-  const { thickness = DEFAULT_THICKNESS, color = DEFAULT_COLOR } = props
-  const [r, g, b, a] = color
-
+  const { options } = props
   return makeAnimatedProgress(props, ({ ctx, cx, cy, radius }, progress, pulse) => {
-    ctx.setLineCap(giCairo.LineCap.ROUND)
+    const thickness = options.thickness.value
+    const [r, g, b, a] = options.color.value as RGBA
+    const trackAlpha = options.trackAlpha.value
+    const shimmerA = options.shimmerAlpha.value
+    const shimmerWM = options.shimmerWidthMul.value
+    const shimmerOff = options.shimmerOffset.value
+    const prd = options.pulseRadiusDelta.value
+    const STEPS = 32
 
-    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, a)
+    ctx.setLineCap(giCairo.LineCap.ROUND)
+    drawTrack(ctx, cx, cy, radius, thickness, r, g, b, trackAlpha, a)
 
     if (progress > 0) {
       const endAngle = START_ANGLE + progress * TAU
-      const STEPS = 32
 
-      // Main arc
       ctx.setLineWidth(thickness)
       ctx.setSourceRGBA(r, g, b, a)
       ctx.arc(cx, cy, radius, START_ANGLE, endAngle)
       ctx.stroke()
 
-      // Shimmer arc (slightly inward, Catmull-Rom smoothed, pulsing offset)
-      const shimmerR = radius - WAVE_SHIMMER_OFFSET - pulse * 2
+      const shimmerR = radius - shimmerOff - pulse * 2
       const shimPts = arcPoints(cx, cy, shimmerR, START_ANGLE, endAngle, STEPS)
 
       if (shimPts.length >= 2) {
@@ -562,14 +559,13 @@ const WaveProgress = (props: Props) => {
             shimPts[Math.min(shimPts.length - 1, i + 2)],
           )
         }
-        ctx.setLineWidth(thickness * WAVE_SHIMMER_WIDTH_MUL)
-        ctx.setSourceRGBA(1, 1, 1, WAVE_SHIMMER_ALPHA * a * (0.5 + pulse * 0.5))
+        ctx.setLineWidth(thickness * shimmerWM)
+        ctx.setSourceRGBA(1, 1, 1, shimmerA * a * (0.5 + pulse * 0.5))
         ctx.stroke()
       }
 
-      // Pulse tip
       const [tx, ty] = tipPoint(cx, cy, radius, progress)
-      ctx.arc(tx, ty, 6 + pulse * PULSE_RADIUS_DELTA, 0, TAU)
+      ctx.arc(tx, ty, 6 + pulse * prd, 0, TAU)
       ctx.setSourceRGBA(r, g, b, (1 - pulse) * 0.35 * a)
       ctx.fill()
       ctx.arc(tx, ty, 3.5, 0, TAU)
@@ -577,16 +573,18 @@ const WaveProgress = (props: Props) => {
       ctx.fill()
     }
 
-    drawCenterText(ctx, cx, cy, progress, r, g, b, a)
+    if (options.showText.value) {
+      drawCenterText(ctx, cx, cy, progress, r, g, b, a, options.textAlpha.value, options.textFontSize.value)
+    }
   })
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 // Public export
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 
 export const CircularProgress = (props: Props) => {
-  switch (props.variant ?? DEFAULT_VARIANT) {
+  switch (props.options.type.value) {
     case "glow": return GlowProgress(props)
     case "neon": return NeonProgress(props)
     case "segmented": return SegmentedProgress(props)

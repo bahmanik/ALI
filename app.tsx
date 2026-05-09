@@ -21,6 +21,7 @@ import { services } from "src/services";
 // ── Lifecycle ─────────────────────────────────────────────────────
 import { lifecycle } from "src/lib/lifecycle";
 import { perf } from "src/lib/lifecycle/perf";
+import TestWindow from "src/widget/test";
 
 // ─────────────────────────────────────────────────────────────────
 // Core services  (sequential, critical)
@@ -151,6 +152,11 @@ lifecycle
     id: "settings",
     priority: 120,
     mount: () => app.get_monitors().forEach(() => SettingWindow()),
+  })
+  .registerWidget({
+    id: "test",
+    priority: 120,
+    mount: () => app.get_monitors().forEach(m => TestWindow(m)),
   });
 
 // ─────────────────────────────────────────────────────────────────

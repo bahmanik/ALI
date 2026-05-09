@@ -2,7 +2,7 @@ import { overrideVisualAsset } from "src/lib/options/factories/overrideVisualAss
 import { opt } from "src/lib/options"
 import type { BarCornerOptions } from "../../corner/type"
 
-const window: BarCornerOptions = {
+const windowTitle: BarCornerOptions = {
   enable: opt(true, { scss: true }),
   gap: opt(0, { scss: true }),
   edge: opt(0, { scss: true }),
@@ -25,4 +25,4 @@ const window: BarCornerOptions = {
   }),
 }
 
-export default window
+export default windowTitle 

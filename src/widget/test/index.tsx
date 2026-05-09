@@ -1,7 +1,6 @@
 import { Astal, Gdk } from "ags/gtk4"
 import { createState } from "gnim";
-import { LineGraph } from "../shared/lineGraph";
-import { CircularProgress } from "../shared/circularProgress";
+import { Cpu } from "../bar/bar/modules";
 
 const FULL_ANCHOR: Astal.WindowAnchor =
   Astal.WindowAnchor.TOP |
@@ -32,7 +31,7 @@ function TestWindow(gdkmonitor: Gdk.Monitor) {
       anchor={FULL_ANCHOR}
     // css="background-color: black;"
     >
-      <CircularProgress variant="segmented" value={55} />
+      <Cpu />
     </window>
   )
 }
