@@ -153,11 +153,11 @@ lifecycle
     priority: 120,
     mount: () => app.get_monitors().forEach(() => SettingWindow()),
   })
-  .registerWidget({
-    id: "test",
-    priority: 120,
-    mount: () => app.get_monitors().forEach(m => TestWindow(m)),
-  });
+// .registerWidget({
+//   id: "test",
+//   priority: 1000,
+//   mount: () => app.get_monitors().forEach(m => TestWindow(m)),
+// });
 
 // ─────────────────────────────────────────────────────────────────
 // Ready listener

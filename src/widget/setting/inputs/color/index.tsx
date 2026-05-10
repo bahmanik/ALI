@@ -1,31 +1,37 @@
 import { Gdk, Gtk } from 'ags/gtk4';
 import { ColorInputterProps } from '../types';
+import type { RGBA } from 'src/widget/shared/circularProgress/type';
 
-function ColorInputter({
-  opt,
-}: ColorInputterProps): JSX.Element {
+//WARNING: you should patch this so it uses a color class 
+function ColorInputter({ opt }: ColorInputterProps): JSX.Element {
   return (
     <Gtk.ColorButton
       useAlpha={false}
       $={(self) => {
+        const current = opt.get() as unknown;
 
-        //WARNING: you should hook this
         const rgba = new Gdk.RGBA();
-        rgba.parse(opt.get());
-        self.set_rgba(rgba);
+
+        if (Array.isArray(current)) {
+          const [r, g, b, a = 1] = current as RGBA;
+          rgba.red = r;
+          rgba.green = g;
+          rgba.blue = b;
+          rgba.alpha = a;
+          self.set_rgba(rgba);
+        } else if (typeof current === 'string') {
+          rgba.parse(current);
+          self.set_rgba(rgba);
+        }
 
         self.connect('color-set', () => {
-          const rgba = self.get_rgba();
-          const hex = (n: number): string => {
-            const c = Math.floor(255 * n).toString(16);
-            return c.length === 1 ? `0${c}` : c;
-          };
-
-          opt.set(`#${hex(rgba.red)}${hex(rgba.green)}${hex(rgba.blue)}`);
+          const picked = self.get_rgba();
+          const next: RGBA = [picked.red, picked.green, picked.blue, picked.alpha];
+          opt.set(next as any);
         });
       }}
     />
   );
-};
+}
 
-export default ColorInputter
+export default ColorInputter;
