@@ -6,7 +6,7 @@ import type { RGBA } from 'src/widget/shared/circularProgress/type';
 function ColorInputter({ opt }: ColorInputterProps): JSX.Element {
   return (
     <Gtk.ColorButton
-      useAlpha={false}
+      useAlpha={true}
       $={(self) => {
         const current = opt.get() as unknown;
 

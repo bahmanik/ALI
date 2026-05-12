@@ -3,7 +3,8 @@ import giCairo from "cairo"
 import { Accessor } from "gnim"
 import { useRef, useAnimation, useDrawingArea } from "src/lib/hooks"
 import GLib from "gi://GLib?version=2.0"
-import type { CircularProgressOptions, RGBA } from "./type"
+import type { CircularProgressOptions } from "./type"
+import { RGBA } from "src/configuration/types"
 
 // ═════════════════════════════════════════════════════════════════════════════
 // Internal types

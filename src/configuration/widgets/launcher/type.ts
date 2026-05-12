@@ -1,4 +1,4 @@
-import type { GtkRevealerTransitionName, HexColor, LauncherBorderLocation, RevealTransitionWithAuto } from "src/configuration/types";
+import type { GtkRevealerTransitionName, HexColor, LauncherBorderLocation, ModuleMapArray, RevealTransitionWithAuto, RgbaColor } from "src/configuration/types";
 import type { Opt } from "src/lib/options";
 
 export interface LauncherOptions {
@@ -36,7 +36,7 @@ export interface LauncherOptions {
     shadowY: Opt<number>;
     shadowBlur: Opt<number>;
     shadowSpread: Opt<number>;
-    shadowColor: Opt<string>;
+    shadowColor: Opt<RgbaColor>;
   };
 
   entry: {

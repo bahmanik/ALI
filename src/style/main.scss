@@ -1,3 +1,7 @@
+window {
+  background-color: $colors-surface;
+  color: $colors-fg;
+}
 @import "scss/bar";
 @import "scss/launcher";
 @import "scss/countdown";

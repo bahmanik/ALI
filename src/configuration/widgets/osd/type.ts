@@ -4,6 +4,7 @@ import type {
   GtkRevealerTransitionName,
   HexColor,
   OsdOrientation,
+  RgbaColor,
 } from "src/configuration/types";
 import type { OsdBrightnessOptions } from "./brightness/type";
 
@@ -55,7 +56,7 @@ export interface OsdOptions {
     shadowY: Opt<number>;
     shadowBlur: Opt<number>;
     shadowSpread: Opt<number>;
-    shadowColor: Opt<string>;
+    shadowColor: Opt<RgbaColor>;
 
     iconSize: Opt<number>;
     iconPadding: Opt<number>;

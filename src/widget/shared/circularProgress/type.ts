@@ -1,3 +1,4 @@
+import { RGBA } from "src/configuration/types"
 import type { Opt } from "src/lib/options"
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -12,9 +13,6 @@ export type CircularProgressVariant =
   | "dual"        // two concentric rings (progress outer, remainder inner)
   | "fill"        // pie-slice fill that grows with value
   | "wave"        // Catmull-Rom shimmer line inside arc + ripple tip
-
-/** RGBA color tuple – each channel normalised 0..1. */
-export type RGBA = [number, number, number, number]
 
 // ═════════════════════════════════════════════════════════════════════════════
 // Single flat options interface

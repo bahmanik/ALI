@@ -3,12 +3,12 @@ import giCairo from "cairo"
 import { State } from "gnim"
 import { useRef, useAnimation, useDrawingArea } from "src/lib/hooks"
 import type { LineGraphOptions } from "./type"
+import { RGBA } from "src/configuration/types"
 
 // ═════════════════════════════════════════════════════════════════════════════
 // Internal types
 // ═════════════════════════════════════════════════════════════════════════════
 
-type RGBA = [number, number, number, number]
 type Point = [number, number]
 type DrawCtx = { ctx: giCairo.Context; w: number; h: number }
 type DrawFn = (dc: DrawCtx, points: Point[], pulse: number) => void

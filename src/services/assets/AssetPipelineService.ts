@@ -74,7 +74,7 @@ export class AssetPipelineService extends ServiceBase {
   }
 
   public watch(asset: VisualAsset, cb: Subscriber): () => void {
-    if (asset.kind === "solid") {
+    if (asset.kind === "solid" || !asset.path?.trim()) {
       cb("")
       return () => { }
     }
@@ -165,7 +165,12 @@ export class AssetPipelineService extends ServiceBase {
   private _ensureMonitor(entry: Entry): void {
     if (entry.monitor) return
 
-    const parent = GLib.path_get_dirname(entry.asset.path)
+    const path = entry.asset.path?.trim()
+    if (!path) return
+
+    const parent = GLib.path_get_dirname(path)
+    if (!parent) return
+
     entry.monitor = monitorFile(parent, (changedPath) => {
       if (!this._samePath(changedPath, entry.asset.path)) return
       this._scheduleRebuild(entry)

@@ -1,5 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { AnchorLayoutType, HexColor, RevealTransitionWithAuto } from "src/configuration/types";
+import type { AnchorLayoutType, HexColor, RevealTransitionWithAuto, RgbaColor } from "src/configuration/types";
 import type { BorderLocationType, CalendarType, WeekDaysType } from "./enums";
 
 export interface CalendarOptions {
@@ -37,7 +37,7 @@ export interface CalendarOptions {
     shadowY: Opt<number>;
     shadowBlur: Opt<number>;
     shadowSpread: Opt<number>;
-    shadowColor: Opt<HexColor>;
+    shadowColor: Opt<RgbaColor>;
   };
 
   header: {
@@ -53,8 +53,8 @@ export interface CalendarOptions {
     cellGap: Opt<number>;
     outsideOpacity: Opt<number>;
     weekendOpacity: Opt<number>;
-    todayBg: Opt<HexColor>;
-    selectedBg: Opt<HexColor>;
-    hoverBg: Opt<HexColor>;
+    todayBg: Opt<RgbaColor>;
+    selectedBg: Opt<RgbaColor>;
+    hoverBg: Opt<RgbaColor>;
   };
 }

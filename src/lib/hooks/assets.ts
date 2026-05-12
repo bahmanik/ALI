@@ -51,7 +51,7 @@ function useRasterAsset(
       setState(null)
       onUpdate()
 
-      if (!predicate(asset)) return
+      if (!predicate(asset) || !asset.path?.trim()) return
 
       stopWatch = AssetPipelineService.get_default().watch(asset, (outPath) => {
         if (currentGen !== generation) return

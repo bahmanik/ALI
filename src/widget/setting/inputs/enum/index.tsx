@@ -5,38 +5,40 @@ function EnumInputter<T extends string>({
   opt,
   values,
 }: Required<EnumInputterProps<T>>): JSX.Element {
-  const step = (dir: 1 | -1): void => {
-    const indexOfCurrentValue = values.findIndex((index) => index === opt.get());
+  const hasValues = values.length > 0
 
-    opt.set(
-      dir > 0
-        ? indexOfCurrentValue + dir > values.length - 1
-          ? values[0]
-          : values[indexOfCurrentValue + dir]
-        : indexOfCurrentValue + dir < 0
-          ? values[values.length - 1]
-          : values[indexOfCurrentValue + dir],
-    );
-  };
+  const step = (dir: 1 | -1): void => {
+    if (!hasValues) return
+
+    const currentValue = opt.get()
+    const indexOfCurrentValue = values.findIndex((value) => value === currentValue)
+    const resolvedIndex = indexOfCurrentValue >= 0 ? indexOfCurrentValue : 0
+    const nextIndex = (resolvedIndex + dir + values.length) % values.length
+
+    opt.set(values[nextIndex])
+  }
+
   return (
     <box class={'enum-setter'}>
-      <label label={opt.as((option) => `${option}`)} />
+      <label label={hasValues ? opt.as((option) => `${option}`) : 'No options'} />
       <button
+        sensitive={hasValues}
         onClicked={() => {
-          step(-1);
+          step(-1)
         }}
       >
         <image iconName={icons.ui.arrow.left} />
       </button>
       <button
+        sensitive={hasValues}
         onClicked={() => {
-          step(+1);
+          step(+1)
         }}
       >
         <image iconName={icons.ui.arrow.right} />
       </button>
     </box>
-  );
-};
+  )
+}
 
 export default EnumInputter

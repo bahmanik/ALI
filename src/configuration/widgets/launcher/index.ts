@@ -1,6 +1,6 @@
 import { opt } from "src/lib/options";
 import type { LauncherOptions } from "./type";
-import type { GtkRevealerTransitionName, HexColor, LauncherBorderLocation, RevealTransitionWithAuto } from "src/configuration/types";
+import { RgbaColor, type GtkRevealerTransitionName, type HexColor, type LauncherBorderLocation, type ModuleMapArray, type RevealTransitionWithAuto } from "src/configuration/types";
 
 const launcher: LauncherOptions = {
   localScale: opt(true),
@@ -42,7 +42,7 @@ const launcher: LauncherOptions = {
     shadowY: opt(18, { scss: true }),
     shadowBlur: opt(42, { scss: true }),
     shadowSpread: opt(0, { scss: true }),
-    shadowColor: opt("rgba(0,0,0,0.45)", { scss: true }),
+    shadowColor: opt<RgbaColor>("rgba(0,0,0,0.45)", { scss: true }),
   },
 
   entry: {

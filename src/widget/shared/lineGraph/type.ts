@@ -13,9 +13,6 @@ export type LineGraphVariant =
   | "segment-bar"   // stacked rounded-rect columns
   | "wave"          // Catmull-Rom spline + shimmer
 
-/** RGBA color tuple – channels normalised 0..1 */
-export type LineGraphRGBA = [number, number, number, number]
-
 // ═════════════════════════════════════════════════════════════════════════════
 // Single flat options interface
 //

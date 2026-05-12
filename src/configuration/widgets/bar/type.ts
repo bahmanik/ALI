@@ -1,5 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { BarBorderLocation, BarLocation, HexColor } from "src/configuration/types";
+import type { BarBorderLocation, BarLocation, HexColor, RgbaColor } from "src/configuration/types";
 import type { SecondaryBarOptions } from "./secondaryBar/type";
 import type { BarCornerOptions } from "./corner/type";
 import type { CpuOptions } from "./modules/cpu/type";
@@ -41,7 +41,7 @@ export interface BarOptions {
     shadowY: Opt<number>;
     shadowBlur: Opt<number>;
     shadowSpread: Opt<number>;
-    shadowColor: Opt<string>;
+    shadowColor: Opt<RgbaColor>;
   };
 
   buttons: {

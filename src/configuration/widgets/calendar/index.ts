@@ -1,5 +1,5 @@
 import { opt } from "src/lib/options";
-import type { AnchorLayoutType, CalendarBorderLocation, RevealTransitionWithAuto } from "src/configuration/types";
+import { HexColor, RgbaColor, type AnchorLayoutType, type CalendarBorderLocation, type RevealTransitionWithAuto } from "src/configuration/types";
 import type { CalendarType, WeekDaysType } from "./enums";
 import type { CalendarOptions } from "./type";
 
@@ -32,7 +32,7 @@ const calendarModule: CalendarOptions = {
   },
 
   style: {
-    bg: opt("#1d2024", { scss: true }),
+    bg: opt<HexColor>("#1d2024", { scss: true }),
     bgOpacity: opt(92, { scss: true }),
 
     radius: opt(18, { scss: true }),
@@ -41,14 +41,14 @@ const calendarModule: CalendarOptions = {
     borderEnable: opt(false, { scss: true }),
     borderLocation: opt<CalendarBorderLocation>("full", { scss: true }),
     borderWidth: opt(1, { scss: true }),
-    borderColor: opt("#8d9199", { scss: true }),
+    borderColor: opt<HexColor>("#8d9199", { scss: true }),
 
     shadowEnable: opt(true, { scss: true }),
     shadowX: opt(0, { scss: true }),
     shadowY: opt(18, { scss: true }),
     shadowBlur: opt(42, { scss: true }),
     shadowSpread: opt(0, { scss: true }),
-    shadowColor: opt("rgba(0,0,0,0.45)", { scss: true }),
+    shadowColor: opt<RgbaColor>("rgba(0,0,0,0.45)", { scss: true }),
   },
 
   header: {
@@ -66,9 +66,9 @@ const calendarModule: CalendarOptions = {
     outsideOpacity: opt(0.35, { scss: true }),
     weekendOpacity: opt(0.9, { scss: true }),
 
-    todayBg: opt("rgba(255,255,255,0.08)", { scss: true }),
-    selectedBg: opt("rgba(27,147,253,0.22)", { scss: true }),
-    hoverBg: opt("rgba(255,255,255,0.06)", { scss: true }),
+    todayBg: opt<RgbaColor>("rgba(255,255,255,0.08)", { scss: true }),
+    selectedBg: opt<RgbaColor>("rgba(27,147,253,0.22)", { scss: true }),
+    hoverBg: opt<RgbaColor>("rgba(255,255,255,0.06)", { scss: true }),
   },
 };
 

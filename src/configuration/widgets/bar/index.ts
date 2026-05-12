@@ -3,7 +3,7 @@ import secondaryBar from "./secondaryBar";
 import barModules from "./modules";
 import { overrideScale } from "src/lib/options/factories/overrideScale";
 import { opt } from "src/lib/options";
-import type { BarBorderLocation, BarLocation, HexColor } from "src/configuration/types";
+import { RgbaColor, type BarBorderLocation, type BarLocation, type HexColor } from "src/configuration/types";
 import type { BarOptions } from "./type";
 
 const bar: BarOptions = {
@@ -39,7 +39,7 @@ const bar: BarOptions = {
     shadowY: opt(10, { scss: true }),
     shadowBlur: opt(24, { scss: true }),
     shadowSpread: opt(0, { scss: true }),
-    shadowColor: opt("rgba(0,0,0,0.35)", { scss: true }),
+    shadowColor: opt<RgbaColor>("rgba(0,0,0,0.35)", { scss: true }),
   },
 
   buttons: {

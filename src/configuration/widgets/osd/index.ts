@@ -1,11 +1,12 @@
 import { opt } from "src/lib/options";
 import brightness from "./brightness";
 import type { OsdOptions } from "./type";
-import type {
-  AnchorLayoutType,
-  HexColor,
-  OsdOrientation,
-  RevealTransitionWithAuto,
+import {
+  RgbaColor,
+  type AnchorLayoutType,
+  type HexColor,
+  type OsdOrientation,
+  type RevealTransitionWithAuto,
 } from "src/configuration/types";
 
 const osd: OsdOptions = {
@@ -63,7 +64,7 @@ const osd: OsdOptions = {
     shadowY: opt(14, { scss: true }),
     shadowBlur: opt(40, { scss: true }),
     shadowSpread: opt(0, { scss: true }),
-    shadowColor: opt("rgba(0,0,0,0.45)", { scss: true }),
+    shadowColor: opt<RgbaColor>("rgba(0,0,0,0.45)", { scss: true }),
 
     iconSize: opt(28, { scss: true }),
     iconPadding: opt(10, { scss: true }),

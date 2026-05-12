@@ -40,6 +40,8 @@ export type {
 } from "src/services/assets/types"
 
 export type HexColor = `#${string}`;
+export type RgbaColor = `rgba(${string})`
+export type RGBA = [number, number, number, number]
 
 export type CalendarBorderLocation = "none" | "full";
 

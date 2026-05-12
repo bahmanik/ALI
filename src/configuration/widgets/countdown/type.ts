@@ -1,14 +1,14 @@
 import type { Opt } from 'src/lib/options'
-import type { AnchorLayoutType, RevealTransitionWithAuto, StackTransition } from 'src/configuration/types'
+import type { AnchorLayoutType, HexColor, RevealTransitionWithAuto, RgbaColor, StackTransition } from 'src/configuration/types'
 
 export interface CountdownStyleOptions {
-  bg: Opt<string>
-  fg: Opt<string>
+  bg: Opt<HexColor>
+  fg: Opt<HexColor>
   radius: Opt<number>
   padding: Opt<number>
   gap: Opt<number>
-  overlayBg: Opt<string>
-  overlayFg: Opt<string>
+  overlayBg: Opt<RgbaColor>
+  overlayFg: Opt<HexColor>
   imageRadius: Opt<number>
   imageMinSize: Opt<number>
   titleSize: Opt<number>
