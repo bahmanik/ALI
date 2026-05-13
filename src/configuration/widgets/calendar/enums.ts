@@ -6,10 +6,5 @@ export const WeekDaysValues = [
   "Sun", "Mon", "Tues", "Wed", "thurs", "Fri", "Sat"
 ]
 
-export const BorderLocationValues = [
-  "none", "full"
-]
-
 export type CalendarType = (typeof CalendarValues)[number]
 export type WeekDaysType = (typeof WeekDaysValues)[number]
-export type BorderLocationType = (typeof BorderLocationValues)[number]

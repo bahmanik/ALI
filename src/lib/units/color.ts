@@ -36,3 +36,20 @@ const gdkToString = (c: Gdk.RGBA, useAlpha?: boolean): string => {
     ? `#${numberToHex(c.red)}${numberToHex(c.green)}${numberToHex(c.blue)}${numberToHex(c.alpha)}`
     : `#${numberToHex(c.red)}${numberToHex(c.green)}${numberToHex(c.blue)}`
 }
+
+import type { ColorWithAlpha } from "src/configuration/shared/types"
+
+/**
+ * Convert a ColorWithAlpha to a CSS rgba() string.
+ *
+ * This is the single call site every widget SCSS export should use instead
+ * of the old manual `bg + bgOpacity/100` construction.
+ *
+ * Example:
+ *   colorWithAlphaToCss({ color: "#1d2024", alpha: 0.8 })
+ *   → "rgba(29,32,36,0.8)"
+ */
+export function colorWithAlphaToCss(c: ColorWithAlpha): string {
+  const { r, g, b, a } = colorToRgba(c.color, c.alpha)
+  return `rgba(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)},${a})`
+}
