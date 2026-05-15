@@ -1,6 +1,6 @@
 import type { Accessor } from "gnim";
-import { HexColor } from "src/configuration/types";
-import { Opt } from "src/lib/options";
+import type { HexColor } from "src/configuration/types";
+import type { Opt } from "src/lib/options";
 
 export type BooleanInputterProps = {
   opt: Opt<boolean>;
@@ -34,6 +34,10 @@ export type StringInputterProps = {
   opt: Opt<string>;
 }
 
+export type KeybindInputterProps = {
+  opt: Opt<string>;
+}
+
 type InputterBaseProps = {
   disabledBinding?: Accessor<boolean>;
 }
@@ -48,6 +52,7 @@ export type InputterProps = (
   | { type: 'enum' } & EnumInputterProps<any>
   | { type: 'float' } & FloatInputterProps
   | { type: 'image' } & ImageInputterProps
+  | { type: 'keybind' } & KeybindInputterProps
   | { type: 'number' } & NumberInputterProps
   | { type: 'string' } & StringInputterProps
 ) & InputterBaseProps

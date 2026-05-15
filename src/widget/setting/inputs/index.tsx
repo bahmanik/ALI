@@ -6,6 +6,7 @@ import ColorInputter from "./color";
 import FloatInputter from "./float";
 import ImageInputter from "./image";
 import EnumInputter from "./enum";
+import KeybindInputter from "./keybind";
 import { InputterProps } from "./types";
 
 function Inputter(props: InputterProps): JSX.Element {
@@ -32,6 +33,8 @@ function Inputter(props: InputterProps): JSX.Element {
         return <ImageInputter opt={props.opt} />;
       case 'color':
         return <ColorInputter opt={props.opt} />;
+      case 'keybind':
+        return <KeybindInputter opt={props.opt} />;
     }
   }
 
