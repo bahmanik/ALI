@@ -15,7 +15,7 @@ import { bootSession } from "src/lib/session";
 import { bootOptions } from "src/lib/options/runtime";
 import { bootNotif } from "src/lib/notiofication";
 import { bootStyle } from "src/style";
-// import { bootHyprland } from "src/hyprland";
+import { bootHyprland } from "src/hyprland";
 import { services } from "src/services";
 
 // ── Lifecycle ─────────────────────────────────────────────────────
@@ -55,11 +55,11 @@ lifecycle
     phase: "lazy",
     start: bootStyle,
   })
-  // .register({
-  //   id: "hyprland",
-  //   phase: "lazy",
-  //   start: bootHyprland,
-  // })
+  .register({
+    id: "hyprland",
+    phase: "lazy",
+    start: bootHyprland,
+  })
   .register({
     id: "wallpaper",
     phase: "lazy",

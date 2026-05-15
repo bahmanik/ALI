@@ -1,7 +1,7 @@
 import options from "src/configuration"
 import { Accessor } from "gnim"
 import { Gtk } from "ags/gtk4"
-import Inputter from "../../inputs"
+import { Option } from "../../_component/option"
 
 type GlobalProps = JSX.IntrinsicElements["box"]
 
@@ -11,7 +11,7 @@ const Global = (props: GlobalProps) => {
       orientation={Gtk.Orientation.VERTICAL}
       {...props}
     >
-      <Inputter opt={options.global.scale} min={1} max={100} increment={1} />
+      <Option type="number" title="scale" opt={options.global.scale} min={1} max={100} increment={1} />
     </box>
   )
 }
