@@ -9,6 +9,10 @@ const windowTitle: windowtitleOptions = {
   icon: opt<boolean>(true),
   truncation: opt<boolean>(false),
   truncation_size: opt<number>(10),
+  enable: opt(true, { scss: true }),
+  gap: opt(0, { scss: true }),
+  edge: opt(0, { scss: true }),
+  radius: opt(12, { scss: true }),
 }
 
-export default windowTitle 
+export default windowTitle

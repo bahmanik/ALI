@@ -8,21 +8,20 @@ const corner: BarCornerOptions = {
   edge: opt(0, { scss: true }),
   radius: opt(12, { scss: true }),
 
-  background: overrideVisualAsset({
+  // Three flat opts — no hidden backing, no derive interception:
+  //   useLocalBackground  →  whether to use localBackground or global.background
+  //   localBackground     →  the locally-stored asset (persisted to disk normally)
+  //   background          →  derived, runtime, consumed by the Corner widget
+  ...overrideVisualAsset({
     widgetId: "bar.corner",
     defaultUseLocal: true,
     defaultLocal: {
       kind: "pattern",
-      size: 80,
       path: "/home/ali/.config/ALI/patter.jpg",
+      size: 80,
+      opacity: 100,
       technique: "none",
     },
-    defaultRemote: ({ display }) => ({
-      kind: "image",
-      path: display.wallpaper.file.value,
-      technique: "none",
-    }),
-    deps: ["display.wallpaper.file"],
   }),
 }
 

@@ -8,4 +8,8 @@ export interface windowtitleOptions {
   icon: Opt<boolean>,
   truncation: Opt<boolean>,
   truncation_size: Opt<number>,
+  enable: Opt<boolean>
+  gap: Opt<number>
+  edge: Opt<number>
+  radius: Opt<number>
 }

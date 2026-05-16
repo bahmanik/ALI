@@ -1,20 +1,19 @@
-import { opt } from "src/lib/options";
-import type { GlobalOptions } from "./type";
-import type { HexColor } from "src/configuration/types";
+import { opt } from "src/lib/options"
+import { GlobalOptions } from "./type"
+import { VisualAsset } from "../types"
 
 const global: GlobalOptions = {
     scale: opt(32),
-    stringTest: opt(""),
-    booleanTest: opt(false),
-    enumTest: opt<"test1" | "test2" | "test3">("test1"),
-    colorTest: opt<HexColor>("#8d9199", { scss: true }),
-    floatTest: opt(1),
+    background: opt<VisualAsset>({
+        kind: "solid",
+        color: "",
+    }),
 }
 
 declare module "src/lib/options/root" {
     interface OptionsRoot {
-        global: GlobalOptions;
+        global: GlobalOptions
     }
 }
 
-export default global;
+export default global

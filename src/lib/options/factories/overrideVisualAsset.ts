@@ -1,55 +1,70 @@
-import { opt, type Opt } from "src/lib/options"
+import { opt } from "src/lib/options"
+import type { OptExports } from "../types"
 import type { VisualAsset } from "src/configuration/types"
+import type { SolidAsset, ImageAsset, PatternAsset } from "src/services/assets/types"
+import type { Opt } from "src/lib/options/opt"
 
-interface OverrideVisualAssetParams {
-  widgetId: string
-  defaultUseLocal: boolean
-  defaultLocal: VisualAsset
-  defaultRemote: (context: any) => VisualAsset
-  deps?: string[]
+const at = (o: any, path: string) =>
+  path.split(".").reduce((acc: any, key: string) => acc?.[key], o)
+
+const DEFAULT_SOLID: SolidAsset = { kind: "solid", color: "#111318", opacity: 100 }
+const DEFAULT_IMAGE: ImageAsset = { kind: "image", path: "", technique: "none" }
+const DEFAULT_PATTERN: PatternAsset = { kind: "pattern", path: "", size: 80, opacity: 100, technique: "none" }
+
+export interface OverrideVisualAssetResult {
+  useLocalBackground: Opt<boolean>
+  localBackground: Opt<VisualAsset>
+  background: Opt<VisualAsset>
+  solidSnapshot: Opt<SolidAsset>
+  imageSnapshot: Opt<ImageAsset>
+  patternSnapshot: Opt<PatternAsset>
 }
 
-export function overrideVisualAsset(config: OverrideVisualAssetParams): Opt<VisualAsset> {
-  // 1. Create hidden, persistent backing options to store custom user overrides safely
-  const isOverriddenOpt = opt(false)
-  const customAssetOpt = opt<VisualAsset>(config.defaultLocal)
+export function overrideVisualAsset(params: {
+  widgetId: string
+  defaultLocal: VisualAsset
+  defaultUseLocal?: boolean
+  exports?: OptExports
+  defaultSolid?: SolidAsset
+  defaultImage?: ImageAsset
+  defaultPattern?: PatternAsset
+}): OverrideVisualAssetResult {
+  const {
+    widgetId,
+    defaultLocal,
+    defaultUseLocal = false,
+    exports = {},
+    defaultSolid = DEFAULT_SOLID,
+    defaultImage = DEFAULT_IMAGE,
+    defaultPattern = DEFAULT_PATTERN,
+  } = params
 
-  // 2. Create the primary derived option consumed by your UI components and views
-  const mainOpt = opt<VisualAsset>(config.defaultLocal, {
-    // Include backing stores in the dependency array so state changes trigger re-evaluations
-    deps: [isOverriddenOpt.id, customAssetOpt.id, ...(config.deps || [])],
-    derive: (context) => {
-      // Priority A: If the user explicitly committed a custom asset, preserve and return it
-      if (isOverriddenOpt.get()) {
-        return customAssetOpt.get()
-      }
+  // Seed the snapshot for the initial kind from defaultLocal
+  const seedSolid: SolidAsset = defaultLocal.kind === "solid" ? defaultLocal as SolidAsset : defaultSolid
+  const seedImage: ImageAsset = defaultLocal.kind === "image" ? defaultLocal as ImageAsset : defaultImage
+  const seedPattern: PatternAsset = defaultLocal.kind === "pattern" ? defaultLocal as PatternAsset : defaultPattern
 
-      // Priority B: Evaluate standard local vs remote derivation logic
-      if (config.defaultUseLocal) {
-        return config.defaultLocal
-      }
-      return config.defaultRemote(context)
-    }
-  })
+  return {
+    useLocalBackground: opt(defaultUseLocal),
+    localBackground: opt<VisualAsset>(defaultLocal),
+    solidSnapshot: opt<SolidAsset>(seedSolid),
+    imageSnapshot: opt<ImageAsset>(seedImage),
+    patternSnapshot: opt<PatternAsset>(seedPattern),
 
-  // 3. Intercept direct .set() calls to persist the custom state backing stores
-  const originalSet = mainOpt.set.bind(mainOpt)
-  mainOpt.set = (newAsset: VisualAsset) => {
-    // Persist the custom payload and flag the stream as manually overridden
-    customAssetOpt.set(newAsset)
-    isOverriddenOpt.set(true)
-
-    // Broadcast the update to runtime listeners
-    originalSet(newAsset)
+    background: opt<VisualAsset>(defaultLocal, {
+      ...exports,
+      runtime: true,
+      deps: [
+        "global.background",
+        `${widgetId}.useLocalBackground`,
+        `${widgetId}.localBackground`,
+      ] as any,
+      derive: ({ root }: { root: any }) => {
+        const w = at(root, widgetId)
+        return w.useLocalBackground.value
+          ? w.localBackground.value
+          : root.global.background.value
+      },
+    }),
   }
-
-  // 4. Augment the option proxy with a clean reset routine to restore dynamic syncing
-  mainOpt.reset = () => {
-    isOverriddenOpt.set(false)
-    customAssetOpt.set(config.defaultLocal)
-    // Force a re-evaluation of the derived stream
-    originalSet(config.defaultUseLocal ? config.defaultLocal : config.defaultRemote({}))
-  }
-
-  return mainOpt
 }

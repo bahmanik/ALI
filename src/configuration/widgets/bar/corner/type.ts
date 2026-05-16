@@ -1,14 +1,10 @@
-import type { VisualAsset } from "src/configuration/types"
 import type { Opt } from "src/lib/options"
+import type { OverrideVisualAssetResult } from "src/lib/options/factories/overrideVisualAsset"
 
-export interface BarCornerOptions {
+export interface BarCornerOptions extends OverrideVisualAssetResult {
   enable: Opt<boolean>
   gap: Opt<number>
   edge: Opt<number>
   radius: Opt<number>
-
-  background: Opt<VisualAsset>
-
-  // compatibility / convenience values can stay in config UI later,
-  // but the widget now consumes only a resolved VisualAsset.
 }
+
