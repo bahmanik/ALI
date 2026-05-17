@@ -12,6 +12,15 @@ export default {
         video: 'video-x-generic-symbolic',
         audio: 'audio-x-generic-symbolic',
     },
+    launcher: {
+        clipboard: 'edit-paste-symbolic',
+        folder: 'folder-symbolic',
+        emoji: 'face-smile-symbolic',
+        window: 'window-symbolic',
+        process: 'process-stop-symbolic',
+        shutdown: 'system-shutdown-symbolic',
+        tmux: 'tmux-symbolic'
+    },
     ui: {
         close: 'window-close-symbolic',
         colorpicker: 'color-select-symbolic',
