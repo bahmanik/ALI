@@ -1,5 +1,6 @@
 import options from "src/configuration"
 import giCairo from "cairo"
+import GLib from "gi://GLib?version=2.0"
 import app from "ags/gtk4/app"
 import { Astal, Gdk } from "ags/gtk4"
 import { onCleanup } from "ags"
@@ -109,15 +110,22 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
   const patternSurface = usePatternAsset(background, queueDraw)
   const solidColor = useSolidAsset(background, queueDraw)
 
-  const visible = options.bar.corner.enable.as
-    ? options.bar.corner.enable.as(Boolean)
-    : options.bar.corner.enable.get()
-
   const unsubs: Array<() => void> = []
   unsubs.push(barsGeometry.subscribe(queueDraw))
   unsubs.push(options.bar.corner.gap.subscribe(queueDraw))
   unsubs.push(options.bar.corner.edge.subscribe(queueDraw))
   unsubs.push(options.bar.corner.radius.subscribe(queueDraw))
+  // Keep visible state in sync with the enable option after startup.
+  unsubs.push(options.bar.corner.enable.subscribe((val: boolean) => {
+    if (!win) return
+    const show = Boolean(val)
+    if (show && !win.visible) {
+      forceClickThrough(win)
+      win.visible = true
+    } else if (!show && win.visible) {
+      win.visible = false
+    }
+  }))
 
   onCleanup(() => {
     for (const unsubscribe of unsubs) {
@@ -143,17 +151,30 @@ export default function Corner(gdkmonitor: Gdk.Monitor) {
       name={`corner-${monitorId}`}
       application={app}
       gdkmonitor={gdkmonitor}
-      visible={visible}
+      visible={false}
       layer={Astal.Layer.BOTTOM}
       exclusivity={Astal.Exclusivity.IGNORE}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT}
       css="background: transparent;"
       $={(self) => {
         win = self
+
+        // Block all input immediately and keep it blocked.
         makeClickThrough(win)
-      }}
-      onNotifyVisible={({ visible }) => {
-        if (visible) forceClickThrough(win)
+
+        // The Wayland layer-shell configure roundtrip happens after the first
+        // map. We wait for it via idle_add so the window has its real monitor
+        // geometry before we paint the first frame. Only then do we show it,
+        // which avoids the startup flash entirely. We also re-apply
+        // click-through here because the compositor may reset the input region
+        // during the configure exchange.
+        GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+          if (Boolean(options.bar.corner.enable.get())) {
+            forceClickThrough(win)
+            win.visible = true
+          }
+          return GLib.SOURCE_REMOVE
+        })
       }}
     >
       {da as unknown as JSX.Element}

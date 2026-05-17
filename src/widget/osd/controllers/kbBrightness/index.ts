@@ -5,6 +5,7 @@ import { clamp01, OsdController, osdEnabled, sourceEnabled } from "../shared";
 export class KeyboardBrightnessController extends OsdController {
   #started = false;
   #brightness: BrightnessService | null = null;
+  #lastPct: number | null = null;
 
   constructor() {
     super("keyboardBrightness");
@@ -25,6 +26,10 @@ export class KeyboardBrightnessController extends OsdController {
 
         const pct = Math.round((Number(brightness.kbdPercent) || 0) * 100);
 
+        if (this.#lastPct === null) { this.#lastPct = pct; return; }
+        if (pct === this.#lastPct) return;
+        this.#lastPct = pct;
+
         this.emit({
           title: "Keyboard",
           iconName: icons.brightness.keyboard,
@@ -35,7 +40,6 @@ export class KeyboardBrightnessController extends OsdController {
       };
 
       brightness.connect?.("notify::kbd-percent", update);
-      update();
 
     } catch (err) {
       console.warn("[OSD] Keyboard brightness controller unavailable:", err);

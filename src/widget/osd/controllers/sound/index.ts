@@ -5,6 +5,7 @@ import { clamp01, OsdController, osdEnabled, sourceEnabled, VOLUME_MAX } from ".
 export class SoundController extends OsdController {
   #started = false;
   #speaker: AstalWp.Endpoint | null = null;
+  #lastPct: number | null = null;
 
   constructor() {
     super("sound");
@@ -46,6 +47,10 @@ export class SoundController extends OsdController {
                       ? icons.audio.volume.low
                       : icons.audio.volume.muted;
 
+        if (this.#lastPct === null) { this.#lastPct = rawPct; return; }
+        if (rawPct === this.#lastPct) return;
+        this.#lastPct = rawPct;
+
         this.emit({
           title: "Volume",
           iconName,
@@ -58,8 +63,6 @@ export class SoundController extends OsdController {
       speaker.connect?.("notify::volume", update);
       speaker.connect?.("notify::mute", update);
 
-      // initial snapshot
-      update();
     } catch (err) {
       console.warn("[OSD] Sound controller unavailable:", err);
     }

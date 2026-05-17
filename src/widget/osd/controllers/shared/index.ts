@@ -100,7 +100,6 @@ export function pickTargetMonitorConnector(): string {
 export class OsdController {
   public readonly kind: OsdKind;
   readonly #listeners = new Set<Listener>();
-
   constructor(kind: OsdKind) {
     this.kind = kind;
   }

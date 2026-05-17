@@ -5,6 +5,7 @@ import { clamp01, OsdController, osdEnabled, sourceEnabled, VOLUME_MAX } from ".
 export class MicController extends OsdController {
   #started = false;
   #mic: AstalWp.Endpoint | null = null;
+  #lastPct: number | null = null;
 
   constructor() {
     super("mic");
@@ -41,6 +42,10 @@ export class MicController extends OsdController {
                   ? icons.audio.mic.low
                   : icons.audio.mic.muted;
 
+        if (this.#lastPct === null) { this.#lastPct = rawPct; return; }
+        if (rawPct === this.#lastPct) return;
+        this.#lastPct = rawPct;
+
         this.emit({
           title: "Microphone",
           iconName,
@@ -52,8 +57,6 @@ export class MicController extends OsdController {
 
       mic.connect?.("notify::volume", update);
       mic.connect?.("notify::mute", update);
-
-      update();
     } catch (err) {
       console.warn("[OSD] Microphone controller unavailable:", err);
     }

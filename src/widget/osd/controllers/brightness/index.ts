@@ -5,6 +5,7 @@ import { clamp01, OsdController, osdEnabled, sourceEnabled } from "../shared";
 export class BrightnessController extends OsdController {
   #started = false;
   #brightness: BrightnessService | null = null;
+  #lastPct: number | null = null;
 
   constructor() {
     super("brightness");
@@ -26,6 +27,10 @@ export class BrightnessController extends OsdController {
         const pct = Number(brightness.screenPercent);
         const rawPct = Math.round(Number.isFinite(pct) ? pct : 0);
 
+        if (this.#lastPct === null) { this.#lastPct = rawPct; return; }
+        if (rawPct === this.#lastPct) return;
+        this.#lastPct = rawPct;
+
         this.emit({
           title: "Brightness",
           iconName: icons.brightness.screen,
@@ -36,8 +41,6 @@ export class BrightnessController extends OsdController {
       };
 
       brightness.connect?.("notify::screen", update);
-      update();
-      console.log("brightness")
     } catch (err) {
       console.warn("[OSD] Brightness controller unavailable:", err);
     }

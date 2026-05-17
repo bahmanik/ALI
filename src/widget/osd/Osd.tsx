@@ -6,7 +6,7 @@ import { layoutToAlign, toRevealerTransitionWithAuto } from "../shared/helpers";
 import { controllerForKind } from "./controllers";
 import type Gdk from "gi://Gdk?version=4.0";
 import type { Accessor } from "gnim";
-import type { OsdKind, OsdEvent } from "./controllers";
+import type { OsdEvent, OsdKind } from "./controllers/shared";
 
 export type OsdProps = {
   name: string;
@@ -475,87 +475,3 @@ export default function Osd(props: OsdProps) {
     </window>
   );
 }
-
-// NOTE: temp fix for sound osd click not working exacly between 1 to 150
-// Now replace your applyNormalized(...) with a controller-normalized version:
-//
-// change the click / drag mapping on the levelbar
-//
-// Add these helpers near your other helpers:
-//
-// const AUDIO_MAX = 1.5; // must match controller.ts VOLUME_MAX
-//
-// function isAudioKind(kind: OsdKind): boolean {
-//   return kind === "sound" || kind === "mic";
-// }
-//
-// // returns controller.setNormalized input (0..1)
-// function controllerNormFromX(kind: OsdKind, x: number, width: number, allowOverflow: boolean): number {
-//   const w = Math.max(1, width);
-//
-//   if (!isAudioKind(kind)) return clamp01(x / w);
-//
-//   // UI width maps to 0..100% (0..1.0 volume)
-//   const base = clamp01(x / w);
-//
-//   if (!allowOverflow || x <= w) {
-//     // volume = base (0..1.0), controllerNorm = volume / 1.5
-//     return clamp01(base / AUDIO_MAX);
-//   }
-//
-//   // Drag past the right edge to access 100..150%
-//   const extra = clamp01((x - w) / w); // 0..1 over one extra width
-//   const volume = 1.0 + extra * (AUDIO_MAX - 1.0); // 1.0..1.5
-//   return clamp01(volume / AUDIO_MAX);
-// }
-//
-// function percentFromControllerNorm(kind: OsdKind, nCtl: number): number {
-//   const n = clamp01(nCtl);
-//   if (isAudioKind(kind)) return Math.round(n * AUDIO_MAX * 100); // 0..150
-//   return Math.round(n * 100);
-// }
-//
-// function barValueFromPercent(kind: OsdKind, pct: number): number {
-//   // bar fill is always 0..1 == 0..100%
-//   return clamp01((Number(pct) || 0) / 100);
-// }
-//
-// const applyControllerNorm = (nCtlRaw: number) => {
-//   const wants = Boolean(interactiveEnabled.peek?.() ?? false);
-//   if (!wants) return;
-//
-//   const nCtl = clamp01(nCtlRaw);
-//
-//   try {
-//     controller.setNormalized(nCtl);
-//   } catch {}
-//
-//   const pct = percentFromControllerNorm(kind, nCtl);
-//   setPercent(pct);
-//   setOverflow(pct > 100);
-//   setValue(barValueFromPercent(kind, pct)); // saturates at 100% visually
-//
-//   clearHideTimers();
-// };
-//
-//
-// And in your levelbar gesture handlers, replace the old applyNormalized(x / w) calls with:
-//
-// // in pressed:
-// const w = Math.max(1, bar.get_allocated_width?.() ?? 1);
-// dragging = true;
-// graceUntilMs = 0;
-// refreshAccepting();
-//
-// const nCtl = controllerNormFromX(kind, x, w, false); // CLICK: no overflow
-// applyControllerNorm(nCtl);
-//
-// // in drag-begin:
-// width = Math.max(1, bar.get_allocated_width?.() ?? 1);
-// const nCtl = controllerNormFromX(kind, startX, width, true); // DRAG: allow overflow
-// applyControllerNorm(nCtl);
-//
-// // in drag-update:
-// const xNow = startX + dx;
-// const nCtl = controllerNormFromX(kind, xNow, width, true);
-// applyControllerNorm(nCtl);
