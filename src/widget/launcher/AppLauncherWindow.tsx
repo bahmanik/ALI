@@ -1,52 +1,48 @@
 import AstalApps from "gi://AstalApps?version=0.1"
-import options from "src/configuration"
 import type { Gdk } from "ags/gtk4"
 import { createState } from "gnim"
+import options from "src/configuration"
 import { Popup } from "../shared/popup"
-import { LauncherPanel } from "./_components"
-import { hideLauncherWindow } from "./helpers"
 import { toRevealerTransition } from "../shared/helpers"
+import { hideLauncherWindow } from "./helpers"
+import { LauncherPanel } from "./components/LauncherPanel"
+import type { SearchMode } from "./providers/prefixes"
 
 const Apps = new AstalApps.Apps()
 
 const { width, height } = options.launcher.window
 const { transitionDuration, revealTransition, maxItems } = options.launcher
 
-// keep behavior: these are evaluated once at import time
-const transitionType = toRevealerTransition(revealTransition.get())
-const transitionduration = transitionDuration.get()
-
-export function hide_all_windows() {
-  hideLauncherWindow()
-}
-
-const [text, text_set] = createState("")
-
-// limit results by options.launcher.maxItems
-const list = text.as((t) => {
-  const max = maxItems.get()
-  return Apps.fuzzy_query(t).slice(0, max)
-})
+// Evaluated once at import time — these drive the Popup's transition
+const transitionType     = toRevealerTransition(revealTransition.get())
+const transitionDurationMs = transitionDuration.get()
 
 export function AppLauncherWindow(gdkmonitor: Gdk.Monitor) {
+  const [query, setQuery] = createState("")
+  const [mode,  setMode]  = createState<SearchMode>("app")
+
+  const list = query.as((q) => Apps.fuzzy_query(q).slice(0, maxItems.get()))
+
   return (
     <Popup
-      name={"launcher"}
+      name="launcher"
       class="Launcher"
-      width={width.get()}
-      transitionDuration={transitionduration}
-      height={height.get()}
       gdkmonitor={gdkmonitor}
       layout="top_center"
-      transitionType={transitionType}
       surfaceClass="launcher-surface"
+      width={width.get()}
+      height={height.get()}
+      transitionType={transitionType}
+      transitionDuration={transitionDurationMs}
     >
       <LauncherPanel
         apps={Apps}
         list={list}
-        query={text}
-        setQuery={text_set}
+        query={query}
+        setQuery={setQuery}
         hideWindow={hideLauncherWindow}
+        activeMode={mode}
+        setMode={setMode}
       />
     </Popup>
   )

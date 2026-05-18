@@ -1,5 +1,5 @@
 import options from "src/configuration"
-import { ALL_Launcher_MODULES } from "src/widget/launcher/_components"
+// import { ALL_Launcher_MODULES } from "src/widget/launcher/_components"
 import GridSetter from "../../inputs/gridSetter"
 
 type LauncherProps = JSX.IntrinsicElements["box"]
@@ -11,12 +11,12 @@ const Launcher = (props: LauncherProps) => {
     <box
       {...props}
     >
-      <GridSetter
+      { /* <GridSetter
         cols={cols}
         rows={rows}
         modulesMap={modulesList}
         modulesList={ALL_Launcher_MODULES}
-      />
+      />  */}
     </box>
   )
 }

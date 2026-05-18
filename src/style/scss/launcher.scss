@@ -121,3 +121,67 @@ window.AppLauncher {
     opacity: 0.85;
   }
 }
+
+  // ─── Prefix selector ─────────────────────────────────────────────────────
+
+  .launcher-entry-row {
+    // wraps the prefix button + search entry
+  }
+
+  button.launcher-prefix-btn {
+    background: $entry-bg;
+    border-radius: $launcher-entry-radius * 1px;
+    padding: 6px 8px;
+    min-width: 36px;
+
+    border: if(
+      $launcher-entry-borderEnable,
+      $launcher-entry-borderWidth * 1px solid $launcher-entry-borderColor,
+      none
+    );
+
+    &:hover {
+      background: $item-bg-hover;
+    }
+  }
+
+  .launcher-prefix-popover {
+    padding: 6px;
+    min-width: 260px;
+  }
+
+  button.launcher-prefix-item {
+    border-radius: 6px;
+    padding: 6px 10px;
+
+    &:hover {
+      background: $item-bg-hover;
+    }
+  }
+
+  .launcher-prefix-item-inner {
+    // spacing handled in TS
+  }
+
+  label.launcher-prefix-label {
+    font-weight: 600;
+    font-size: 0.9em;
+  }
+
+  label.launcher-prefix-desc {
+    font-size: 0.78em;
+    opacity: 0.7;
+  }
+
+  label.launcher-prefix-key {
+    font-size: 0.75em;
+    opacity: 0.5;
+    font-family: monospace;
+  }
+
+  label.launcher-loading,
+  label.launcher-empty {
+    margin: 12px;
+    opacity: 0.5;
+    font-size: 0.85em;
+  }
