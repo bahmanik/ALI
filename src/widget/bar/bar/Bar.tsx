@@ -1,24 +1,9 @@
 import app from "ags/gtk4/app";
 import { Astal } from "ags/gtk4";
-import { onCleanup } from "ags";
+import { For, onCleanup } from "ags";
 
-import {
-  Volume,
-  Windowtitle,
-  Workspaces,
-  Battery,
-  Clock,
-  Media,
-  Tray,
-  Wireless,
-  Clipboard,
-  Cpu,
-  CpuTemp,
-  Ram,
-  KbLayout,
-  Storage,
-  Hyprsunset
-} from "./modules";
+import { barModuleMap } from "./modules";
+import type { BarModules } from "./modules";
 
 import {
   createBarWindowBinds,
@@ -33,6 +18,7 @@ import {
 import type { Gdk, Gtk } from "ags/gtk4";
 import type { BarOptionGroup as BarOptionGroupT, BarKind } from "./helpers";
 import type { Opt } from "src/lib/options";
+import type { BarSlotLayout } from "src/configuration/widgets/bar/type";
 import { BarLocation } from "src/configuration/types";
 
 type BarOptionGroup = BarOptionGroupT & {
@@ -46,6 +32,7 @@ type BarProps = {
   option: BarOptionGroup;
   namespace?: string;
   kind?: BarKind;
+  layout: Opt<BarSlotLayout>;
 };
 
 export default function Bar({
@@ -54,16 +41,23 @@ export default function Bar({
   option,
   namespace = "bar",
   kind = "primary",
+  layout,
 }: BarProps) {
   let win: Astal.Window;
   let root: Gtk.Widget | null = null;
 
-  const isVertical: Opt<boolean> = option.position.as(isBarVertical)
+  const isVertical: Opt<boolean> = option.position.as(isBarVertical);
 
   const monitorId = gdkmonitor.connector;
 
-  const layout = getBarOrientation(option.position);
+  const barOrientation = getBarOrientation(option.position);
   const winBinds = createBarWindowBinds(option);
+
+  // Derive a reactive accessor for each slot from the layout opt.
+  // layout.as() returns an Accessor — For can consume that directly.
+  const startModules = layout.as((l) => l.start);
+  const centerModules = layout.as((l) => l.center);
+  const endModules = layout.as((l) => l.end);
 
   const recompute = () => {
     if (!win) return;
@@ -72,7 +66,6 @@ export default function Bar({
   };
 
   onCleanup(() => {
-    // window is not auto-destroyed
     try {
       win?.destroy();
     } catch {
@@ -111,7 +104,7 @@ export default function Bar({
       css="background: transparent;"
     >
       <centerbox
-        orientation={layout.orientation}
+        orientation={barOrientation.orientation}
         class="bar-panel"
         $={(self) => {
           root = self;
@@ -126,29 +119,47 @@ export default function Bar({
       >
         <box
           $type="start"
-          orientation={layout.orientation}
-          halign={layout.start.halign}
-          valign={layout.start.valign}
+          orientation={barOrientation.orientation}
+          halign={barOrientation.start.halign}
+          valign={barOrientation.start.valign}
         >
-          <Ram />
+          <For each={startModules}>
+            {(modName: BarModules) => {
+              const Component = barModuleMap[modName];
+              if (!Component) return <box />;
+              return <Component verticalState={isVertical} />;
+            }}
+          </For>
         </box>
 
         <box
           $type="center"
-          orientation={layout.orientation}
-          halign={layout.start.halign}
-          valign={layout.start.valign}
+          orientation={barOrientation.orientation}
+          halign={barOrientation.start.halign}
+          valign={barOrientation.start.valign}
         >
-          <Clipboard />
+          <For each={centerModules}>
+            {(modName: BarModules) => {
+              const Component = barModuleMap[modName];
+              if (!Component) return <box />;
+              return <Component verticalState={isVertical} />;
+            }}
+          </For>
         </box>
 
         <box
           $type="end"
-          orientation={layout.orientation}
-          halign={layout.start.halign}
-          valign={layout.start.valign}
+          orientation={barOrientation.orientation}
+          halign={barOrientation.start.halign}
+          valign={barOrientation.start.valign}
         >
-          <Wireless />
+          <For each={endModules}>
+            {(modName: BarModules) => {
+              const Component = barModuleMap[modName];
+              if (!Component) return <box />;
+              return <Component verticalState={isVertical} />;
+            }}
+          </For>
         </box>
       </centerbox>
     </window>

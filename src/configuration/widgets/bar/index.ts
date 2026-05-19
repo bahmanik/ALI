@@ -4,14 +4,25 @@ import barModules from "./modules";
 import { overrideScale } from "src/lib/options/factories/overrideScale";
 import { opt } from "src/lib/options";
 import { RgbaColor, type BarBorderLocation, type BarLocation, type HexColor } from "src/configuration/types";
-import type { BarOptions } from "./type";
+import type { BarOptions, BarSlotLayout } from "./type";
+
+const defaultLayout: BarSlotLayout = {
+  start: ["Workspaces", "Windowtitle"],
+  center: ["Clock"],
+  end: ["Tray", "Volume", "Wireless", "Battery"],
+};
 
 const bar: BarOptions = {
   position: opt<BarLocation>("top", { scss: true, hyprland: true }),
   margin: opt<number[]>([0, 0, 0, 0]),
   secondaryBar: secondaryBar,
   corner: corner,
-  modules: barModules,
+  modules: {
+    ...barModules,
+    defaultLayout: opt<BarSlotLayout>(defaultLayout),
+    monitorLayouts: opt<Record<string, BarSlotLayout>>({}),
+    mirrorFirstMonitor: opt<boolean>(false),
+  },
 
   style: {
     floating: opt(false, { scss: true }),
