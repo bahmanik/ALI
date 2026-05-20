@@ -1,4 +1,4 @@
-import { BarModules } from "src/widget/bar/bar/modules";
+import { BarModules } from "src/widget/bar/modules";
 import { DashboardModules } from "src/widget/dashboard/_component";
 
 

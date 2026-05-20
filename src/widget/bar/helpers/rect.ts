@@ -3,7 +3,7 @@ import type Gdk from "gi://Gdk?version=4.0";
 
 import type { BarOptionGroup, BarKind } from "./types";
 import { readMargin } from "./margin";
-import { setPrimaryRect, setSecondaryRect } from "../../shared";
+import { setPrimaryRect, setSecondaryRect } from "../shared";
 
 function widgetSize(w: Gtk.Widget | null) {
   const width = w?.get_allocated_width?.() ?? w?.get_width?.() ?? 0;

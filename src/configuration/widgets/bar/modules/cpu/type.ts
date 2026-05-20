@@ -1,5 +1,5 @@
 import { Opt } from "src/lib/options"
-import { ResourceLabelType } from "src/widget/bar/bar/modules/storage/options"
+import { ResourceLabelType } from "src/widget/bar/modules/storage/options"
 import { CircularProgressOptions } from "src/widget/shared/circularProgress/type"
 import { LineGraphOptions } from "src/widget/shared/lineGraph/type"
 

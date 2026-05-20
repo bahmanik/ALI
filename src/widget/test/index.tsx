@@ -1,6 +1,6 @@
 import { Astal, Gdk } from "ags/gtk4"
 import { createState } from "gnim";
-import { Cpu } from "../bar/bar/modules";
+import { Cpu } from "../bar/modules";
 
 const FULL_ANCHOR: Astal.WindowAnchor =
   Astal.WindowAnchor.TOP |

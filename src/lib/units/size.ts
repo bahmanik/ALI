@@ -1,4 +1,4 @@
-import { SizeUnit } from "src/widget/bar/bar/_components/storage/options";
+import { SizeUnit } from "src/widget/bar/modules/storage/options";
 
 export class SizeConverter {
   private readonly _value: number;

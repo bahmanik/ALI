@@ -3,7 +3,7 @@ import type { BarBorderLocation, BarLocation, HexColor, RgbaColor } from "src/co
 import type { SecondaryBarOptions } from "./secondaryBar/type";
 import type { BarCornerOptions } from "./corner/type";
 import type { CpuOptions } from "./modules/cpu/type";
-import type { BarModules } from "src/widget/bar/bar/modules";
+import type { BarModules } from "src/widget/bar/modules";
 
 export interface BarSlotLayout {
   start: BarModules[];

@@ -2,7 +2,7 @@ import { opt } from "src/lib/options"
 import { overrideCircularProgress } from "src/lib/options/factories/overrideCircularProgress"
 import { overrideLineGraph } from "src/lib/options/factories/overrideLineGraph"
 import type { CpuOptions } from "./type"
-import { ResourceLabelType } from "src/widget/bar/bar/modules/storage/options"
+import { ResourceLabelType } from "src/widget/bar/modules/storage/options"
 
 const cpu: CpuOptions = {
   // ── module ────────────────────────────────────────────────────────────────

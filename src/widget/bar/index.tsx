@@ -1,5 +1,5 @@
 import options from "src/configuration";
-import Bar from "./bar/Bar";
+import Bar from "./Bar";
 import Corner from "./corner/Corner";
 import { With } from "ags";
 import type { Gdk } from "ags/gtk4";
