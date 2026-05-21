@@ -1,10 +1,9 @@
-import app from "ags/gtk4/app";
-import { Astal } from "ags/gtk4";
-import { For, onCleanup } from "ags";
+import app from "ags/gtk4/app"
+import { Astal } from "ags/gtk4"
+import { For, onCleanup } from "ags"
 
-import { barModuleMap } from "./modules";
-import type { BarModules } from "./modules";
-
+import { barModuleMap } from "./modules"
+import type { BarModule } from "./modules"
 import {
   createBarWindowBinds,
   computeBarRect,
@@ -13,27 +12,20 @@ import {
   storeBarRect,
   subscribeOpt,
   watchWidgetSize,
-} from "./helpers";
-
-import type { Gdk, Gtk } from "ags/gtk4";
-import type { BarOptionGroup as BarOptionGroupT, BarKind } from "./helpers";
-import type { Opt } from "src/lib/options";
-import type { BarSlotLayout } from "src/configuration/widgets/bar/type";
-import { BarLocation } from "src/configuration/types";
-
-type BarOptionGroup = BarOptionGroupT & {
-  position: { get(): BarLocation; subscribe(cb: () => void): any; as?: any };
-  margin: { get(): number[]; subscribe(cb: () => void): any; as?: any };
-};
+} from "./helpers"
+import type { Gdk, Gtk } from "ags/gtk4"
+import type { BarOptionGroup, BarKind } from "./helpers"
+import type { Opt } from "src/lib/options"
+import type { BarSlotLayout } from "src/configuration/widgets/bar/type"
 
 type BarProps = {
-  gdkmonitor: Gdk.Monitor;
-  name: string;
-  option: BarOptionGroup;
-  namespace?: string;
-  kind?: BarKind;
-  layout: Opt<BarSlotLayout>;
-};
+  gdkmonitor: Gdk.Monitor
+  name: string
+  option: BarOptionGroup
+  namespace?: string
+  kind?: BarKind
+  layout: Opt<BarSlotLayout>
+}
 
 export default function Bar({
   gdkmonitor,
@@ -43,51 +35,50 @@ export default function Bar({
   kind = "primary",
   layout,
 }: BarProps) {
-  let win: Astal.Window;
-  let root: Gtk.Widget | null = null;
+  let win: Astal.Window
+  let root: Gtk.Widget | null = null
 
-  const isVertical: Opt<boolean> = option.position.as(isBarVertical);
+  const isVertical = option.position.as(isBarVertical)
+  const monitorId = gdkmonitor.connector
+  const orientation = getBarOrientation(option.position)
+  const winBinds = createBarWindowBinds(option)
 
-  const monitorId = gdkmonitor.connector;
-
-  const barOrientation = getBarOrientation(option.position);
-  const winBinds = createBarWindowBinds(option);
-
-  // Derive a reactive accessor for each slot from the layout opt.
-  // layout.as() returns an Accessor — For can consume that directly.
-  const startModules = layout.as((l) => l.start);
-  const centerModules = layout.as((l) => l.center);
-  const endModules = layout.as((l) => l.end);
+  const startModules = layout.as((l) => l.start)
+  const centerModules = layout.as((l) => l.center)
+  const endModules = layout.as((l) => l.end)
 
   const recompute = () => {
-    if (!win) return;
-    const rect = computeBarRect({ gdkmonitor, monitorId, name, option, root });
-    storeBarRect(monitorId, kind, rect);
-  };
+    if (!win) return
+    storeBarRect(monitorId, kind, computeBarRect({ gdkmonitor, monitorId, name, option, root }))
+  }
 
   onCleanup(() => {
-    try {
-      win?.destroy();
-    } catch {
-      // ignore
-    }
-    storeBarRect(monitorId, kind, undefined);
-  });
+    try { win?.destroy() } catch { }
+    storeBarRect(monitorId, kind, undefined)
+  })
+
+  function Slot({ modules, halign, valign }: { modules: ReturnType<typeof layout.as>, halign: any, valign: any }) {
+    return (
+      <box orientation={orientation.orientation} halign={halign} valign={valign}>
+        <For each={modules}>
+          {(modName: BarModule) => {
+            const Component = barModuleMap[modName]
+            if (!Component) return <box />
+            return <Component verticalState={isVertical} />
+          }}
+        </For>
+      </box>
+    )
+  }
 
   return (
     <window
       $={(self) => {
-        win = self;
-
-        const stopPos = subscribeOpt(option.position, recompute);
-        const stopMargin = subscribeOpt(option.margin, recompute);
-
-        recompute();
-
-        onCleanup(() => {
-          stopPos();
-          stopMargin();
-        });
+        win = self
+        const stopPos = subscribeOpt(option.position, recompute)
+        const stopMargin = subscribeOpt(option.margin, recompute)
+        recompute()
+        onCleanup(() => { stopPos(); stopMargin() })
       }}
       visible
       namespace={namespace}
@@ -104,64 +95,19 @@ export default function Bar({
       css="background: transparent;"
     >
       <centerbox
-        orientation={barOrientation.orientation}
+        orientation={orientation.orientation}
         class="bar-panel"
         $={(self) => {
-          root = self;
-
-          const stopWatch = watchWidgetSize(self, recompute);
-          recompute();
-
-          onCleanup(() => {
-            stopWatch();
-          });
+          root = self
+          const stopWatch = watchWidgetSize(self, recompute)
+          recompute()
+          onCleanup(() => stopWatch())
         }}
       >
-        <box
-          $type="start"
-          orientation={barOrientation.orientation}
-          halign={barOrientation.start.halign}
-          valign={barOrientation.start.valign}
-        >
-          <For each={startModules}>
-            {(modName: BarModules) => {
-              const Component = barModuleMap[modName];
-              if (!Component) return <box />;
-              return <Component verticalState={isVertical} />;
-            }}
-          </For>
-        </box>
-
-        <box
-          $type="center"
-          orientation={barOrientation.orientation}
-          halign={barOrientation.start.halign}
-          valign={barOrientation.start.valign}
-        >
-          <For each={centerModules}>
-            {(modName: BarModules) => {
-              const Component = barModuleMap[modName];
-              if (!Component) return <box />;
-              return <Component verticalState={isVertical} />;
-            }}
-          </For>
-        </box>
-
-        <box
-          $type="end"
-          orientation={barOrientation.orientation}
-          halign={barOrientation.start.halign}
-          valign={barOrientation.start.valign}
-        >
-          <For each={endModules}>
-            {(modName: BarModules) => {
-              const Component = barModuleMap[modName];
-              if (!Component) return <box />;
-              return <Component verticalState={isVertical} />;
-            }}
-          </For>
-        </box>
+        <Slot $type="start" modules={startModules} halign={orientation.start.halign} valign={orientation.start.valign} />
+        <Slot $type="center" modules={centerModules} halign={orientation.center.halign} valign={orientation.center.valign} />
+        <Slot $type="end" modules={endModules} halign={orientation.end.halign} valign={orientation.end.valign} />
       </centerbox>
     </window>
-  );
+  )
 }
