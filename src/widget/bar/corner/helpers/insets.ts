@@ -1,44 +1,42 @@
-import type { BarsOnMonitor } from "../../shared";
+import type { BarsOnMonitor } from "../../shared"
 
 export type Insets = {
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-  radius: number;
-  rectCount: number;
-};
+  top: number
+  bottom: number
+  left: number
+  right: number
+  radius: number
+  rectCount: number
+}
 
 export function computeInsets(args: {
-  w: number;
-  h: number;
-  geo: BarsOnMonitor;
-  gap: number;
-  edge: number;
-  radius: number;
+  w: number
+  h: number
+  geo: BarsOnMonitor
+  gap: number
+  edge: number
+  radius: number
 }): Insets {
-  const { w, h, geo, gap, edge, radius } = args;
+  const { w, h, geo, gap, edge, radius } = args
 
-  const rects = [geo.primary, geo.secondary].filter(Boolean) as any[];
+  const rects = Object.values(geo).filter(Boolean) as NonNullable<BarsOnMonitor[string]>[]
 
-  let top = 0,
-    bottom = 0,
-    left = 0,
-    right = 0;
+  let top = 0, bottom = 0, left = 0, right = 0
+
   for (const r of rects) {
     switch (r.position) {
       case "top":
-        top = Math.max(top, r.y + r.height);
-        break;
+        top = Math.max(top, r.y + r.height)
+        break
       case "bottom":
-        bottom = Math.max(bottom, h - r.y);
-        break;
+        bottom = Math.max(bottom, h - r.y)
+        break
       case "left":
-        left = Math.max(left, r.x + r.width);
-        break;
+        left = Math.max(left, r.x + r.width)
+        break
       case "right":
-        right = Math.max(right, w - r.x);
-        break;
+        right = Math.max(right, w - r.x)
+        break
     }
   }
 
@@ -49,5 +47,5 @@ export function computeInsets(args: {
     right: edge + (right > 0 ? right + gap : 0),
     radius,
     rectCount: rects.length,
-  };
+  }
 }

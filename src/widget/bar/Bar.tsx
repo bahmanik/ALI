@@ -14,16 +14,17 @@ import {
   watchWidgetSize,
 } from "./helpers"
 import type { Gdk, Gtk } from "ags/gtk4"
-import type { BarOptionGroup, BarKind } from "./helpers"
+import type { BarOptionGroup } from "./helpers"
 import type { Opt } from "src/lib/options"
 import type { BarSlotLayout } from "src/configuration/widgets/bar/type"
+import { createMemo } from "gnim"
 
 type BarProps = {
   gdkmonitor: Gdk.Monitor
   name: string
   option: BarOptionGroup
+  /** Used as the Wayland layer-shell namespace AND as the CSS class on the window. */
   namespace?: string
-  kind?: BarKind
   layout: Opt<BarSlotLayout>
 }
 
@@ -32,16 +33,17 @@ export default function Bar({
   name,
   option,
   namespace = "bar",
-  kind = "primary",
   layout,
 }: BarProps) {
   let win: Astal.Window
   let root: Gtk.Widget | null = null
 
-  const isVertical = option.position.as(isBarVertical)
   const monitorId = gdkmonitor.connector
   const orientation = getBarOrientation(option.position)
   const winBinds = createBarWindowBinds(option)
+
+  /** Reactive boolean — true when the bar is on the left or right edge. */
+  const vertical = createMemo(() => isBarVertical(option.position.get()))
 
   const startModules = layout.as((l) => l.start)
   const centerModules = layout.as((l) => l.center)
@@ -49,22 +51,26 @@ export default function Bar({
 
   const recompute = () => {
     if (!win) return
-    storeBarRect(monitorId, kind, computeBarRect({ gdkmonitor, monitorId, name, option, root }))
+    storeBarRect(namespace, monitorId, computeBarRect({ gdkmonitor, monitorId, name, option, root }))
   }
 
   onCleanup(() => {
     try { win?.destroy() } catch { }
-    storeBarRect(monitorId, kind, undefined)
+    storeBarRect(namespace, monitorId, undefined)
   })
 
-  function Slot({ modules, halign, valign }: { modules: ReturnType<typeof layout.as>, halign: any, valign: any }) {
+  function Slot({ modules, halign, valign }: {
+    modules: ReturnType<typeof layout.as>
+    halign: any
+    valign: any
+  }) {
     return (
       <box orientation={orientation.orientation} halign={halign} valign={valign}>
         <For each={modules}>
           {(modName: BarModule) => {
             const Component = barModuleMap[modName]
             if (!Component) return <box />
-            return <Component verticalState={isVertical} />
+            return <Component vertical={vertical} />
           }}
         </For>
       </box>
@@ -83,7 +89,7 @@ export default function Bar({
       visible
       namespace={namespace}
       name={name}
-      class={`bar ${kind === "primary" ? "bar-primary" : "bar-secondary"}`}
+      class={`bar ${namespace}`}
       gdkmonitor={gdkmonitor}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       anchor={winBinds.anchor}

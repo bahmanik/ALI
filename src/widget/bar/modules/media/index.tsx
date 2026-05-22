@@ -2,8 +2,9 @@ import AstalMpris from "gi://AstalMpris"
 import AstalApps from "gi://AstalApps"
 import { Gtk } from "ags/gtk4"
 import { For, createBinding } from "ags"
+import type { BarModuleProps } from "../types"
 
-function Media() {
+function Media(_props: BarModuleProps) {
   const mpris = AstalMpris.get_default()
   const apps = new AstalApps.Apps()
   const players = createBinding(mpris, "players")
@@ -31,16 +32,10 @@ function Media() {
                   <label xalign={0} label={createBinding(player, "artist")} />
                 </box>
                 <box hexpand halign={Gtk.Align.END}>
-                  <button
-                    onClicked={() => player.previous()}
-                    visible={createBinding(player, "canGoPrevious")}
-                  >
+                  <button onClicked={() => player.previous()} visible={createBinding(player, "canGoPrevious")}>
                     <image iconName="media-seek-backward-symbolic" />
                   </button>
-                  <button
-                    onClicked={() => player.play_pause()}
-                    visible={createBinding(player, "canControl")}
-                  >
+                  <button onClicked={() => player.play_pause()} visible={createBinding(player, "canControl")}>
                     <box>
                       <image
                         iconName="media-playback-start-symbolic"
@@ -56,10 +51,7 @@ function Media() {
                       />
                     </box>
                   </button>
-                  <button
-                    onClicked={() => player.next()}
-                    visible={createBinding(player, "canGoNext")}
-                  >
+                  <button onClicked={() => player.next()} visible={createBinding(player, "canGoNext")}>
                     <image iconName="media-seek-forward-symbolic" />
                   </button>
                 </box>

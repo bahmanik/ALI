@@ -5,6 +5,7 @@ import { CpuObserver } from "src/lib/observers/cpu"
 import { CircularProgress } from "src/widget/shared/circularProgress"
 import { LineGraph } from "src/widget/shared/lineGraph"
 import options from "src/configuration"
+import type { BarModuleProps } from "../types"
 
 const { cpu } = options.bar.modules
 
@@ -13,7 +14,7 @@ function renderCpuLabel(percentage: number, round: boolean): string {
   return `${value}%`
 }
 
-function Cpu() {
+function Cpu(_props: BarModuleProps) {
   const observer = new CpuObserver()
 
   const cpuUsage = createPoll(0, cpu.pollingInterval.value, () =>
@@ -22,7 +23,6 @@ function Cpu() {
 
   const normalised = cpuUsage((raw) => raw / 100)
 
-  // Rolling history buffer for the line graph (values 0..1)
   const [history, setHistory] = createState<number[]>([])
   cpuUsage((raw) => {
     const next = [...history.peek(), raw / 100]

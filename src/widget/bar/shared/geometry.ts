@@ -11,10 +11,8 @@ export type BarRect = {
   height: number
 }
 
-export type BarsOnMonitor = {
-  primary?: BarRect
-  secondary?: BarRect
-}
+/** All bars on a single monitor, keyed by their namespace (e.g. "bar", "secondary-bar"). */
+export type BarsOnMonitor = Record<string, BarRect | undefined>
 
 const [bars, setBars] = createState<Record<string, BarsOnMonitor>>({})
 
@@ -23,14 +21,14 @@ export const barsGeometry = {
   subscribe: (cb: () => void) => bars.subscribe(cb),
 }
 
-function upsert(monitor: string, patch: Partial<BarsOnMonitor>) {
-  setBars({ ...bars.peek(), [monitor]: { ...(bars.peek()[monitor] ?? {}), ...patch } })
+function upsert(monitor: string, namespace: string, rect: BarRect | undefined) {
+  const current = bars.peek()
+  setBars({
+    ...current,
+    [monitor]: { ...(current[monitor] ?? {}), [namespace]: rect },
+  })
 }
 
-export function setPrimaryRect(monitor: string, rect?: BarRect) {
-  upsert(monitor, { primary: rect })
-}
-
-export function setSecondaryRect(monitor: string, rect?: BarRect) {
-  upsert(monitor, { secondary: rect })
+export function setBarRect(namespace: string, monitor: string, rect?: BarRect) {
+  upsert(monitor, namespace, rect)
 }

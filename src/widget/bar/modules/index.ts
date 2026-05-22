@@ -14,7 +14,18 @@ import KbLayout from "./kblayout"
 import Storage from "./storage"
 import Hyprsunset from "./hyprsunset"
 
-export {
+import type { BarModuleProps } from "./types"
+
+/**
+ * Single source of truth for all bar modules.
+ *
+ * Key   = the name used in layout config (e.g. options.bar.modules.defaultLayout)
+ * Value = the component that accepts {@link BarModuleProps}
+ *
+ * Adding a module here is the only change needed — the type and the renderer
+ * both derive from this dict automatically.
+ */
+export const barModuleMap = {
   Clock,
   Media,
   Tray,
@@ -30,43 +41,9 @@ export {
   KbLayout,
   Storage,
   Hyprsunset,
-}
+} as const satisfies Record<string, (props: BarModuleProps) => JSX.Element>
 
-export const barModules = [
-  "Clock",
-  "Media",
-  "Tray",
-  "Wireless",
-  "Volume",
-  "Battery",
-  "Workspaces",
-  "Windowtitle",
-  "Clipboard",
-  "Cpu",
-  "CpuTemp",
-  "Ram",
-  "KbLayout",
-  "Storage",
-  "Hyprsunset",
-] as const
+/** Union of valid module names, derived — never needs manual updates. */
+export type BarModule = keyof typeof barModuleMap
 
-export type BarModule = (typeof barModules)[number]
-
-/** Maps module name → component. Only named modules in the layout are rendered. */
-export const barModuleMap: Record<BarModule, () => JSX.Element> = {
-  Clock,
-  Media,
-  Tray,
-  Wireless,
-  Volume,
-  Battery,
-  Workspaces,
-  Windowtitle,
-  Clipboard,
-  Cpu,
-  CpuTemp,
-  Ram,
-  KbLayout,
-  Storage,
-  Hyprsunset,
-}
+export type { BarModuleProps }

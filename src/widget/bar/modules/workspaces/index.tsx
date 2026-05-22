@@ -2,7 +2,7 @@ import AstalHyprland from "gi://AstalHyprland"
 import { createBinding, createEffect, createState } from "ags"
 import { Gtk } from "ags/gtk4"
 import { range } from "src/lib/array"
-import type { Opt } from "src/lib/options"
+import type { BarModuleProps } from "../types"
 
 type WsButtonProps = JSX.IntrinsicElements["button"] & {
   ws: AstalHyprland.Workspace
@@ -14,6 +14,7 @@ function WorkspaceButton({ ws, ...props }: WsButtonProps) {
   const fws = createBinding(hyprland, "focusedWorkspace")
   const clients = createBinding(hyprland, "clients")
   const [classes, setClasses] = createState(["workspace-button"])
+
   if (fws.peek().id == ws.id) {
     const newClasses = classes.peek()
     newClasses.push("active")
@@ -45,9 +46,7 @@ function WorkspaceButton({ ws, ...props }: WsButtonProps) {
 
   return (
     <button
-      $={(self) => {
-        button = self
-      }}
+      $={(self) => { button = self }}
       class="workspace-button"
       valign={Gtk.Align.CENTER}
       halign={Gtk.Align.CENTER}
@@ -57,14 +56,14 @@ function WorkspaceButton({ ws, ...props }: WsButtonProps) {
   )
 }
 
-function Workspaces({ verticalState }: { verticalState: Opt<boolean> }) {
+function Workspaces({ vertical }: BarModuleProps) {
   return (
     <box
-      orientation={
-        verticalState.as(vertical => vertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL)
-      }
-      hexpand={verticalState.get()}
-      class="workspace-container" spacing={4}>
+      orientation={vertical.as(v => v ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL)}
+      hexpand={vertical.peek()}
+      class="workspace-container"
+      spacing={4}
+    >
       {range(8).map((i) => (
         <WorkspaceButton ws={AstalHyprland.Workspace.dummy(i + 1, null)} />
       ))}

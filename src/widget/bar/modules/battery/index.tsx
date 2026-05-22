@@ -2,9 +2,9 @@ import AstalBattery from "gi://AstalBattery"
 import AstalPowerProfiles from "gi://AstalPowerProfiles"
 import { Gtk } from "ags/gtk4"
 import { createBinding } from "ags"
-import type { Opt } from "src/lib/options"
+import type { BarModuleProps } from "../types"
 
-function Battery({ verticalState }: { verticalState: Opt<boolean> }) {
+function Battery({ vertical }: BarModuleProps) {
   const battery = AstalBattery.get_default()
   const powerprofiles = AstalPowerProfiles.get_default()
 
@@ -14,9 +14,9 @@ function Battery({ verticalState }: { verticalState: Opt<boolean> }) {
     powerprofiles.set_active_profile(profile)
   }
 
-  const contentOrientation = verticalState.as(v => v ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL)
-  const contentHalign = verticalState.as(v => v ? Gtk.Align.CENTER : Gtk.Align.START)
-  const contentSpacing = verticalState.as(v => v ? 2 : 6)
+  const contentOrientation = vertical.as(v => v ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL)
+  const contentHalign = vertical.as(v => v ? Gtk.Align.CENTER : Gtk.Align.START)
+  const contentSpacing = vertical.as(v => v ? 2 : 6)
 
   return (
     <menubutton visible={createBinding(battery, "isPresent")} hexpand={false} halign={Gtk.Align.CENTER}>
@@ -28,7 +28,6 @@ function Battery({ verticalState }: { verticalState: Opt<boolean> }) {
         <image iconName={createBinding(battery, "iconName")} halign={Gtk.Align.CENTER} />
         <label label={percent} xalign={0.5} halign={Gtk.Align.CENTER} />
       </box>
-
       <popover>
         <box orientation={Gtk.Orientation.VERTICAL}>
           {powerprofiles.get_profiles().map(({ profile }) => (

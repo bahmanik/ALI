@@ -2,8 +2,9 @@ import AstalNetwork from "gi://AstalNetwork"
 import { Gtk } from "ags/gtk4"
 import { For, With, createBinding } from "ags"
 import { execAsync } from "ags/process"
+import type { BarModuleProps } from "../types"
 
-function Wireless() {
+function Wireless(_props: BarModuleProps) {
   const network = AstalNetwork.get_default()
   const wifi = createBinding(network, "wifi")
 
@@ -12,12 +13,9 @@ function Wireless() {
   }
 
   async function connect(ap: AstalNetwork.AccessPoint) {
-    // connecting to ap is not yet supported
-    // https://github.com/Aylur/astal/pull/13
     try {
       await execAsync(`nmcli d wifi connect ${ap.bssid}`)
     } catch (error) {
-      // you can implement a popup asking for password here
       console.error(error)
     }
   }

@@ -1,21 +1,16 @@
-import HyprsunsetService from 'src/services/hyprsunset';
-import { hyprsunsetOptions } from './options';
-import { createState } from 'gnim';
-import { Gtk } from 'ags/gtk4';
+import HyprsunsetService from "src/services/hyprsunset"
+import { hyprsunsetOptions } from "./options"
+import { createState } from "gnim"
+import { Gtk } from "ags/gtk4"
+import type { BarModuleProps } from "../types"
 
-const {
-  label,
-  onIcon,
-  offIcon,
-  onLabel,
-  offLabel,
-  temperature,
-} = hyprsunsetOptions
+const { temperature } = hyprsunsetOptions
 
-function Hyprsunset() {
+function Hyprsunset(_props: BarModuleProps) {
   const sunset = new HyprsunsetService()
   const [enable, setEnable] = createState(false)
-  const labelBinding = enable((c) => c ? "on" : "off")
+  const labelBinding = enable((c) => (c ? "on" : "off"))
+
   return (
     <menubutton>
       <label label={labelBinding} />
@@ -33,9 +28,7 @@ function Hyprsunset() {
             min={1000}
             max={12000}
             value={sunset.temperature}
-            onChangeValue={({ value }) => {
-              sunset.temperature = value;
-            }}
+            onChangeValue={({ value }) => { sunset.temperature = value }}
             hexpand
           />
         </box>

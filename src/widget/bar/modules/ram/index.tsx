@@ -1,8 +1,9 @@
-import { createPoll } from "ags/time";
-import { RamObserver } from "src/lib/observers/ram";
+import { createPoll } from "ags/time"
+import { RamObserver } from "src/lib/observers/ram"
+import type { BarModuleProps } from "../types"
 
-function Ram() {
-  const ram = new RamObserver
+function Ram(_props: BarModuleProps) {
+  const ram = new RamObserver()
   const labelBinding = createPoll(0, 1000, () => ram.getRamUsage().percentage)
 
   return (

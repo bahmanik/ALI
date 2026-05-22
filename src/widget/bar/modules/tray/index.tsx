@@ -1,8 +1,9 @@
 import AstalTray from "gi://AstalTray"
 import { For, createBinding } from "ags"
 import type { Gtk } from "ags/gtk4"
+import type { BarModuleProps } from "../types"
 
-function Tray() {
+function Tray(_props: BarModuleProps) {
   const tray = AstalTray.get_default()
   const items = createBinding(tray, "items")
 
