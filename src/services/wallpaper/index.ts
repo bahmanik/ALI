@@ -5,7 +5,7 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { monitorFile, writeFile } from "ags/file"
 import { execAsync } from "ags/process"
 
-import { SwwwDaemon } from "./SwwwDaemon"
+import { AwwwDaemon } from "./AwwwDaemon"
 import { createDebouncer } from "../../lib/time/debounce"
 import { ServiceBase } from "../ServiceBase"
 import type { Opt } from "../../lib/options"
@@ -38,7 +38,7 @@ export class WallpaperService extends ServiceBase {
     return this._default
   }
 
-  private _daemon = new SwwwDaemon()
+  private _daemon = new AwwwDaemon()
   private _blockMonitor = false
   private _monitor: Gio.FileMonitor | undefined
   private _applyDebounce = createDebouncer(80)
@@ -132,7 +132,7 @@ export class WallpaperService extends ServiceBase {
       return
     }
 
-    const argv = await this._buildSwwwImgCmd(namespace)
+    const argv = await this._buildAwwwImgCmd(namespace)
 
     try {
       await execAsync(argv)
@@ -141,11 +141,11 @@ export class WallpaperService extends ServiceBase {
     }
   }
 
-  private async _buildSwwwImgCmd(namespace?: string): Promise<string[]> {
+  private async _buildAwwwImgCmd(namespace?: string): Promise<string[]> {
     const opts = this._opts
-    if (!opts) return ["swww", "img", this._managedFile]
+    if (!opts) return ["awww", "img", this._managedFile]
 
-    const argv: string[] = ["swww", "img"]
+    const argv: string[] = ["awww", "img"]
     if (namespace) argv.push("--namespace", namespace)
 
     const transitionEnabled = opts.transition.enabled.get()
@@ -157,7 +157,6 @@ export class WallpaperService extends ServiceBase {
       if (opts.transition.invert_y.get()) {
         argv.push("--invert-y")
       }
-
 
       const posOpt = opts.transition.pos.get()
       const pos = await this._resolveTransitionPos(posOpt)
@@ -174,7 +173,7 @@ export class WallpaperService extends ServiceBase {
     try {
       const hyprland = AstalHyprland.get_default()
 
-      // Hyprland cursorpos is usually "X, Y" -> swww wants "X,Y"
+      // Hyprland cursorpos is usually "X, Y" -> awww wants "X,Y"
       const raw = String(hyprland.message("cursorpos"))
       const cleaned = raw.trim().replace(/\s+/g, "")
       return cleaned.length ? cleaned : "center"

@@ -1,6 +1,7 @@
 export const options = {
   custom_title: true,
   title_map: [],
+  class_name: false,
   label: true,
   icon: true,
   truncation: true,
