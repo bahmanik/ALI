@@ -5,10 +5,63 @@ import type { BarCornerOptions } from "./corner/type"
 import type { CpuOptions } from "./modules/cpu/type"
 import type { BarModule } from "src/widget/bar/modules"
 
+// ─── Shared ────────────────────────────────────────────────────────────────
+
+export type NodeId = string   // e.g. "n_abc123" — generated once at creation time
+
+// ─── Popover content tree ──────────────────────────────────────────────────
+
+export interface ContentModuleNode {
+  kind: "module"
+  id: NodeId
+  module: BarModule
+}
+
+export interface ContentBoxNode {
+  kind: "box"
+  id: NodeId
+  direction: "horizontal" | "vertical"
+  spacing: number     // px, default 8
+  width: number       // 0 = natural size
+  height: number      // 0 = natural size
+  children: ContentNode[]
+}
+
+export type ContentNode = ContentModuleNode | ContentBoxNode
+
+// ─── Bar-level tree ────────────────────────────────────────────────────────
+
+export interface BarModuleNode {
+  kind: "module"
+  id: NodeId
+  module: BarModule
+}
+
+export interface BarGroupNode {
+  kind: "group"
+  id: NodeId
+  direction: "horizontal" | "vertical"
+  spacing: number     // px, default 4
+  cssClass: string    // e.g. "pill" — maps to a SCSS class
+  children: BarNode[] // BarModule, nested BarGroup, or BarPopover
+}
+
+export interface BarPopoverNode {
+  kind: "popover"
+  id: NodeId
+  triggerIcon: string   // icon-name string; "" = auto from first content module
+  triggerLabel: string  // "" = icon only
+  content: ContentNode  // root of the popover body tree
+}
+
+export type BarNode = BarModuleNode | BarGroupNode | BarPopoverNode
+
+// ─── Slot layout ──────────────────────────────────────────────────────────
+
 export interface BarSlotLayout {
-  start: BarModule[]
-  center: BarModule[]
-  end: BarModule[]
+  start: BarNode[]
+  center: BarNode[]
+  end: BarNode[]
 }
 
 export interface BarModulesOptions {

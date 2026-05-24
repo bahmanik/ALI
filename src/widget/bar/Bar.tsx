@@ -2,8 +2,6 @@ import app from "ags/gtk4/app"
 import { Astal } from "ags/gtk4"
 import { For, onCleanup } from "ags"
 
-import { barModuleMap } from "./modules"
-import type { BarModule } from "./modules"
 import {
   createBarWindowBinds,
   computeBarRect,
@@ -16,8 +14,9 @@ import {
 import type { Gdk, Gtk } from "ags/gtk4"
 import type { BarOptionGroup } from "./helpers"
 import type { Opt } from "src/lib/options"
-import type { BarSlotLayout } from "src/configuration/widgets/bar/type"
+import type { BarNode, BarSlotLayout } from "src/configuration/widgets/bar/type"
 import { createMemo } from "gnim"
+import { BarNodeRenderer } from "./renderers/BarNodeRenderer"
 
 type BarProps = {
   gdkmonitor: Gdk.Monitor
@@ -59,19 +58,15 @@ export default function Bar({
     storeBarRect(namespace, monitorId, undefined)
   })
 
-  function Slot({ modules, halign, valign }: {
-    modules: ReturnType<typeof layout.as>
+  function Slot({ nodes, halign, valign }: {
+    nodes: ReturnType<typeof layout.as>
     halign: any
     valign: any
   }) {
     return (
       <box orientation={orientation.orientation} halign={halign} valign={valign}>
-        <For each={modules}>
-          {(modName: BarModule) => {
-            const Component = barModuleMap[modName]
-            if (!Component) return <box />
-            return <Component vertical={vertical} />
-          }}
+        <For each={nodes}>
+          {(node: BarNode) => <BarNodeRenderer node={node} vertical={vertical} />}
         </For>
       </box>
     )
@@ -110,9 +105,9 @@ export default function Bar({
           onCleanup(() => stopWatch())
         }}
       >
-        <Slot $type="start" modules={startModules} halign={orientation.start.halign} valign={orientation.start.valign} />
-        <Slot $type="center" modules={centerModules} halign={orientation.center.halign} valign={orientation.center.valign} />
-        <Slot $type="end" modules={endModules} halign={orientation.end.halign} valign={orientation.end.valign} />
+        <Slot $type="start" nodes={startModules} halign={orientation.start.halign} valign={orientation.start.valign} />
+        <Slot $type="center" nodes={centerModules} halign={orientation.center.halign} valign={orientation.center.valign} />
+        <Slot $type="end" nodes={endModules} halign={orientation.end.halign} valign={orientation.end.valign} />
       </centerbox>
     </window>
   )

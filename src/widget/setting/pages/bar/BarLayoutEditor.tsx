@@ -1,8 +1,7 @@
 import { Gtk } from "ags/gtk4"
-import { For, With } from "ags"
+import { With } from "ags"
 import { createState } from "gnim"
-import { barModules } from "src/widget/bar/modules"
-import type { BarModule } from "src/widget/bar/modules"
+import { barModuleMap, type BarModule } from "src/widget/bar/modules"
 import type { BarSlotLayout } from "src/configuration/widgets/bar/type"
 
 type Slot = "start" | "center" | "end"
@@ -141,18 +140,6 @@ function ModulePool({
         </With>
       </box>
       <box spacing={4}>
-        {barModules.map((mod) => {
-          const used = inLayout(mod)
-          return (
-            <button
-              class={used ? "bar-pool-chip used" : "bar-pool-chip"}
-              sensitive={!used}
-              onClicked={() => onAdd(mod as BarModule)}
-            >
-              <label label={mod} />
-            </button>
-          )
-        })}
       </box>
     </box>
   )

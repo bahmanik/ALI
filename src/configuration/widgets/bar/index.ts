@@ -7,10 +7,20 @@ import { RgbaColor, type BarBorderLocation, type BarLocation, type HexColor } fr
 import type { BarOptions, BarSlotLayout } from "./type";
 
 const defaultLayout: BarSlotLayout = {
-  start: ["Workspaces", "Windowtitle"],
-  center: ["Clock"],
-  end: ["Tray", "Volume", "Wireless", "Battery"],
-};
+  start: [
+    { kind: "module", id: "n_ws", module: "Workspaces" },
+    { kind: "module", id: "n_wt", module: "Windowtitle" },
+  ],
+  center: [
+    { kind: "module", id: "n_cl", module: "Clock" },
+  ],
+  end: [
+    { kind: "module", id: "n_tr", module: "Tray" },
+    { kind: "module", id: "n_vol", module: "Volume" },
+    { kind: "module", id: "n_net", module: "Wireless" },
+    { kind: "module", id: "n_bat", module: "Battery" },
+  ],
+}
 
 const bar: BarOptions = {
   position: opt<BarLocation>("top", { scss: true, hyprland: true }),

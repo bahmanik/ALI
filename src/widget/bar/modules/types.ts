@@ -8,3 +8,10 @@ import type { Accessor } from "gnim"
 export type BarModuleProps = {
   vertical: Accessor<boolean>
 }
+
+// Props for content rendered inside a shared popover
+export type BarContentProps = {
+  vertical: Accessor<boolean>
+  /** True when sharing a popover with other modules — suppress internal headers. */
+  shared: boolean
+}

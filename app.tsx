@@ -66,12 +66,12 @@ lifecycle
     deps: ["style"],
     start: () => services.wallpaper.start(),
   })
-  .register({
-    id: "matugen",
-    phase: "lazy",
-    deps: ["wallpaper"],
-    start: () => services.matugenPalette.start(),
-  })
+  // .register({
+  //   id: "matugen",
+  //   phase: "lazy",
+  //   deps: ["wallpaper"],
+  //   start: () => services.matugenPalette.start(),
+  // })
   .register({
     id: "countdown",
     phase: "lazy",

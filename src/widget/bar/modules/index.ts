@@ -14,7 +14,7 @@ import KbLayout from "./kblayout"
 import Storage from "./storage"
 import Hyprsunset from "./hyprsunset"
 
-import type { BarModuleProps } from "./types"
+import type { BarModuleProps, BarContentProps } from "./types"
 
 /**
  * Single source of truth for all bar modules.
@@ -45,5 +45,9 @@ export const barModuleMap = {
 
 /** Union of valid module names, derived — never needs manual updates. */
 export type BarModule = keyof typeof barModuleMap
+
+// Populated in Phase 4 as each module is split.
+// Absent keys mean "no extractable content" — the renderer returns <box />.
+export const barContentMap: Partial<Record<BarModule, (props: BarContentProps) => JSX.Element>> = {}
 
 export type { BarModuleProps }
