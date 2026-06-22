@@ -1,8 +1,11 @@
 import { Gtk } from "ags/gtk4"
-import { barModuleMap } from "../modules"
-import { ContentNodeRenderer } from "./ContentNodeRenderer"
+import { barTriggerMap } from "../triggers"
+import { MenuNodeRenderer } from "./MenuNodeRenderer"
 import type { BarNode } from "src/configuration/widgets/bar/type"
 import type { Accessor } from "gnim"
+
+/** Self-contained triggers that manage their own interactivity. Never wrap these. */
+const SELF_CONTAINED: (keyof typeof barTriggerMap)[] = ["Workspaces", "Tray"]
 
 export function BarNodeRenderer({
   node,
@@ -11,12 +14,7 @@ export function BarNodeRenderer({
   node: BarNode
   vertical: Accessor<boolean>
 }) {
-  if (node.kind === "module") {
-    const Component = barModuleMap[node.module]
-    if (!Component) return <box />
-    return <Component vertical={vertical} />
-  }
-
+  // ── Group node ─────────────────────────────────────────────────────────────
   if (node.kind === "group") {
     const orientation = node.direction === "horizontal"
       ? Gtk.Orientation.HORIZONTAL
@@ -35,21 +33,42 @@ export function BarNodeRenderer({
     )
   }
 
-  if (node.kind === "popover") {
-    const icon = node.triggerIcon || ""
-    const label = node.triggerLabel || ""
+  // ── Trigger node ───────────────────────────────────────────────────────────
+  if (node.kind === "trigger") {
+    const Trigger = barTriggerMap[node.triggerWidget]
+    if (!Trigger) return <box />
 
-    return (
-      <menubutton hexpand={false} halign={Gtk.Align.CENTER}>
-        <box spacing={4}>
-          {icon && <image iconName={icon} />}
-          {label && <label label={label} />}
-        </box>
-        <popover>
-          <ContentNodeRenderer node={node.content} vertical={vertical} />
-        </popover>
-      </menubutton>
-    )
+    const selfContained = SELF_CONTAINED.includes(node.triggerWidget as any)
+    const hasMenu       = node.children.length > 0
+
+    // Self-contained triggers (Workspaces, Tray) always render directly.
+    if (selfContained) {
+      return <Trigger vertical={vertical} />
+    }
+
+    // Trigger with menu → wrap in menubutton + popover
+    if (hasMenu) {
+      return (
+        <menubutton hexpand={false} halign={Gtk.Align.CENTER}>
+          <Trigger vertical={vertical} />
+          <popover>
+            <box
+              orientation={Gtk.Orientation.VERTICAL}
+              widthRequest={node.menuMinimumWidth > 0 ? node.menuMinimumWidth : -1}
+            >
+              <MenuNodeRenderer
+                nodes={node.children}
+                vertical={vertical}
+                parentDirection="vertical"
+              />
+            </box>
+          </popover>
+        </menubutton>
+      )
+    }
+
+    // Trigger with no menu → render content directly, no wrapper
+    return <Trigger vertical={vertical} />
   }
 
   return <box />

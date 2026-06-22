@@ -3,58 +3,91 @@ import type { BarBorderLocation, BarLocation, HexColor, RgbaColor } from "src/co
 import type { SecondaryBarOptions } from "./secondaryBar/type"
 import type { BarCornerOptions } from "./corner/type"
 import type { CpuOptions } from "./modules/cpu/type"
-import type { BarModule } from "src/widget/bar/modules"
+import type { BarTriggerKey, BarMenuKey } from "src/widget/bar/triggers"
 
 // ─── Shared ────────────────────────────────────────────────────────────────
 
 export type NodeId = string   // e.g. "n_abc123" — generated once at creation time
 
-// ─── Popover content tree ──────────────────────────────────────────────────
+// ─── Menu node tree (composable popover content) ───────────────────────────
+// Mirrors OkShell's MenuWidget / ContainerConfig pattern.
 
-export interface ContentModuleNode {
-  kind: "module"
+/**
+ * A named menu-content leaf.
+ * `widget` is a key into `barMenuMap` in src/widget/bar/triggers/index.ts.
+ * At render time MenuNodeRenderer looks up the corresponding () => JSX.Element.
+ */
+export interface MenuWidgetNode {
+  kind: "menu-widget"
   id: NodeId
-  module: BarModule
+  widget: BarMenuKey
 }
 
-export interface ContentBoxNode {
-  kind: "box"
+/**
+ * A layout container that embeds child MenuNodes side-by-side or stacked.
+ * Allows placing multiple menus
+ * in a horizontal row inside a single popover.
+ */
+export interface MenuContainerNode {
+  kind: "menu-container"
   id: NodeId
   direction: "horizontal" | "vertical"
-  spacing: number     // px, default 8
-  width: number       // 0 = natural size
-  height: number      // 0 = natural size
-  children: ContentNode[]
+  spacing: number       // px between children, default 0
+  minimumWidth: number  // 0 = natural size
+  children: MenuNode[]
 }
 
-export type ContentNode = ContentModuleNode | ContentBoxNode
+/** A visual GTK separator line between menu sections. */
+export interface MenuDividerNode {
+  kind: "menu-divider"
+  id: NodeId
+}
+
+/** A blank spacer of fixed pixel size. */
+export interface MenuSpacerNode {
+  kind: "menu-spacer"
+  id: NodeId
+  size: number   // px, default 16
+}
+
+export type MenuNode =
+  | MenuWidgetNode
+  | MenuContainerNode
+  | MenuDividerNode
+  | MenuSpacerNode
 
 // ─── Bar-level tree ────────────────────────────────────────────────────────
 
-export interface BarModuleNode {
-  kind: "module"
+/**
+ * A bar trigger.
+ *
+ * `triggerWidget` selects which reactive component renders the bar-face
+ * (volume icon, battery %, clock, workspaces, etc.).
+ *
+ * `children` is the composable menu tree rendered inside the popover when
+ * the trigger is clicked. Empty array = no popover, widget renders inline
+ * without any button wrapper.
+ *
+ * This node replaces both the old `kind: "module"` and `kind: "popover"` nodes.
+ */
+export interface BarTriggerNode {
+  kind: "trigger"
   id: NodeId
-  module: BarModule
+  triggerWidget: BarTriggerKey
+  children: MenuNode[]
+  menuMinimumWidth: number   // popover minimum width px, default 410
 }
 
 export interface BarGroupNode {
   kind: "group"
   id: NodeId
   direction: "horizontal" | "vertical"
-  spacing: number     // px, default 4
-  cssClass: string    // e.g. "pill" — maps to a SCSS class
-  children: BarNode[] // BarModule, nested BarGroup, or BarPopover
+  spacing: number
+  cssClass: string
+  children: BarNode[]
 }
 
-export interface BarPopoverNode {
-  kind: "popover"
-  id: NodeId
-  triggerIcon: string   // icon-name string; "" = auto from first content module
-  triggerLabel: string  // "" = icon only
-  content: ContentNode  // root of the popover body tree
-}
-
-export type BarNode = BarModuleNode | BarGroupNode | BarPopoverNode
+export type BarNode = BarTriggerNode | BarGroupNode
 
 // ─── Slot layout ──────────────────────────────────────────────────────────
 
@@ -64,13 +97,12 @@ export interface BarSlotLayout {
   end: BarNode[]
 }
 
+// ─── Options ──────────────────────────────────────────────────────────────
+
 export interface BarModulesOptions {
   cpu: CpuOptions
-  /** Default layout used for any monitor that doesn't have a custom layout. */
   defaultLayout: Opt<BarSlotLayout>
-  /** Per-monitor layouts keyed by connector name (e.g. "eDP-1", "HDMI-A-1"). */
   monitorLayouts: Opt<Record<string, BarSlotLayout>>
-  /** When true every bar renders the layout of the first connected monitor. */
   mirrorFirstMonitor: Opt<boolean>
 }
 
@@ -84,10 +116,8 @@ export interface BarOptions {
   style: {
     floating: Opt<boolean>
     transparent: Opt<boolean>
-
     bg: Opt<HexColor>
     bgOpacity: Opt<number>
-
     height: Opt<number>
     radius: Opt<number>
     paddingX: Opt<number>
@@ -95,12 +125,10 @@ export interface BarOptions {
     marginTop: Opt<number>
     marginBottom: Opt<number>
     marginSides: Opt<number>
-
     borderEnable: Opt<boolean>
     borderLocation: Opt<BarBorderLocation>
     borderWidth: Opt<number>
     borderColor: Opt<HexColor>
-
     shadowEnable: Opt<boolean>
     shadowMargin: Opt<number>
     shadowX: Opt<number>
@@ -114,7 +142,6 @@ export interface BarOptions {
     bg: Opt<HexColor>
     bgOpacity: Opt<number>
     bgHoverOpacity: Opt<number>
-
     radius: Opt<number>
     spacing: Opt<number>
     paddingX: Opt<number>

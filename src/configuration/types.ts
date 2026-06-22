@@ -1,4 +1,4 @@
-import { BarModule } from "src/widget/bar/modules";
+import { BarTriggerKey } from "src/widget/bar/triggers";
 import { DashboardModules } from "src/widget/dashboard/_component";
 
 
@@ -151,9 +151,9 @@ export type RevealTransitionWithAuto = "AUTO" | GtkRevealerTransitionName;
 export type OsdOrientation = "vertical" | "horizontal";
 
 export type BarLayout = {
-    left: BarModule[];
-    middle: BarModule[];
-    right: BarModule[];
+    left: BarTriggerKey[];
+    middle: BarTriggerKey[];
+    right: BarTriggerKey[];
     extends?: string;
 };
 export type BarLayouts = {

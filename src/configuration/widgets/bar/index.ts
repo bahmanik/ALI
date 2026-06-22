@@ -8,17 +8,35 @@ import type { BarOptions, BarSlotLayout } from "./type";
 
 const defaultLayout: BarSlotLayout = {
   start: [
-    { kind: "module", id: "n_ws", module: "Workspaces" },
-    { kind: "module", id: "n_wt", module: "Windowtitle" },
+    { kind: "trigger", id: "n_ws", triggerWidget: "Workspaces", children: [], menuMinimumWidth: 0 },
+    { kind: "trigger", id: "n_wt", triggerWidget: "Windowtitle", children: [], menuMinimumWidth: 0 },
   ],
   center: [
-    { kind: "module", id: "n_cl", module: "Clock" },
+    { kind: "trigger", id: "n_cl", triggerWidget: "Clock", children: [], menuMinimumWidth: 0 },
   ],
   end: [
-    { kind: "module", id: "n_tr", module: "Tray" },
-    { kind: "module", id: "n_vol", module: "Volume" },
-    { kind: "module", id: "n_net", module: "Wireless" },
-    { kind: "module", id: "n_bat", module: "Battery" },
+    { kind: "trigger", id: "n_tr", triggerWidget: "Tray", children: [], menuMinimumWidth: 0 },
+    {
+      kind: "trigger", id: "n_vol", triggerWidget: "Volume",
+      children: [{ kind: "menu-widget", id: "n_vol_m", widget: "Volume" }],
+      menuMinimumWidth: 410,
+    },
+    {
+      kind: "trigger", id: "n_net", triggerWidget: "Wireless",
+      children: [{
+        kind: "menu-container", id: "n_net_co", direction: "horizontal", spacing: 16, minimumWidth: 16,
+        children: [
+          { kind: "menu-widget", id: "n_net_m", widget: "Wireless" },
+          { kind: "menu-widget", id: "n_net_m2", widget: "Wireless" },
+        ],
+      }],
+      menuMinimumWidth: 410,
+    },
+    {
+      kind: "trigger", id: "n_bat", triggerWidget: "Battery",
+      children: [{ kind: "menu-widget", id: "n_bat_m", widget: "Battery" }],
+      menuMinimumWidth: 0,
+    },
   ],
 }
 
