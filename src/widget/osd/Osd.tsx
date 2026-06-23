@@ -177,7 +177,7 @@ export default function Osd(props: OsdProps) {
       setRevealed(false);
       hideTimer = null;
 
-      const dur = Math.max(0, Number(options.osd.transitionDurationMs.get() ?? 0));
+      const dur = Math.max(0, Number(options.osd.transitionDuration.get() ?? 0));
       hideAnimTimer = setTimeout(() => {
         setVisible(false);
 
@@ -198,7 +198,7 @@ export default function Osd(props: OsdProps) {
 
     setRevealed(false);
 
-    const dur = Math.max(0, Number(options.osd.transitionDurationMs.get() ?? 0));
+    const dur = Math.max(0, Number(options.osd.transitionDuration.get() ?? 0));
     hideAnimTimer = setTimeout(() => {
       setVisible(false);
       setAccepting(false);
@@ -375,7 +375,7 @@ export default function Osd(props: OsdProps) {
           <revealer
             class="osd-revealer"
             transitionType={transition}
-            transitionDuration={options.osd.transitionDurationMs.as((ms: number) => Math.max(0, ms))}
+            transitionDuration={options.osd.transitionDuration.as((ms: number) => Math.max(0, ms))}
             revealChild={revealed}
           >
             <box

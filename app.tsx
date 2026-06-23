@@ -4,7 +4,7 @@ import app from "ags/gtk4/app";
 import { Corner, PrimaryBar, SecondaryBar } from "./src/widget/bar";
 import { MicOsd, SoundOsd, BrightnessOsd, KeyboardBrightnessOsd } from "./src/widget/osd";
 import NotificationPopups from "./src/widget/notifications/NotificationPopups";
-import { AppLauncherWindow } from "./src/widget/launcher/AppLauncherWindow";
+// import { AppLauncherWindow } from "./src/widget/launcher/AppLauncherWindow";
 import CalendarWindow from "./src/widget/calendar/CalendarWindow";
 import CountdownWindow from "./src/widget/countdown/CountdownWindow";
 import PowerWindow from "./src/widget/power";
@@ -128,11 +128,11 @@ lifecycle
     priority: 70,
     mount: () => app.get_monitors().forEach(m => KeyboardBrightnessOsd(m)),
   })
-  .registerWidget({
-    id: "launcher",
-    priority: 80,
-    mount: () => app.get_monitors().forEach(m => AppLauncherWindow(m)),
-  })
+  // .registerWidget({
+  // id: "launcher",
+  // priority: 80,
+  // mount: () => app.get_monitors().forEach(m => AppLauncherWindow(m)),
+  // })
   .registerWidget({
     id: "calendar",
     priority: 90,

@@ -1,7 +1,6 @@
 import { Gdk, Gtk } from 'ags/gtk4';
 import { ColorInputterProps } from '../types';
-import type { RGBA } from 'src/widget/shared/circularProgress/type';
-
+import { gdkToHex, numberToHex } from 'src/lib/units/color';
 //WARNING: you should patch this so it uses a color class 
 function ColorInputter({ opt }: ColorInputterProps): JSX.Element {
   return (
@@ -13,7 +12,7 @@ function ColorInputter({ opt }: ColorInputterProps): JSX.Element {
         const rgba = new Gdk.RGBA();
 
         if (Array.isArray(current)) {
-          const [r, g, b, a = 1] = current as RGBA;
+          const [r, g, b, a = 1] = current;
           rgba.red = r;
           rgba.green = g;
           rgba.blue = b;
@@ -26,8 +25,9 @@ function ColorInputter({ opt }: ColorInputterProps): JSX.Element {
 
         self.connect('color-set', () => {
           const picked = self.get_rgba();
-          const next: RGBA = [picked.red, picked.green, picked.blue, picked.alpha];
-          opt.set(next as any);
+          const next = gdkToHex(picked)
+          numberToHex
+          opt.set(next);
         });
       }}
     />

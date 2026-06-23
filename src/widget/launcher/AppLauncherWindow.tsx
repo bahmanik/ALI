@@ -11,15 +11,13 @@ import type { SearchMode } from "./providers/prefixes"
 const Apps = new AstalApps.Apps()
 
 const { width, height } = options.launcher.window
-const { transitionDuration, revealTransition, maxItems } = options.launcher
-
 // Evaluated once at import time — these drive the Popup's transition
-const transitionType     = toRevealerTransition(revealTransition.get())
+const transitionType = toRevealerTransition(revealTransitio.get())
 const transitionDurationMs = transitionDuration.get()
 
 export function AppLauncherWindow(gdkmonitor: Gdk.Monitor) {
   const [query, setQuery] = createState("")
-  const [mode,  setMode]  = createState<SearchMode>("app")
+  const [mode, setMode] = createState<SearchMode>("app")
 
   const list = query.as((q) => Apps.fuzzy_query(q).slice(0, maxItems.get()))
 

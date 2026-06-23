@@ -1,4 +1,4 @@
-import { RGBA } from "src/configuration/types"
+import type { ColorWithAlpha } from "src/configuration/types"
 import type { Opt } from "src/lib/options"
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -36,8 +36,8 @@ export interface CircularProgressOptions {
   size: Opt<number>
   /** Stroke / arc thickness in pixels */
   thickness: Opt<number>
-  /** Primary RGBA colour – [r, g, b, a], channels 0..1 */
-  color: Opt<RGBA>
+  /** Primary color. Use `colorToRgba(color)` in draw functions. */
+  color: Opt<ColorWithAlpha>
   /** Render the percentage label in the centre */
   showText: Opt<boolean>
   /** Font size of the centre label in px */

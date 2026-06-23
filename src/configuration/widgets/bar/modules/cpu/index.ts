@@ -2,7 +2,8 @@ import { opt } from "src/lib/options"
 import { overrideCircularProgress } from "src/lib/options/factories/overrideCircularProgress"
 import { overrideLineGraph } from "src/lib/options/factories/overrideLineGraph"
 import type { CpuOptions } from "./type"
-import { ResourceLabelType } from "src/widget/bar/modules/storage/options"
+import { ResourceLabelType } from "src/widget/bar/triggers/storage/options"
+import { colorWithAlpha } from "src/lib/options/factories/colorWithAlpha"
 
 const cpu: CpuOptions = {
   // ── module ────────────────────────────────────────────────────────────────
@@ -20,7 +21,7 @@ const cpu: CpuOptions = {
     defaultVariant: "glow",
     defaultThickness: 4,
     defaultSmoothing: 0.15,
-    defaultColor: [0.2, 0.85, 0.5, 1],
+    defaultColor: colorWithAlpha({ color: "#123123", alpha: 0.9 }),
     defaultSpringStiffness: 0.05,
     defaultSpringDamping: 0.7,
   }),
@@ -30,7 +31,7 @@ const cpu: CpuOptions = {
     defaultVariant: "wave",
     defaultWidth: 120,
     defaultHeight: 36,
-    defaultColor: [0.2, 0.85, 0.5, 1],
+    defaultColor: colorWithAlpha({ color: "#123123", alpha: 0.9 }),
     defaultSmoothing: 0.15,
   }),
 }

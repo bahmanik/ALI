@@ -1,37 +1,30 @@
 import type { Opt } from 'src/lib/options'
-import type { AnchorLayoutType, HexColor, RevealTransitionWithAuto, RgbaColor, StackTransition } from 'src/configuration/types'
+import type { ColorWithAlpha, HexColor, StackTransition } from 'src/configuration/types'
+import { ContainerStyleOptions } from 'src/lib/options/factories/overrideContainer';
+import { PopupWindowOptions } from 'src/lib/options/factories/overridePopupWindow';
 
-export interface CountdownStyleOptions {
-  bg: Opt<HexColor>
-  fg: Opt<HexColor>
-  radius: Opt<number>
-  padding: Opt<number>
-  gap: Opt<number>
-  overlayBg: Opt<RgbaColor>
-  overlayFg: Opt<HexColor>
-  imageRadius: Opt<number>
-  imageMinSize: Opt<number>
-  titleSize: Opt<number>
-  descriptionSize: Opt<number>
-  timerSize: Opt<number>
-  navSize: Opt<number>
+export interface CountdownStyleOptions extends ContainerStyleOptions {
+  fg: ColorWithAlpha;
+  overlayBg: ColorWithAlpha;   // was RgbaColor
+  overlayFg: Opt<HexColor>;         // fully opaque accent
+  gap: Opt<number>;
+  imageRadius: Opt<number>;
+  imageMinSize: Opt<number>;
+  titleSize: Opt<number>;
+  descriptionSize: Opt<number>;
+  timerSize: Opt<number>;
+  navSize: Opt<number>;
 }
 
 export interface CountdownOptions {
-  window: {
-    layout: Opt<AnchorLayoutType>
-    revealTransition: Opt<RevealTransitionWithAuto>
-    transitionDuration: Opt<number>
-    margin: Opt<number>
-  }
+  window: PopupWindowOptions;  // replaces the inline window block; keep all fields
 
   stack: {
-    transition: Opt<StackTransition>
-    duration: Opt<number>
-  }
+    transition: Opt<StackTransition>;
+    duration: Opt<number>;
+  };
 
-  refreshMs: Opt<number>
-  pastLimit: Opt<number>
-
-  style: CountdownStyleOptions
+  refreshMs: Opt<number>;
+  pastLimit: Opt<number>;
+  style: CountdownStyleOptions;
 }

@@ -1,13 +1,10 @@
-import { ModuleMapArray } from "src/configuration/types";
 import { DashboardOptions } from "./type";
-import { opt } from "src/lib/options";
+import { overrideContainer } from "src/lib/options/factories/overrideContainer";
+import { overrideGrid } from "src/lib/options/factories/overrideGrid";
 
 const dashboard: DashboardOptions = {
-  grid: {
-    rows: opt(10),
-    cols: opt(10),
-    modulesList: opt<ModuleMapArray>([])
-  }
+  grid: overrideGrid({}),
+  style: overrideContainer({}),
 };
 
 declare module "src/lib/options/root" {

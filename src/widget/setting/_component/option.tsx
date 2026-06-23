@@ -1,4 +1,4 @@
-import { Accessor, createState } from 'gnim';
+import { Accessor } from 'gnim';
 import { LabelSettingProps, PropertyLabel } from './propertyLabel';
 import { ResetButton } from './resetButton';
 import Inputter from '../inputs';

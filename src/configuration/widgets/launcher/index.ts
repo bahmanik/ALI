@@ -1,49 +1,20 @@
 import { opt } from "src/lib/options";
 import type { LauncherOptions } from "./type";
-import { RgbaColor, type GtkRevealerTransitionName, type HexColor, type LauncherBorderLocation, type ModuleMapArray, type RevealTransitionWithAuto } from "src/configuration/types";
+import type {
+  GtkRevealerTransitionName,
+  ModuleMapArray,
+} from "src/configuration/types";
+import { colorWithAlpha } from "src/lib/options/factories/colorWithAlpha";
+import { overrideContainer } from "src/lib/options/factories/overrideContainer";
+import { overridePopupWindow } from "src/lib/options/factories/overridePopupWindow";
+import { overrideGrid } from "src/lib/options/factories/overrideGrid";
 
 const launcher: LauncherOptions = {
-  localScale: opt(true),
-  revealTransition: opt<RevealTransitionWithAuto>("SWING_DOWN"),
-  transitionDuration: opt(0.4),
   maxItems: opt(5),
 
-  grid: {
-    rows: opt(5),
-    cols: opt(10),
-    modulesList: opt<ModuleMapArray>([]),
-  },
-
-  scale: opt(12,
-    {
-      scss: true, hyprland: true
-    }),
-
-  // --- Window + panel theming (SCSS exported) ---
-  window: {
-    width: opt(520, { scss: true }),
-    height: opt(560, { scss: true }), // clamp heightRequest
-    margin: opt(12, { scss: true }),
-  },
-
-  style: {
-    bg: opt<HexColor>("#1d2024", { scss: true }),
-    bgOpacity: opt(92, { scss: true }), // 0..100
-    radius: opt(18, { scss: true }),
-    padding: opt(12, { scss: true }),
-
-    borderEnable: opt(false, { scss: true }),
-    borderLocation: opt<LauncherBorderLocation>("full", { scss: true }),
-    borderWidth: opt(1, { scss: true }),
-    borderColor: opt<HexColor>("#8d9199", { scss: true }),
-
-    shadowEnable: opt(true, { scss: true }),
-    shadowX: opt(0, { scss: true }),
-    shadowY: opt(18, { scss: true }),
-    shadowBlur: opt(42, { scss: true }),
-    shadowSpread: opt(0, { scss: true }),
-    shadowColor: opt<RgbaColor>("rgba(0,0,0,0.45)", { scss: true }),
-  },
+  grid: overrideGrid({}),
+  window: overridePopupWindow({}),
+  style: overrideContainer({}),
 
   entry: {
     placeholder: opt("Search…"),
@@ -51,26 +22,26 @@ const launcher: LauncherOptions = {
     radius: opt(14, { scss: true }),
     paddingX: opt(12, { scss: true }),
     paddingY: opt(10, { scss: true }),
+    spacing: opt(0, { scss: true }),
 
-    bg: opt<HexColor>("#111318", { scss: true }),
-    bgOpacity: opt(70, { scss: true }),
+    bg: colorWithAlpha({ color: "#111318", alpha: 0.70 }),
+    hoverOpacity: opt(0, { scss: true }),
 
     borderEnable: opt(false, { scss: true }),
     borderWidth: opt(1, { scss: true }),
-    borderColor: opt<HexColor>("#8d9199", { scss: true }),
+    borderColor: colorWithAlpha({ color: "#8d9199", alpha: 1 }),
   },
 
   list: {
     spacing: opt(8, { scss: true }),
-    itemRadius: opt(14, { scss: true }),
-    itemPaddingX: opt(12, { scss: true }),
-    itemPaddingY: opt(10, { scss: true }),
+    radius: opt(14, { scss: true }),
+    paddingX: opt(12, { scss: true }),
+    paddingY: opt(10, { scss: true }),
     itemGap: opt(14, { scss: true }), // icon <-> text
 
-    itemBg: opt<HexColor>("#111318", { scss: true }),
-    itemBgOpacity: opt(0, { scss: true }), // 0 means transparent until hover
-    itemHoverOpacity: opt(55, { scss: true }),
-    itemActiveOpacity: opt(75, { scss: true }),
+    bg: colorWithAlpha({ color: "#111318", alpha: 0 }), // transparent until hover
+    hoverOpacity: opt(0.55, { scss: true }),
+    activeOpacity: opt(0.75, { scss: true }),
 
     showDescription: opt(true),
   },
@@ -83,9 +54,10 @@ const launcher: LauncherOptions = {
   favoritesUI: {
     spacing: opt(10, { scss: true }),
     radius: opt(14, { scss: true }),
-    bg: opt<HexColor>("#111318", { scss: true }),
-    bgOpacity: opt(35, { scss: true }),
-    hoverOpacity: opt(55, { scss: true }),
+    bg: colorWithAlpha({ color: "#111318", alpha: 0.35 }),
+    hoverOpacity: opt(0.55, { scss: true }),
+    paddingX: opt(0, { scss: true }),
+    paddingY: opt(0, { scss: true }),
   },
 
   animateResults: opt<GtkRevealerTransitionName>("CROSSFADE"),

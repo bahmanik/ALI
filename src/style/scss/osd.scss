@@ -62,7 +62,7 @@ $bar-h: $osd-style-barHeight * 1px;
 
     border: if($osd-style-borderEnable, $osd-style-borderWidth * 1px, 0px) solid $osd-border;
 
-    box-shadow: if($osd-style-shadowEnable, $panel-shadow, none);
+    box-shadow: if($bar-style-shadowEnable, $panel-shadow, none);
 
     .osd-header {
       margin-bottom: 8px;

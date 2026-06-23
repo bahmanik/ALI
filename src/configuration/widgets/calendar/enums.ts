@@ -12,4 +12,3 @@ export const BorderLocationValues = [
 
 export type CalendarType = (typeof CalendarValues)[number]
 export type WeekDaysType = (typeof WeekDaysValues)[number]
-export type BorderLocationType = (typeof BorderLocationValues)[number]

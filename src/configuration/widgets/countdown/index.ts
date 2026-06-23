@@ -1,14 +1,15 @@
 import { opt } from 'src/lib/options'
 import type { CountdownOptions } from './type'
-import { HexColor, RgbaColor, type AnchorLayoutType, type RevealTransitionWithAuto, type StackTransition } from 'src/configuration/types'
+import type {
+  HexColor,
+  StackTransition,
+} from 'src/configuration/types'
+import { colorWithAlpha } from 'src/lib/options/factories/colorWithAlpha'
+import { overrideContainer } from 'src/lib/options/factories/overrideContainer'
+import { overridePopupWindow } from 'src/lib/options/factories/overridePopupWindow'
 
 const countdown: CountdownOptions = {
-  window: {
-    layout: opt<AnchorLayoutType>('top-right'),
-    revealTransition: opt<RevealTransitionWithAuto>('CROSSFADE'),
-    transitionDuration: opt(1.6),
-    margin: opt(12),
-  },
+  window: overridePopupWindow({}),
 
   stack: {
     transition: opt<StackTransition>('SLIDE_RIGHT'),
@@ -19,12 +20,9 @@ const countdown: CountdownOptions = {
   pastLimit: opt(12),
 
   style: {
-    bg: opt<HexColor>('#0f1115', { scss: true }),
-    fg: opt<HexColor>('#e7e7e7', { scss: true }),
-    radius: opt(16, { scss: true }),
-    padding: opt(14, { scss: true }),
+    fg: colorWithAlpha({ color: '#e7e7e7', alpha: 1 }),
     gap: opt(10, { scss: true }),
-    overlayBg: opt<RgbaColor>('rgba(0,0,0,0.45)', { scss: true }),
+    overlayBg: colorWithAlpha({ color: '#000000', alpha: 0.45 }),
     overlayFg: opt<HexColor>('#ffffff', { scss: true }),
     imageRadius: opt(14, { scss: true }),
     imageMinSize: opt(260, { scss: true }),
@@ -32,6 +30,7 @@ const countdown: CountdownOptions = {
     descriptionSize: opt(13, { scss: true }),
     timerSize: opt(14, { scss: true }),
     navSize: opt(18, { scss: true }),
+    ...overrideContainer({})
   },
 }
 

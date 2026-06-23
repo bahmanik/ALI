@@ -1,6 +1,7 @@
 import { CONFIG_DIR } from "src/lib/session/api";
 import type { WallpaperOptions } from "./type";
-import type { TransitionPos, TransitionType } from "src/configuration/types";
+import type { TransitionType } from "src/configuration/types";
+import type { TransitionPosType, WallpaperLayoutType } from "./enums";
 import { opt } from "src/lib/options";
 
 const wallpaper: WallpaperOptions = {
@@ -9,7 +10,7 @@ const wallpaper: WallpaperOptions = {
 
     daemon: {
         namespace: opt(""),
-        layer: opt<"background" | "bottom">("background"),
+        layer: opt<WallpaperLayoutType>("background"),
         quiet: opt(true),
     },
 
@@ -19,9 +20,8 @@ const wallpaper: WallpaperOptions = {
         duration: opt(1.5),
         fps: opt(60),
         invert_y: opt(true),
-        pos: opt<TransitionPos>("cursor"),
+        pos: opt<TransitionPosType>("cursor"),
     },
 }
 
 export default wallpaper;
-

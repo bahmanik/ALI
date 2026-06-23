@@ -1,5 +1,6 @@
 import type { Opt } from "src/lib/options";
-import type { TransitionPos, TransitionType } from "src/configuration/types";
+import type { TransitionType } from "src/configuration/types";
+import type { TransitionPosType, WallpaperLayoutType } from "./enums";
 
 export interface WallpaperOptions {
     enable: Opt<boolean>;
@@ -7,7 +8,7 @@ export interface WallpaperOptions {
 
     daemon: {
         namespace: Opt<string>;
-        layer: Opt<"background" | "bottom">;
+        layer: Opt<WallpaperLayoutType>;
         quiet: Opt<boolean>;
     };
 
@@ -17,6 +18,6 @@ export interface WallpaperOptions {
         duration: Opt<number>;
         fps: Opt<number>;
         invert_y: Opt<boolean>;
-        pos: Opt<TransitionPos>;
+        pos: Opt<TransitionPosType>;
     };
 }

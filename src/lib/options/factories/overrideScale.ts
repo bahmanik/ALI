@@ -1,4 +1,4 @@
-import { opt } from "..";
+import { Opt, opt } from "..";
 import type { OptExports } from "../types";
 
 const at = (o: any, path: string) =>
@@ -40,4 +40,8 @@ export function overrideScale(params: {
 }
 
 /** The shape produced by overrideScale — use this in widget Option interfaces. */
-export type OverrideScaleResult = ReturnType<typeof overrideScale>;
+export type OverrideScaleResult = {
+    useLocalScale: Opt<boolean>,
+    localScale: Opt<number>,
+    scale: Opt<number>
+}

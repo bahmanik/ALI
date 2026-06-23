@@ -1,9 +1,9 @@
 import { opt } from "src/lib/options"
 import type { OptExports } from "src/lib/options/types"
+import type { ColorWithAlpha } from "src/configuration/types"
 import type {
     CircularProgressOptions,
     CircularProgressVariant,
-    RGBA,
 } from "src/widget/shared/circularProgress/type"
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -17,7 +17,7 @@ export interface OverrideCircularProgressParams {
     // ── universal ─────────────────────────────────────────────────────────────
     defaultSize?: number
     defaultThickness?: number
-    defaultColor?: RGBA
+    defaultColor?: ColorWithAlpha
     defaultShowText?: boolean
     defaultTextFontSize?: number
     defaultTextAlpha?: number
@@ -83,7 +83,7 @@ export interface OverrideCircularProgressParams {
  * ```ts
  * const cpu: CpuOptions = {
  *   enable: opt(true),
- *   ...overrideCircularProgress({ defaultVariant: "glow", defaultColor: [0.2, 0.85, 0.5, 1] }),
+ *   ...overrideCircularProgress({ defaultVariant: "glow", defaultColor: { color: "#1b93fd", alpha: 1 } }),
  * }
  * ```
  */
@@ -94,7 +94,7 @@ export function overrideCircularProgress(
         defaultVariant = "simple",
         defaultSize = 50,
         defaultThickness = 4,
-        defaultColor = [0.2, 0.7, 1, 1] as RGBA,
+        defaultColor = { color: "#1b93fd", alpha: 1 } satisfies ColorWithAlpha,
         defaultShowText = true,
         defaultTextFontSize = 18,
         defaultTextAlpha = 0.9,
@@ -134,7 +134,7 @@ export function overrideCircularProgress(
         type: opt<CircularProgressVariant>(defaultVariant, e),
         size: opt<number>(defaultSize, e),
         thickness: opt<number>(defaultThickness, e),
-        color: opt<RGBA>(defaultColor, e),
+        color: opt<ColorWithAlpha>(defaultColor, e),
         showText: opt<boolean>(defaultShowText, e),
         textFontSize: opt<number>(defaultTextFontSize, e),
         textAlpha: opt<number>(defaultTextAlpha, e),

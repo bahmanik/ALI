@@ -1,10 +1,7 @@
-import { ModuleMapArray } from "src/configuration/types";
-import type { Opt } from "src/lib/options";
+import { ContainerStyleOptions } from "src/lib/options/factories/overrideContainer";
+import { GridLayoutOptions } from "src/lib/options/factories/overrideGrid";
 
-export type DashboardOptions = {
-  grid: {
-    rows: Opt<number>,
-    cols: Opt<number>,
-    modulesList: Opt<ModuleMapArray>,
-  }
+export interface DashboardOptions {
+  grid: GridLayoutOptions;
+  style: ContainerStyleOptions;
 }

@@ -1,9 +1,12 @@
 import type { Opt } from "src/lib/options"
-import type { BarBorderLocation, BarLocation, HexColor, RgbaColor } from "src/configuration/types"
+import type { OverrideScaleResult } from "src/lib/options/factories/overrideScale"
 import type { SecondaryBarOptions } from "./secondaryBar/type"
 import type { BarCornerOptions } from "./corner/type"
 import type { CpuOptions } from "./modules/cpu/type"
 import type { BarTriggerKey, BarMenuKey } from "src/widget/bar/triggers"
+import { BarLocationType } from "src/configuration/enums"
+import { ContainerStyleOptions } from "src/lib/options/factories/overrideContainer"
+import { InteractiveSurfaceOptions } from "src/lib/options/factories/overrideInteractiveSurface"
 
 // ─── Shared ────────────────────────────────────────────────────────────────
 
@@ -99,6 +102,19 @@ export interface BarSlotLayout {
 
 // ─── Options ──────────────────────────────────────────────────────────────
 
+export interface BarStyleOptions extends ContainerStyleOptions {
+  floating: Opt<boolean>;
+  transparent: Opt<boolean>;
+  height: Opt<number>;
+  marginTop: Opt<number>;
+  marginBottom: Opt<number>;
+  marginSides: Opt<number>;
+}
+
+export interface BarButtonsOptions extends InteractiveSurfaceOptions {
+  bgHoverOpacity: Opt<number>;
+}
+
 export interface BarModulesOptions {
   cpu: CpuOptions
   defaultLayout: Opt<BarSlotLayout>
@@ -106,49 +122,12 @@ export interface BarModulesOptions {
   mirrorFirstMonitor: Opt<boolean>
 }
 
-export interface BarOptions {
-  position: Opt<BarLocation>
-  margin: Opt<number[]>
-  secondaryBar: SecondaryBarOptions
-  corner: BarCornerOptions
-  modules: BarModulesOptions
-
-  style: {
-    floating: Opt<boolean>
-    transparent: Opt<boolean>
-    bg: Opt<HexColor>
-    bgOpacity: Opt<number>
-    height: Opt<number>
-    radius: Opt<number>
-    paddingX: Opt<number>
-    paddingY: Opt<number>
-    marginTop: Opt<number>
-    marginBottom: Opt<number>
-    marginSides: Opt<number>
-    borderEnable: Opt<boolean>
-    borderLocation: Opt<BarBorderLocation>
-    borderWidth: Opt<number>
-    borderColor: Opt<HexColor>
-    shadowEnable: Opt<boolean>
-    shadowMargin: Opt<number>
-    shadowX: Opt<number>
-    shadowY: Opt<number>
-    shadowBlur: Opt<number>
-    shadowSpread: Opt<number>
-    shadowColor: Opt<RgbaColor>
-  }
-
-  buttons: {
-    bg: Opt<HexColor>
-    bgOpacity: Opt<number>
-    bgHoverOpacity: Opt<number>
-    radius: Opt<number>
-    spacing: Opt<number>
-    paddingX: Opt<number>
-    paddingY: Opt<number>
-  }
-
-  useLocalScale: Opt<boolean>
-  localScale: Opt<number>
-  scale: Opt<number>
+export interface BarOptions extends OverrideScaleResult {
+  position: Opt<BarLocationType>;
+  margin: Opt<number[]>;
+  style: BarStyleOptions;
+  buttons: BarButtonsOptions;
+  secondaryBar: SecondaryBarOptions;
+  corner: BarCornerOptions;
+  modules: BarModulesOptions;
 }

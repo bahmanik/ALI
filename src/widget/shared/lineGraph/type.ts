@@ -1,4 +1,5 @@
 import type { Opt } from "src/lib/options"
+import type { ColorWithAlpha } from "src/configuration/types"
 
 // ═════════════════════════════════════════════════════════════════════════════
 // Variant enum
@@ -34,8 +35,8 @@ export interface LineGraphOptions {
   height: Opt<number>
   /** Line / stroke thickness in px */
   thickness: Opt<number>
-  /** Primary RGBA colour – [r, g, b, a], channels 0..1 */
-  color: Opt<LineGraphRGBA>
+  /** Primary color. Use `colorToRgba(color)` in draw functions. */
+  color: Opt<ColorWithAlpha>
 
   // ── shared animated ───────────────────────────────────────────────────────
   /** Exponential-smoothing factor (0 = instant snap, ~0.3 = slow drift) */

@@ -1,6 +1,7 @@
 import { opt } from "src/lib/options"
 import type { OptExports } from "src/lib/options/types"
-import type { LineGraphOptions, LineGraphVariant, LineGraphRGBA } from "src/widget/shared/lineGraph/type"
+import type { ColorWithAlpha } from "src/configuration/types"
+import type { LineGraphOptions, LineGraphVariant } from "src/widget/shared/lineGraph/type"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Params
@@ -12,7 +13,7 @@ export interface OverrideLineGraphParams {
     defaultWidth?: number
     defaultHeight?: number
     defaultThickness?: number
-    defaultColor?: LineGraphRGBA
+    defaultColor?: ColorWithAlpha
 
     // ── shared animated ───────────────────────────────────────────────────────
     defaultSmoothing?: number
@@ -76,7 +77,7 @@ export interface OverrideLineGraphParams {
  * const cpu: CpuOptions = {
  *   enable: opt(true),
  *   ...overrideCircularProgress({ ... }),
- *   ...overrideLineGraph({ defaultVariant: "wave", defaultColor: [0.2, 0.85, 0.5, 1] }),
+ *   ...overrideLineGraph({ defaultVariant: "wave", defaultColor: { color: "#1b93fd", alpha: 1 } }),
  * }
  * ```
  */
@@ -88,7 +89,7 @@ export function overrideLineGraph(
         defaultWidth = 200,
         defaultHeight = 60,
         defaultThickness = 2,
-        defaultColor = [0.2, 0.7, 1, 1] as LineGraphRGBA,
+        defaultColor = { color: "#1b93fd", alpha: 1 } satisfies ColorWithAlpha,
         defaultSmoothing = 0.15,
         defaultPulseRadiusDelta = 5,
         defaultPulseSpeed = 0.04,
@@ -131,7 +132,7 @@ export function overrideLineGraph(
         width: opt<number>(defaultWidth, e),
         height: opt<number>(defaultHeight, e),
         thickness: opt<number>(defaultThickness, e),
-        color: opt<LineGraphRGBA>(defaultColor, e),
+        color: opt<ColorWithAlpha>(defaultColor, e),
 
         smoothing: opt<number>(defaultSmoothing, e),
         pulseRadiusDelta: opt<number>(defaultPulseRadiusDelta, e),

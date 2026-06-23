@@ -36,7 +36,7 @@ const Calendar = (props: CalendarProps) => {
 
       <Header title="style" />
       <Option type="color" title="background" opt={style.bg} />
-      <Option type="number" title="background opacity" opt={style.bgOpacity} />
+      {/*<Option type="number" title="background opacity" opt={style.bg} />*/}
       <Option type="number" title="radius" opt={style.radius} />
       <Option type="number" title="padding" opt={style.padding} />
       <Option type="enum" title="borderLocation" opt={style.borderLocation} values={BorderLocationValues} />

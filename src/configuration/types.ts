@@ -1,3 +1,7 @@
+/**
+ * Global configuration primitive types.
+ */
+import { Opt } from "src/lib/options";
 import { BarTriggerKey } from "src/widget/bar/triggers";
 import { DashboardModules } from "src/widget/dashboard/_component";
 
@@ -18,20 +22,6 @@ export type TransitionType =
     | "outer"
     | "random";
 
-export type TransitionPos =
-    | "cursor"
-    | "center"
-    | "top"
-    | "bottom"
-    | "left"
-    | "right"
-    | "top-left"
-    | "top-right"
-    | "bottom-left"
-    | "bottom-right";
-
-export type BarLocation = "top" | "bottom" | "left" | "right";
-
 export type {
     AssetTransformation,
     ImageTechnique,
@@ -40,22 +30,11 @@ export type {
 } from "src/services/assets/types"
 
 export type HexColor = `#${string}`;
-export type RgbaColor = `rgba(${string})`
-export type RGBA = [number, number, number, number]
 
-export type CalendarBorderLocation = "none" | "full";
-
-export type LauncherBorderLocation = "none" | "full";
-
-export type BarBorderLocation =
-    | "none"
-    | "top"
-    | "bottom"
-    | "left"
-    | "right"
-    | "horizontal"
-    | "vertical"
-    | "full";
+export interface ColorWithAlpha {
+    color: Opt<HexColor>;
+    alpha: Opt<number>;
+}
 
 export type ThemeMode = "dark" | "light";
 

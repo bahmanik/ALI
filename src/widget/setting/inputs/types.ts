@@ -1,5 +1,5 @@
 import type { Accessor } from "gnim";
-import type { HexColor } from "src/configuration/types";
+import type { HexColor, ColorWithAlpha } from "src/configuration/types";
 import type { Opt } from "src/lib/options";
 
 export type BooleanInputterProps = {
@@ -7,7 +7,7 @@ export type BooleanInputterProps = {
 }
 
 export type ColorInputterProps = {
-  opt: Opt<HexColor>;
+  opt: Opt<HexColor | ColorWithAlpha>;
 }
 
 export type EnumInputterProps<T extends string = string> = {

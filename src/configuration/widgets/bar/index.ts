@@ -3,8 +3,10 @@ import secondaryBar from "./secondaryBar";
 import barModules from "./modules";
 import { overrideScale } from "src/lib/options/factories/overrideScale";
 import { opt } from "src/lib/options";
-import { RgbaColor, type BarBorderLocation, type BarLocation, type HexColor } from "src/configuration/types";
 import type { BarOptions, BarSlotLayout } from "./type";
+import { BarLocationType } from "src/configuration/enums";
+import { colorWithAlpha } from "src/lib/options/factories/colorWithAlpha";
+import { overrideContainer } from "src/lib/options/factories/overrideContainer";
 
 const defaultLayout: BarSlotLayout = {
   start: [
@@ -41,7 +43,7 @@ const defaultLayout: BarSlotLayout = {
 }
 
 const bar: BarOptions = {
-  position: opt<BarLocation>("top", { scss: true, hyprland: true }),
+  position: opt<BarLocationType>("top", { scss: true, hyprland: true }),
   margin: opt<number[]>([0, 0, 0, 0]),
   secondaryBar: secondaryBar,
   corner: corner,
@@ -56,34 +58,17 @@ const bar: BarOptions = {
     floating: opt(false, { scss: true }),
     transparent: opt(false, { scss: true }),
 
-    bg: opt<HexColor>("#1d2024", { scss: true }),
-    bgOpacity: opt(80, { scss: true }),
-
     height: opt(36, { scss: true }),
-    radius: opt(16, { scss: true }),
-    paddingX: opt(0, { scss: true }),
-    paddingY: opt(0, { scss: true }),
     marginTop: opt(8, { scss: true }),
     marginBottom: opt(8, { scss: true }),
     marginSides: opt(10, { scss: true }),
 
-    borderEnable: opt(false, { scss: true }),
-    borderLocation: opt<BarBorderLocation>("full", { scss: true }),
-    borderWidth: opt(1, { scss: true }),
-    borderColor: opt<HexColor>("#8d9199", { scss: true }),
-
-    shadowEnable: opt(true, { scss: true }),
-    shadowMargin: opt(8, { scss: true }),
-    shadowX: opt(0, { scss: true }),
-    shadowY: opt(10, { scss: true }),
-    shadowBlur: opt(24, { scss: true }),
-    shadowSpread: opt(0, { scss: true }),
-    shadowColor: opt<RgbaColor>("rgba(0,0,0,0.35)", { scss: true }),
+    ...overrideContainer({})
   },
 
   buttons: {
-    bg: opt<HexColor>("#1d2024", { scss: true }),
-    bgOpacity: opt(45, { scss: true }),
+    bg: colorWithAlpha({ color: "#1d2024", alpha: 0.45 }),
+    hoverOpacity: opt(0.70, { scss: true }),
     bgHoverOpacity: opt(70, { scss: true }),
 
     radius: opt(12, { scss: true }),
