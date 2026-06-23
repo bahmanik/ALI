@@ -11,8 +11,10 @@ async function connect(ap: AstalNetwork.AccessPoint) {
   }
 }
 
-function sortedPoints(arr: Array<AstalNetwork.AccessPoint>) {
-  return arr.filter((ap) => !!ap.ssid).sort((a, b) => b.strength - a.strength)
+function sortedPoints(arr: AstalNetwork.AccessPoint[]) {
+  return [...arr]
+    .filter((ap) => !!ap.ssid)
+    .sort((a, b) => b.strength - a.strength)
 }
 
 /**
@@ -21,10 +23,19 @@ function sortedPoints(arr: Array<AstalNetwork.AccessPoint>) {
  * Requires a connected `AstalNetwork.Wifi` instance to be passed in.
  * No `<menubutton>`, no `<popover>` wrapper.
  */
-export function WirelessMenu({ wifi }: { wifi: AstalNetwork.Wifi }) {
+export function WirelessMenu() {
+  const network = AstalNetwork.get_default()
+  const wifi = createBinding(network, "wifi")
+
+  const accessPoints = wifi.as((wifi) =>
+    wifi ? sortedPoints(wifi.accessPoints) : []
+  )
+
+  const activeBssid = wifi.as((wifi) => wifi?.activeAccessPoint?.bssid ?? "")
+
   return (
     <box orientation={Gtk.Orientation.VERTICAL}>
-      <For each={createBinding(wifi, "accessPoints")(sortedPoints)}>
+      <For each={accessPoints}>
         {(ap: AstalNetwork.AccessPoint) => (
           <button onClicked={() => connect(ap)}>
             <box spacing={4}>
@@ -32,7 +43,7 @@ export function WirelessMenu({ wifi }: { wifi: AstalNetwork.Wifi }) {
               <label label={createBinding(ap, "ssid")} />
               <image
                 iconName="object-select-symbolic"
-                visible={createBinding(wifi, "activeAccessPoint")((active) => active === ap)}
+                visible={activeBssid.as((bssid) => bssid === ap.bssid)}
               />
             </box>
           </button>

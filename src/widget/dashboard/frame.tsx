@@ -1,36 +1,35 @@
 import { Gtk } from "ags/gtk4"
-import Cell from "./_component/cell"
 import {
-  Observer,
-  AppLauncher,
-  Avatar,
-  Clock,
-  FileLauncher,
-  Media,
-  QuickLaunch,
-  Uptime,
-  Weather,
-} from "./_component"
+  ObserverMenu,
+  AppLauncherMenu,
+  AvatarMenu,
+  ClockMenu,
+  FileLauncherMenu,
+  MediaMenu,
+  QuickLaunchMenu,
+  UptimeMenu,
+  WeatherMenu,
+} from "../shared/menus"
 
 function Frame() {
-  const observer = <Observer /> as Gtk.Widget
-  const appLauncher = <AppLauncher /> as Gtk.Widget
-  const avatar = <Avatar /> as Gtk.Widget
-  const clock = <Clock /> as Gtk.Widget
-  const fileLauncher = <FileLauncher /> as Gtk.Widget
-  const media = <Media /> as Gtk.Widget
-  const uptime = <Uptime /> as Gtk.Widget
-  const weather = <Weather /> as Gtk.Widget
+  const observer = <ObserverMenu /> as Gtk.Widget
+  const appLauncher = <AppLauncherMenu /> as Gtk.Widget
+  const avatar = <AvatarMenu /> as Gtk.Widget
+  const clock = <ClockMenu /> as Gtk.Widget
+  const fileLauncher = <FileLauncherMenu /> as Gtk.Widget
+  const media = <MediaMenu /> as Gtk.Widget
+  const uptime = <UptimeMenu /> as Gtk.Widget
+  const weather = <WeatherMenu /> as Gtk.Widget
 
-  const quickLaunch1 = <QuickLaunch /> as Gtk.Widget
-  const quickLaunch2 = <QuickLaunch /> as Gtk.Widget
-  const quickLaunch3 = <QuickLaunch /> as Gtk.Widget
-  const quickLaunch4 = <QuickLaunch /> as Gtk.Widget
-  const quickLaunch5 = <QuickLaunch /> as Gtk.Widget
-  const quickLaunch6 = <QuickLaunch /> as Gtk.Widget
-  const quickLaunch7 = <QuickLaunch /> as Gtk.Widget
-  const quickLaunch8 = <QuickLaunch /> as Gtk.Widget
-  const quickLaunch9 = <QuickLaunch /> as Gtk.Widget
+  const quickLaunch1 = <QuickLaunchMenu /> as Gtk.Widget
+  const quickLaunch2 = <QuickLaunchMenu /> as Gtk.Widget
+  const quickLaunch3 = <QuickLaunchMenu /> as Gtk.Widget
+  const quickLaunch4 = <QuickLaunchMenu /> as Gtk.Widget
+  const quickLaunch5 = <QuickLaunchMenu /> as Gtk.Widget
+  const quickLaunch6 = <QuickLaunchMenu /> as Gtk.Widget
+  const quickLaunch7 = <QuickLaunchMenu /> as Gtk.Widget
+  const quickLaunch8 = <QuickLaunchMenu /> as Gtk.Widget
+  const quickLaunch9 = <QuickLaunchMenu /> as Gtk.Widget
   return (
     <Gtk.Grid
       $={(self) => {

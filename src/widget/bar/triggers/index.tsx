@@ -20,26 +20,10 @@ import {
   BatteryMenu,
   MediaMenu,
   ClipboardMenu,
+  WirelessMenu,
 } from "src/widget/shared/menus"
 
-import AstalNetwork from "gi://AstalNetwork"
-import { createBinding, With } from "ags"
-import { WirelessMenu } from "src/widget/shared/menus/WirelessMenu"
-
 import type { BarTriggerProps, BarMenuProps } from "./types"
-
-/**
- * Zero-arg wrapper for WirelessMenu.
- * Resolves the wifi binding internally so it can be stored in barMenuMap
- * as a () => JSX.Element without requiring external props.
- */
-function WirelessMenuWidget() {
-  const network = AstalNetwork.get_default()
-  const wifi = createBinding(network, "wifi")
-  return (
-    <label label={"you should implement this"} />
-  )
-}
 
 /**
  * Single source of truth for all bar triggers.
@@ -81,10 +65,10 @@ export type BarTriggerKey = keyof typeof barTriggerMap
  */
 export const barMenuMap = {
   Volume: VolumeMenu,
-  Wireless: WirelessMenuWidget,   // wrapper resolves wifi internally
   Battery: BatteryMenu,
   Media: MediaMenu,
   Clipboard: ClipboardMenu,
+  Wireless: WirelessMenu,
   Hyprsunset: HyprsunsetMenu,
 } as const satisfies Record<string, () => JSX.Element>
 
