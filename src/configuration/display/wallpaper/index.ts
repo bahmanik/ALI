@@ -1,7 +1,6 @@
 import { CONFIG_DIR } from "src/lib/session/api";
 import type { WallpaperOptions } from "./type";
-import type { TransitionType } from "src/configuration/types";
-import type { TransitionPosType, WallpaperLayoutType } from "./enums";
+import type { TransitionPosType, TransitionType, WallpaperLayoutType } from "./enums";
 import { opt } from "src/lib/options";
 
 const wallpaper: WallpaperOptions = {

@@ -7,6 +7,7 @@ import { InteractiveSurfaceOptions } from "src/lib/options/factories/overrideInt
 import { PopupWindowOptions } from "src/lib/options/factories/overridePopupWindow";
 import { ContainerStyleOptions } from "src/lib/options/factories/overrideContainer";
 import { GridLayoutOptions } from "src/lib/options/factories/overrideGrid";
+import { BorderOptions } from "src/lib/options/factories/overrideBorder";
 
 export interface LauncherListOptions extends InteractiveSurfaceOptions {
   activeOpacity: Opt<number>; // unique to list
@@ -14,14 +15,9 @@ export interface LauncherListOptions extends InteractiveSurfaceOptions {
   showDescription: Opt<boolean>;
 }
 
-export interface LauncherEntryOptions extends InteractiveSurfaceOptions {
+export interface LauncherEntryOptions extends InteractiveSurfaceOptions, BorderOptions {
   placeholder: Opt<string>;
   height: Opt<number>;
-  // borderEnable/borderWidth/borderColor are NOT on InteractiveSurfaceOptions
-  // keep them as extra fields:
-  borderEnable: Opt<boolean>;
-  borderWidth: Opt<number>;
-  borderColor: ColorWithAlpha;
 }
 
 export interface LauncherOptions {

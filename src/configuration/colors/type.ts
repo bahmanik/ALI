@@ -1,14 +1,10 @@
 import type { Opt } from "src/lib/options";
-import type {
-    HexColor,
-    MatugenResizeFilter,
-    MatugenType,
-    ThemeMode,
-} from "src/configuration/types";
+import type { HexColor } from "src/configuration/types";
+import { MatugenResizeFilterType, MatugenType, ThemeModeType } from "./enums";
 
 export interface ColorsOptions {
     enableMatugen: Opt<boolean>;
-    themeMode: Opt<ThemeMode>;
+    themeMode: Opt<ThemeModeType>;
 
     bg: Opt<HexColor>;
     fg: Opt<HexColor>;
@@ -20,7 +16,7 @@ export interface ColorsOptions {
     matugen: {
         type: Opt<MatugenType>;
         contrast: Opt<number>;
-        resizeFilter: Opt<MatugenResizeFilter>;
+        resizeFilter: Opt<MatugenResizeFilterType>;
     };
 
     exportColorSchema: {

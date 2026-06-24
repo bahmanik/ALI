@@ -2,37 +2,32 @@ import { overrideScale } from "src/lib/options/factories/overrideScale";
 import { opt } from "src/lib/options";
 import type { SecondaryBarOptions } from "./type";
 import type { BarLocationType } from "src/configuration/enums";
-import { colorWithAlpha } from "src/lib/options/factories/colorWithAlpha";
 import { overrideContainer } from "src/lib/options/factories/overrideContainer";
+import { overrideInteractiveSurface } from "src/lib/options/factories/overrideInteractiveSurface";
+import type { BarSlotLayout } from "../type";
+import { barDefaultLayout } from "..";
+import barModules from "../modules";
 
 const secondaryBar: SecondaryBarOptions = {
   enable: opt(false),
   position: opt<BarLocationType>("left", { scss: true, hyprland: true }),
-  margin: opt<number[]>([0, 0, 0, 0]),
-  /** Visual styling options (exported to SCSS). Inspired by HyprPanel's bar theming knobs. */
+
+  modules: {
+    ...barModules,
+    defaultLayout: opt<BarSlotLayout>(barDefaultLayout),
+    monitorLayouts: opt<Record<string, BarSlotLayout>>({}),
+    mirrorFirstMonitor: opt<boolean>(false),
+  },
+
   style: {
     floating: opt(true, { scss: true }),
     transparent: opt(false, { scss: true }),
 
-    // geometry
-    height: opt(36, { scss: true }), // px
-    marginTop: opt(8, { scss: true }), // px (inside the window)
-    marginBottom: opt(8, { scss: true }), // px (inside the window)
-    marginSides: opt(10, { scss: true }), // px (inside the window)
+    height: opt(36, { scss: true }),
     ...overrideContainer({})
   },
 
-  /** Button-ish widgets inside the bar (buttons / menubuttons). */
-  buttons: {
-    bg: colorWithAlpha({ color: "#1d2024", alpha: 0.45 }),
-    hoverOpacity: opt(0.70, { scss: true }),
-    bgHoverOpacity: opt(70, { scss: true }), // 0..100
-
-    radius: opt(12, { scss: true }), // px
-    spacing: opt(4, { scss: true }), // px (horizontal spacing)
-    paddingX: opt(0, { scss: true }), // px
-    paddingY: opt(0, { scss: true }), // px
-  },
+  buttons: overrideInteractiveSurface({}),
 
   ...overrideScale({
     widgetId: 'bar.secondaryBar',

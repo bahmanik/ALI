@@ -5,10 +5,10 @@ import { overrideScale } from "src/lib/options/factories/overrideScale";
 import { opt } from "src/lib/options";
 import type { BarOptions, BarSlotLayout } from "./type";
 import { BarLocationType } from "src/configuration/enums";
-import { colorWithAlpha } from "src/lib/options/factories/colorWithAlpha";
 import { overrideContainer } from "src/lib/options/factories/overrideContainer";
+import { overrideInteractiveSurface } from "src/lib/options/factories/overrideInteractiveSurface";
 
-const defaultLayout: BarSlotLayout = {
+export const barDefaultLayout: BarSlotLayout = {
   start: [
     { kind: "trigger", id: "n_ws", triggerWidget: "Workspaces", children: [], menuMinimumWidth: 0 },
     { kind: "trigger", id: "n_wt", triggerWidget: "Windowtitle", children: [], menuMinimumWidth: 0 },
@@ -44,12 +44,12 @@ const defaultLayout: BarSlotLayout = {
 
 const bar: BarOptions = {
   position: opt<BarLocationType>("top", { scss: true, hyprland: true }),
-  margin: opt<number[]>([0, 0, 0, 0]),
   secondaryBar: secondaryBar,
   corner: corner,
+
   modules: {
     ...barModules,
-    defaultLayout: opt<BarSlotLayout>(defaultLayout),
+    defaultLayout: opt<BarSlotLayout>(barDefaultLayout),
     monitorLayouts: opt<Record<string, BarSlotLayout>>({}),
     mirrorFirstMonitor: opt<boolean>(false),
   },
@@ -59,23 +59,10 @@ const bar: BarOptions = {
     transparent: opt(false, { scss: true }),
 
     height: opt(36, { scss: true }),
-    marginTop: opt(8, { scss: true }),
-    marginBottom: opt(8, { scss: true }),
-    marginSides: opt(10, { scss: true }),
-
     ...overrideContainer({})
   },
 
-  buttons: {
-    bg: colorWithAlpha({ color: "#1d2024", alpha: 0.45 }),
-    hoverOpacity: opt(0.70, { scss: true }),
-    bgHoverOpacity: opt(70, { scss: true }),
-
-    radius: opt(12, { scss: true }),
-    spacing: opt(4, { scss: true }),
-    paddingX: opt(0, { scss: true }),
-    paddingY: opt(0, { scss: true }),
-  },
+  buttons: overrideInteractiveSurface({}),
 
   ...overrideScale({
     widgetId: "bar",

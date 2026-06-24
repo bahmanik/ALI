@@ -1,16 +1,12 @@
 import { CONFIG_DIR } from "src/lib/session/api";
-import type {
-    HexColor,
-    MatugenResizeFilter,
-    MatugenType,
-    ThemeMode,
-} from "src/configuration/types";
+import type { HexColor } from "src/configuration/types";
 import type { ColorsOptions } from "./type";
 import { opt } from "src/lib/options";
+import type { MatugenResizeFilterType, MatugenType, ThemeModeType } from "./enums";
 
 const colors: ColorsOptions = {
     enableMatugen: opt(true),
-    themeMode: opt<ThemeMode>("dark"),
+    themeMode: opt<ThemeModeType>("dark"),
 
     bg: opt<HexColor>("#111318", { scss: true }),
     fg: opt<HexColor>("#e1e2e9", { scss: true }),
@@ -22,7 +18,7 @@ const colors: ColorsOptions = {
     matugen: {
         type: opt<MatugenType>("scheme-tonal-spot"),
         contrast: opt(0),
-        resizeFilter: opt<MatugenResizeFilter>("lanczos3"),
+        resizeFilter: opt<MatugenResizeFilterType>("lanczos3"),
     },
 
     exportColorSchema: {

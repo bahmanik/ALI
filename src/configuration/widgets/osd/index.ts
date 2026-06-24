@@ -5,19 +5,19 @@ import type {
   AnchorLayoutType,
   HexColor,
   OsdOrientation,
-  RevealTransitionWithAuto,
 } from "src/configuration/types";
 import { colorWithAlpha } from "src/lib/options/factories/colorWithAlpha";
 import { overrideContainer } from "src/lib/options/factories/overrideContainer";
+import { RevealTransitionWithAuto } from "src/configuration/enums";
 
 const osd: OsdOptions = {
   enable: opt(true),
 
-  timeoutMs: opt(4400),
+  timeoutDuration: opt(4400),
   startupDelayMs: opt(250),
 
   // HyprPanel-style location names (also accept underscore variants).
-  location: opt<AnchorLayoutType>("bottom-right"),
+  layout: opt<AnchorLayoutType>("bottom-right"),
   orientation: opt<OsdOrientation>("horizontal"),
 
   // Transition options.
@@ -42,9 +42,6 @@ const osd: OsdOptions = {
   // Visual styling options (exported to SCSS).
   style: {
     gap: opt(12, { scss: true }),
-    margin: opt(12, { scss: true }),
-
-    fg: colorWithAlpha({ color: "#e1e2e9", alpha: 1 }),
 
     iconSize: opt(28, { scss: true }),
     iconPadding: opt(10, { scss: true }),

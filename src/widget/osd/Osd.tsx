@@ -172,7 +172,7 @@ export default function Osd(props: OsdProps) {
 
     clearHideTimers();
 
-    const timeoutMs = Math.max(0, options.osd.timeoutMs.get());
+    const timeoutMs = Math.max(0, options.osd.timeoutDuration.get());
     hideTimer = setTimeout(() => {
       setRevealed(false);
       hideTimer = null;
@@ -276,7 +276,7 @@ export default function Osd(props: OsdProps) {
   const percentClass = overflow.as((o: boolean) => (o ? "osd-percent overflow" : "osd-percent"));
   const levelClass = overflow.as((o: boolean) => (o ? "osd-level overflow" : "osd-level"));
 
-  const { revealTransition, location } = options.osd
+  const { revealTransition, layout: location } = options.osd
   const transition = toRevealerTransitionWithAuto(revealTransition.get(), location.get())
 
   return (
@@ -365,8 +365,8 @@ export default function Osd(props: OsdProps) {
 
         <box
           class="osd-host"
-          halign={options.osd.location.as((l: string) => layoutToAlign(l).halign)}
-          valign={options.osd.location.as((l: string) => layoutToAlign(l).valign)}
+          halign={options.osd.layout.as((l: string) => layoutToAlign(l).halign)}
+          valign={options.osd.layout.as((l: string) => layoutToAlign(l).valign)}
           marginTop={margin}
           marginBottom={margin}
           marginStart={margin}

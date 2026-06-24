@@ -1,6 +1,5 @@
 import type { Opt } from "src/lib/options";
-import type { TransitionType } from "src/configuration/types";
-import type { TransitionPosType, WallpaperLayoutType } from "./enums";
+import type { TransitionPosType, TransitionType, WallpaperLayoutType } from "./enums";
 
 export interface WallpaperOptions {
     enable: Opt<boolean>;

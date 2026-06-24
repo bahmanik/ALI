@@ -8,10 +8,6 @@ const corner: BarCornerOptions = {
   edge: opt(0, { scss: true }),
   radius: opt(12, { scss: true }),
 
-  // Three flat opts — no hidden backing, no derive interception:
-  //   useLocalBackground  →  whether to use localBackground or global.background
-  //   localBackground     →  the locally-stored asset (persisted to disk normally)
-  //   background          →  derived, runtime, consumed by the Corner widget
   ...overrideVisualAsset({
     widgetId: "bar.corner",
     defaultUseLocal: true,

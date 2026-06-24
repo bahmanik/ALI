@@ -5,7 +5,9 @@ import { overrideShadow } from "./overrideShadow"
 import { colorWithAlpha } from "./colorWithAlpha"
 
 export function overrideContainer(params: {
+  defaultMargin?: number;
   defaultBg?: Parameters<typeof colorWithAlpha>[0];
+  defaultFg?: Parameters<typeof colorWithAlpha>[0];
   defaultRadius?: number;
   defaultPadding?: number;
   border?: Parameters<typeof overrideBorder>[0];
@@ -14,6 +16,8 @@ export function overrideContainer(params: {
 } = {}) {
   const {
     defaultBg = { color: "#1d2024", alpha: 0.92 },
+    defaultFg = { color: "#F2F3F4", alpha: 0.92 },
+    defaultMargin = 3,
     defaultRadius = 18,
     defaultPadding = 12,
     border: b = {},
@@ -23,8 +27,10 @@ export function overrideContainer(params: {
 
   return {
     bg: colorWithAlpha({ exports: e, ...defaultBg }),
+    fg: colorWithAlpha({ exports: e, ...defaultFg }),
     radius: opt<number>(defaultRadius, e),
     padding: opt<number>(defaultPadding, e),
+    margin: opt<number>(defaultMargin, e),
     ...overrideBorder({ exports: e, ...b }),
     ...overrideShadow({ exports: e, ...s }),
   }

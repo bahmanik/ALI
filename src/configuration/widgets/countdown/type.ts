@@ -1,7 +1,8 @@
 import type { Opt } from 'src/lib/options'
-import type { ColorWithAlpha, HexColor, StackTransition } from 'src/configuration/types'
+import type { ColorWithAlpha, HexColor } from 'src/configuration/types'
 import { ContainerStyleOptions } from 'src/lib/options/factories/overrideContainer';
 import { PopupWindowOptions } from 'src/lib/options/factories/overridePopupWindow';
+import { StackTransitionType } from 'src/configuration/enums';
 
 export interface CountdownStyleOptions extends ContainerStyleOptions {
   fg: ColorWithAlpha;
@@ -20,7 +21,7 @@ export interface CountdownOptions {
   window: PopupWindowOptions;  // replaces the inline window block; keep all fields
 
   stack: {
-    transition: Opt<StackTransition>;
+    transition: Opt<StackTransitionType>;
     duration: Opt<number>;
   };
 

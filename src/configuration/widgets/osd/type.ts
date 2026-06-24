@@ -2,12 +2,12 @@ import type { Opt } from "src/lib/options";
 import type {
   AnchorLayoutType,
   ColorWithAlpha,
-  GtkRevealerTransitionName,
   HexColor,
   OsdOrientation,
 } from "src/configuration/types";
 import type { OsdBrightnessOptions } from "./brightness/type";
 import { ContainerStyleOptions } from "src/lib/options/factories/overrideContainer";
+import { RevealTransitionWithAuto } from "src/configuration/enums";
 
 export interface OsdStyleOptions extends ContainerStyleOptions {
   fg: ColorWithAlpha;
@@ -20,19 +20,19 @@ export interface OsdStyleOptions extends ContainerStyleOptions {
   barWidth: Opt<number>;
   barHeight: Opt<number>;
   barBg: ColorWithAlpha;
-  barFill: Opt<HexColor>;     // fully opaque accent — HexColor is correct here
+  barFill: Opt<HexColor>;
 }
 
 export interface OsdOptions {
   enable: Opt<boolean>;
-  timeoutMs: Opt<number>;
+  timeoutDuration: Opt<number>;
   startupDelayMs: Opt<number>;
 
-  location: Opt<AnchorLayoutType>;
+  layout: Opt<AnchorLayoutType>;
   orientation: Opt<OsdOrientation>;
 
-  revealTransition: Opt<"AUTO" | GtkRevealerTransitionName>;
-  transitionDuration: Opt<number>; // seconds — was transitionDurationMs (integer ms), now float
+  revealTransition: Opt<RevealTransitionWithAuto>;
+  transitionDuration: Opt<number>;
 
   sources: {
     volume: Opt<boolean>;

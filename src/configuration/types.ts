@@ -1,26 +1,6 @@
-/**
- * Global configuration primitive types.
- */
 import { Opt } from "src/lib/options";
 import { BarTriggerKey } from "src/widget/bar/triggers";
-import { DashboardModules } from "src/widget/dashboard/_component";
-
-
-export type TransitionType =
-    | "none"
-    | "simple"
-    | "fade"
-    | "left"
-    | "right"
-    | "top"
-    | "bottom"
-    | "wipe"
-    | "wave"
-    | "grow"
-    | "center"
-    | "any"
-    | "outer"
-    | "random";
+import { MenuNode } from "./widgets/bar/type";
 
 export type {
     AssetTransformation,
@@ -35,24 +15,6 @@ export interface ColorWithAlpha {
     color: Opt<HexColor>;
     alpha: Opt<number>;
 }
-
-export type ThemeMode = "dark" | "light";
-
-export type MatugenType =
-    | "scheme-tonal-spot"
-    | "scheme-neutral"
-    | "scheme-vibrant"
-    | "scheme-expressive"
-    | "scheme-content"
-    | "scheme-fidelity";
-
-export type MatugenResizeFilter =
-    | "nearest"
-    | "triangle"
-    | "catmull-rom"
-    | "gaussian"
-    | "lanczos3"
-    | "none";
 
 // -----------------------------------------------------------------------------
 // Shared layout + transitions (GTK4 widgets)
@@ -87,46 +49,6 @@ export const AnchorLayoutValues = [
 
 export type AnchorLayoutType = (typeof AnchorLayoutValues)[number]
 
-/** Names mapped to Gtk.RevealerTransitionType (GTK4). */
-export type GtkRevealerTransitionName =
-    | "NONE"
-    | "CROSSFADE"
-    | "SLIDE_RIGHT"
-    | "SLIDE_LEFT"
-    | "SLIDE_UP"
-    | "SLIDE_DOWN"
-    | "SWING_RIGHT"
-    | "SWING_LEFT"
-    | "SWING_UP"
-    | "SWING_DOWN";
-
-export type StackTransition =
-    | "NONE"
-    | "CROSSFADE"
-    | "SLIDE_RIGHT"
-    | "SLIDE_LEFT"
-    | "SLIDE_UP"
-    | "SLIDE_DOWN"
-    | "SLIDE_LEFT_RIGHT"
-    | "SLIDE_UP_DOWN"
-    | "OVER_UP"
-    | "OVER_DOWN"
-    | "OVER_LEFT"
-    | "OVER_RIGHT"
-    | "UNDER_UP"
-    | "UNDER_DOWN"
-    | "UNDER_LEFT"
-    | "UNDER_RIGHT"
-    | "OVER_UP_DOWN"
-    | "OVER_DOWN_UP"
-    | "OVER_LEFT_RIGHT"
-    | "OVER_RIGHT_LEFT"
-    | "ROTATE_LEFT"
-    | "ROTATE_RIGHT"
-    | "ROTATE_LEFT_RIGH"
-
-export type RevealTransitionWithAuto = "AUTO" | GtkRevealerTransitionName;
-
 export type OsdOrientation = "vertical" | "horizontal";
 
 export type BarLayout = {
@@ -140,7 +62,7 @@ export type BarLayouts = {
 };
 
 export type GridChild = {
-    module: DashboardModules;
+    module: MenuNode;
     column: number;
     row: number;
     width: number;

@@ -106,13 +106,7 @@ export interface BarStyleOptions extends ContainerStyleOptions {
   floating: Opt<boolean>;
   transparent: Opt<boolean>;
   height: Opt<number>;
-  marginTop: Opt<number>;
-  marginBottom: Opt<number>;
-  marginSides: Opt<number>;
-}
-
-export interface BarButtonsOptions extends InteractiveSurfaceOptions {
-  bgHoverOpacity: Opt<number>;
+  margin: Opt<number>;
 }
 
 export interface BarModulesOptions {
@@ -124,9 +118,8 @@ export interface BarModulesOptions {
 
 export interface BarOptions extends OverrideScaleResult {
   position: Opt<BarLocationType>;
-  margin: Opt<number[]>;
   style: BarStyleOptions;
-  buttons: BarButtonsOptions;
+  buttons: InteractiveSurfaceOptions;
   secondaryBar: SecondaryBarOptions;
   corner: BarCornerOptions;
   modules: BarModulesOptions;
