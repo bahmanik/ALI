@@ -25,7 +25,7 @@ export function computeBarRect(args: {
   const mh = geo.height
 
   const pos = option.position.get()
-  const margin = readMargin(option.margin.get())
+  const margin = readMargin(option.style.margin.get())
   const { width: aw, height: ah } = widgetSize(root)
 
   let x = margin.left

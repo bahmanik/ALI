@@ -1,11 +1,11 @@
 import { Astal } from "ags/gtk4"
 import Gtk from "gi://Gtk?version=4.0"
 import type { BarOptionGroup } from "./types"
-import type { BarLocation } from "src/configuration/types"
 import { bindMarginSide } from "./margin"
 import { Opt } from "src/lib/options"
+import { BarLocationType } from "src/configuration/enums"
 
-function getBarAnchor(pos: BarLocation) {
+function getBarAnchor(pos: BarLocationType) {
   const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor
   switch (pos) {
     case "top": return TOP | LEFT | RIGHT
@@ -16,22 +16,22 @@ function getBarAnchor(pos: BarLocation) {
 }
 
 /** True for left/right bars (stacked vertically). */
-export function isBarVertical(pos: BarLocation) {
+export function isBarVertical(pos: BarLocationType) {
   return pos === "left" || pos === "right"
 }
 
 export function createBarWindowBinds(option: BarOptionGroup) {
   return {
     anchor: option.position.as(getBarAnchor),
-    marginTop: bindMarginSide(option.margin, 0),
-    marginRight: bindMarginSide(option.margin, 1),
-    marginBottom: bindMarginSide(option.margin, 2),
-    marginLeft: bindMarginSide(option.margin, 3),
+    marginTop: bindMarginSide(option.style.margin, 0),
+    marginRight: bindMarginSide(option.style.margin, 1),
+    marginBottom: bindMarginSide(option.style.margin, 2),
+    marginLeft: bindMarginSide(option.style.margin, 3),
   }
 }
 
-export function getBarOrientation(position: Opt<BarLocation>) {
-  const vert = (p: BarLocation) => isBarVertical(p)
+export function getBarOrientation(position: Opt<BarLocationType>) {
+  const vert = (p: BarLocationType) => isBarVertical(p)
 
   return {
     orientation: position.as((p) => vert(p) ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL),

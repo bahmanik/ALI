@@ -77,7 +77,7 @@ export default function Bar({
       $={(self) => {
         win = self
         const stopPos = subscribeOpt(option.position, recompute)
-        const stopMargin = subscribeOpt(option.margin, recompute)
+        const stopMargin = subscribeOpt(option.style.margin, recompute)
         recompute()
         onCleanup(() => { stopPos(); stopMargin() })
       }}

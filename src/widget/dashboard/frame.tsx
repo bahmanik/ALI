@@ -1,56 +1,55 @@
 import { Gtk } from "ags/gtk4"
-import {
-  ObserverMenu,
-  AppLauncherMenu,
-  AvatarMenu,
-  ClockMenu,
-  FileLauncherMenu,
-  MediaMenu,
-  QuickLaunchMenu,
-  UptimeMenu,
-  WeatherMenu,
-} from "../shared/menus"
+import { With } from "ags"
+import options from "src/configuration"
+import { isMenuKey, MenuRenderer } from "src/widget/shared/menus"
+import type { ModuleMapArray } from "src/configuration/types"
 
-function Frame() {
-  const observer = <ObserverMenu /> as Gtk.Widget
-  const appLauncher = <AppLauncherMenu /> as Gtk.Widget
-  const avatar = <AvatarMenu /> as Gtk.Widget
-  const clock = <ClockMenu /> as Gtk.Widget
-  const fileLauncher = <FileLauncherMenu /> as Gtk.Widget
-  const media = <MediaMenu /> as Gtk.Widget
-  const uptime = <UptimeMenu /> as Gtk.Widget
-  const weather = <WeatherMenu /> as Gtk.Widget
-
-  const quickLaunch1 = <QuickLaunchMenu /> as Gtk.Widget
-  const quickLaunch2 = <QuickLaunchMenu /> as Gtk.Widget
-  const quickLaunch3 = <QuickLaunchMenu /> as Gtk.Widget
-  const quickLaunch4 = <QuickLaunchMenu /> as Gtk.Widget
-  const quickLaunch5 = <QuickLaunchMenu /> as Gtk.Widget
-  const quickLaunch6 = <QuickLaunchMenu /> as Gtk.Widget
-  const quickLaunch7 = <QuickLaunchMenu /> as Gtk.Widget
-  const quickLaunch8 = <QuickLaunchMenu /> as Gtk.Widget
-  const quickLaunch9 = <QuickLaunchMenu /> as Gtk.Widget
+/**
+ * Renders a snapshot of the dashboard grid from a resolved `ModuleMapArray`.
+ *
+ * Each `GridChild.module` is a `MenuKey` — looked up in the shared `menuMap`
+ * and rendered via the shared `MenuRenderer`. The same renderer the bar uses
+ * inside trigger popovers, just attached to a grid cell instead.
+ *
+ * `Gtk.Grid.attach()` is imperative so we build inside a `$` callback.
+ * `With` above re-mounts this component whenever the stored layout changes,
+ * giving full reactivity without manual diffing.
+ */
+function DashboardGrid({ modules }: { modules: ModuleMapArray }) {
   return (
     <Gtk.Grid
       $={(self) => {
-        self.attach(avatar, 0, 0, 3, 4)
-        self.attach(quickLaunch1, 0, 4, 1, 1)
-        self.attach(weather, 3, 0, 4, 3)
-        self.attach(quickLaunch2, 3, 3, 2, 1)
-        self.attach(quickLaunch3, 5, 3, 2, 1)
-        self.attach(media, 1, 4, 6, 1)
-        self.attach(quickLaunch4, 7, 0, 2, 1)
-        self.attach(fileLauncher, 7, 1, 2, 4)
-        self.attach(quickLaunch5, 9, 0, 1, 1)
-        self.attach(quickLaunch6, 9, 1, 1, 1)
-        self.attach(quickLaunch7, 9, 2, 1, 1)
-        self.attach(quickLaunch8, 9, 3, 1, 1)
-        self.attach(quickLaunch9, 9, 4, 1, 1)
-        console.log(self)
-      }}
-    >
+        for (const child of modules) {
+          if (!isMenuKey(child.module)) {
+            console.warn(`[Dashboard] Unknown menu key: "${child.module}" — skipping`)
+            continue
+          }
 
-    </Gtk.Grid>
+          // Render as a single-node MenuNode tree so the same shared renderer
+          // handles both simple cells (one widget) and future composite cells
+          // (MenuContainerNode trees).
+          const widget = <MenuRenderer
+            nodes={[{ kind: "menu-widget", id: child.module, widget: child.module }]}
+          /> as Gtk.Widget
+
+          self.attach(widget, child.column, child.row, child.width, child.height)
+        }
+      }}
+    />
+  )
+}
+
+/**
+ * Config-driven dashboard frame.
+ *
+ * Reads `options.dashboard.grid.modulesList` and re-renders the grid
+ * whenever the stored layout changes (e.g. after editing in Settings).
+ */
+function Frame() {
+  return (
+    <With value={options.dashboard.grid.modulesList.as(v => v)}>
+      {(modules) => <DashboardGrid modules={modules} />}
+    </With>
   )
 }
 

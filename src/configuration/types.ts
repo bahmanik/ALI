@@ -1,6 +1,6 @@
 import { Opt } from "src/lib/options";
 import { BarTriggerKey } from "src/widget/bar/triggers";
-import { MenuNode } from "./widgets/bar/type";
+import type { MenuKey } from "src/widget/shared/menus";
 
 export type {
     AssetTransformation,
@@ -20,12 +20,6 @@ export interface ColorWithAlpha {
 // Shared layout + transitions (GTK4 widgets)
 // -----------------------------------------------------------------------------
 
-/**
- * Shared layout names used by popup-like widgets (Launcher/OSD).
- *
- * We accept both HyprPanel-style "top-left" and internal underscore variants
- * ("top_left") to avoid duplicating enums across subsystems.
- */
 export const AnchorLayoutValues = [
     "top-left",
     "top-center",
@@ -62,7 +56,12 @@ export type BarLayouts = {
 };
 
 export type GridChild = {
-    module: MenuNode;
+    /**
+     * Dashboard menu key — a key of `menuMap` in `src/widget/shared/menus`.
+     * Typed as `MenuKey` for full compile-time safety; runtime safety is also
+     * enforced by `isMenuKey()` in the renderer.
+     */
+    module: MenuKey;
     column: number;
     row: number;
     width: number;

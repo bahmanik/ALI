@@ -1,6 +1,6 @@
 import { Gtk } from "ags/gtk4"
 import { barTriggerMap } from "../triggers"
-import { MenuNodeRenderer } from "./MenuNodeRenderer"
+import { MenuRenderer } from "src/widget/shared/menus"
 import type { BarNode } from "src/configuration/widgets/bar/type"
 import type { Accessor } from "gnim"
 
@@ -46,7 +46,9 @@ export function BarNodeRenderer({
       return <Trigger vertical={vertical} />
     }
 
-    // Trigger with menu → wrap in menubutton + popover
+    // Trigger with menu → wrap in menubutton + popover.
+    // MenuRenderer is orientation-agnostic: it renders the MenuNode tree
+    // without needing to know about bar orientation.
     if (hasMenu) {
       return (
         <menubutton hexpand={false} halign={Gtk.Align.CENTER}>
@@ -56,9 +58,8 @@ export function BarNodeRenderer({
               orientation={Gtk.Orientation.VERTICAL}
               widthRequest={node.menuMinimumWidth > 0 ? node.menuMinimumWidth : -1}
             >
-              <MenuNodeRenderer
+              <MenuRenderer
                 nodes={node.children}
-                vertical={vertical}
                 parentDirection="vertical"
               />
             </box>
@@ -67,7 +68,7 @@ export function BarNodeRenderer({
       )
     }
 
-    // Trigger with no menu → render content directly, no wrapper
+    // Trigger with no menu → render content directly, no wrapper.
     return <Trigger vertical={vertical} />
   }
 

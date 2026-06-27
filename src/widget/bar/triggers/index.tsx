@@ -14,16 +14,7 @@ import KbLayoutTrigger from "./kblayout"
 import StorageTrigger from "./storage"
 import HyprsunsetTrigger from "./hyprsunset"
 
-import {
-  HyprsunsetMenu,
-  VolumeMenu,
-  BatteryMenu,
-  MediaMenu,
-  ClipboardMenu,
-  WirelessMenu,
-} from "src/widget/shared/menus"
-
-import type { BarTriggerProps, BarMenuProps } from "./types"
+import type { BarTriggerProps } from "./types"
 
 /**
  * Single source of truth for all bar triggers.
@@ -31,20 +22,17 @@ import type { BarTriggerProps, BarMenuProps } from "./types"
  * Key   = name used in layout config (e.g. options.bar.modules.defaultLayout)
  * Value = component accepting {@link BarTriggerProps}
  *
- * Adding a trigger here is the only change required — the derived type and
- * both renderers automatically pick it up.
- *
  * Note: Workspaces and Tray are self-contained — they manage their own
  * interactivity and should never appear with `children` in a BarTriggerNode.
  */
 export const barTriggerMap = {
   Clock: ClockTrigger,
   Media: MediaTrigger,
-  Tray: TrayTrigger,        // self-contained: manages its own per-item menubuttons
+  Tray: TrayTrigger,
   Wireless: WirelessTrigger,
   Volume: VolumeTrigger,
   Battery: BatteryTrigger,
-  Workspaces: WorkspacesTrigger,  // self-contained: manages its own interactive buttons
+  Workspaces: WorkspacesTrigger,
   Windowtitle: WindowtitleTrigger,
   Clipboard: ClipboardTrigger,
   Cpu: CpuTrigger,
@@ -58,21 +46,11 @@ export const barTriggerMap = {
 /** Union of valid trigger keys — derived, never manually updated. */
 export type BarTriggerKey = keyof typeof barTriggerMap
 
-/**
- * Maps menu-widget keys to their standalone menu content component.
- * Used by MenuNodeRenderer when rendering kind:"menu-widget" nodes.
- * Every entry must be a zero-argument () => JSX.Element.
- */
-export const barMenuMap = {
-  Volume: VolumeMenu,
-  Battery: BatteryMenu,
-  Media: MediaMenu,
-  Clipboard: ClipboardMenu,
-  Wireless: WirelessMenu,
-  Hyprsunset: HyprsunsetMenu,
-} as const satisfies Record<string, () => JSX.Element>
+// ─── Shared menu map (re-exported for bar consumers) ─────────────────────────
+//
+// The menu map and its derived types live in src/widget/shared/menus — both
+// bar and dashboard import from there. These aliases let existing bar code
+// (BarLayoutEditor, etc.) keep importing from "src/widget/bar/triggers"
+// without change.
 
-/** Union of valid menu widget keys — derived, never manually updated. */
-export type BarMenuKey = keyof typeof barMenuMap
-
-export type { BarTriggerProps, BarMenuProps }
+export type { BarTriggerProps }

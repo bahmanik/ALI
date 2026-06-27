@@ -1,6 +1,6 @@
 import options from "src/configuration"
-import { ALL_DASHBOARD_MODULES } from "src/widget/dashboard/_component"
 import GridSetter from "../../inputs/gridSetter"
+import { ALL_MENU_KEYS } from "src/widget/shared/menus"
 
 type DashboardProps = JSX.IntrinsicElements["box"]
 
@@ -15,7 +15,7 @@ function Dashboard(props: DashboardProps) {
         cols={cols}
         rows={rows}
         modulesMap={modulesList}
-        modulesList={ALL_DASHBOARD_MODULES}
+        modulesList={ALL_MENU_KEYS}
       />
     </box>
   )

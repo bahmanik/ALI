@@ -1,24 +1,25 @@
 import { Gtk } from "ags/gtk4"
-import { barMenuMap } from "../triggers"
-import type { MenuNode } from "src/configuration/widgets/bar/type"
-import type { Accessor } from "gnim"
+import { menuMap } from "./menuMap"
+import type { MenuNode } from "./types"
 
 /**
- * Renders a MenuNode tree inside a trigger's popover.
+ * Shared menu tree renderer.
  *
- * - kind:"menu-widget"    → looks up barMenuMap[node.widget] and calls it
- * - kind:"menu-container" → gtk Box containing recursive children
- *   (horizontal layout = multiple menus side-by-side, like OkShell's ContainerConfig)
- * - kind:"menu-divider"   → gtk Separator
- * - kind:"menu-spacer"    → empty box with fixed size request
+ * Renders a `MenuNode[]` tree into a GTK box. Works in any context — bar
+ * trigger popovers, dashboard grid cells, or any future widget.
+ *
+ * Previously `MenuNodeRenderer` lived in `src/widget/bar/renderers/` and was
+ * bar-only. Elevated here so any widget can `import { MenuRenderer }` and
+ * render a tree without coupling to the bar.
+ *
+ * The renderer is intentionally free of bar concerns (`vertical`, triggers,
+ * etc.) — it only knows about menu content.
  */
-export function MenuNodeRenderer({
+export function MenuRenderer({
   nodes,
-  vertical,
   parentDirection = "vertical",
 }: {
   nodes: MenuNode[]
-  vertical: Accessor<boolean>
   parentDirection?: "horizontal" | "vertical"
 }) {
   return (
@@ -29,23 +30,29 @@ export function MenuNodeRenderer({
           : Gtk.Orientation.VERTICAL
       }
     >
-      {nodes.map((node) => renderNode(node, vertical))}
+      {nodes.map((node) => renderMenuNode(node))}
     </box>
   )
 }
 
-function renderNode(node: MenuNode, vertical: Accessor<boolean>): JSX.Element {
+/**
+ * Renders a single `MenuNode`. Exported so callers that need to render one
+ * node at a time (e.g. inside a `Gtk.Grid.$` callback) can do so without
+ * wrapping everything in an extra box.
+ */
+export function renderMenuNode(node: MenuNode): JSX.Element {
   switch (node.kind) {
     case "menu-widget": {
-      const Menu = barMenuMap[node.widget]
+      const Menu = menuMap[node.widget]
       if (!Menu) return <box />
       return <Menu />
     }
 
     case "menu-container": {
-      const orientation = node.direction === "horizontal"
-        ? Gtk.Orientation.HORIZONTAL
-        : Gtk.Orientation.VERTICAL
+      const orientation =
+        node.direction === "horizontal"
+          ? Gtk.Orientation.HORIZONTAL
+          : Gtk.Orientation.VERTICAL
 
       return (
         <box
@@ -55,7 +62,7 @@ function renderNode(node: MenuNode, vertical: Accessor<boolean>): JSX.Element {
           widthRequest={node.minimumWidth > 0 ? node.minimumWidth : -1}
           hexpand
         >
-          {node.children.map((child) => renderNode(child, vertical))}
+          {node.children.map((child) => renderMenuNode(child))}
         </box>
       )
     }

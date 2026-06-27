@@ -1,8 +1,11 @@
 import { Gtk } from "ags/gtk4"
 import { With } from "ags"
 import { createState } from "gnim"
-import { barTriggerMap, barMenuMap, type BarTriggerKey, type BarMenuKey } from "src/widget/bar/triggers"
-import type { BarSlotLayout, BarNode, BarTriggerNode, MenuNode, NodeId } from "src/configuration/widgets/bar/type"
+import { barTriggerMap, type BarTriggerKey } from "src/widget/bar/triggers"
+import type { BarSlotLayout, BarNode, BarTriggerNode } from "src/configuration/widgets/bar/type"
+import type { MenuKey, MenuNode, NodeId } from "src/widget/shared/menus"
+import { ALL_MENU_KEYS, menuMap} from "src/widget/shared/menus"
+
 
 type Slot = "start" | "center" | "end"
 
@@ -53,9 +56,9 @@ function BarPreview({ layout }: { layout: BarSlotLayout }) {
 
 // ─── MenuNodeEditor ───────────────────────────────────────────────────────────
 
-const MENU_WIDGET_OPTIONS: BarMenuKey[] = [
-  "Volume", "Wireless", "Battery", "Media", "Clipboard", "Hyprsunset",
-]
+// Every menu in the shared menuMap is available inside a bar popover.
+// Previously a hardcoded subset; now derived from the single source of truth.
+const MENU_WIDGET_OPTIONS: MenuKey[] = ALL_MENU_KEYS
 
 const MENU_NODE_TYPE_LABELS: Record<MenuNode["kind"], string> = {
   "menu-widget": "Widget",
@@ -71,10 +74,10 @@ function WidgetKeyDropdown({
   current,
   onChange,
 }: {
-  current: BarMenuKey
-  onChange: (key: BarMenuKey) => void
+  current: MenuKey
+  onChange: (key: MenuKey) => void
 }) {
-  const keys = Object.keys(barMenuMap) as BarMenuKey[]
+  const keys = Object.keys(menuMap) as MenuKey[]
   const [open, setOpen] = createState(false)
 
   return (
@@ -140,7 +143,7 @@ function MenuNodeEditor({
     onChange(nodes.filter((_, i) => i !== idx))
   }
 
-  const addWidget = (key: BarMenuKey) => {
+  const addWidget = (key: MenuKey) => {
     onChange([...nodes, { kind: "menu-widget", id: generateId(), widget: key }])
   }
 

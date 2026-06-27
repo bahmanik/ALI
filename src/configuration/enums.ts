@@ -54,3 +54,4 @@ export type BorderLocationType = (typeof BorderLocationValue)[number]
 export type StackTransitionType = (typeof StackTransitionValues)[number]
 export type GtkRevealerTransitionType = (typeof GtkRevealerTransitionValues)[number]
 export type RevealTransitionWithAuto = "AUTO" | GtkRevealerTransitionType;
+export type BarLocationType = (typeof BarLocationValues)[number]

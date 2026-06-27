@@ -1,9 +1,9 @@
 import { Gtk } from "ags/gtk4"
 import { Accessor, createState } from "gnim"
-import { isDashboardModule } from "src/widget/dashboard/_component"
 import { ModuleMap } from "./helpers"
 import { Opt } from "src/lib/options"
 import { ModuleMapArray } from "src/configuration/types"
+import { isMenuKey } from "src/widget/shared/menus"
 
 type DashboardProps = JSX.IntrinsicElements["box"] & {
   rows: Opt<number>
@@ -37,14 +37,14 @@ function GridSetter({ rows, cols, modulesMap, modulesList }: DashboardProps) {
   }
 
   const handleModuleSelect = (self: Gtk.Button): void => {
-    if (!isDashboardModule(self.name)) {
+    if (!isMenuKey(self.name)) {
       console.error("Invalid module name:", self.name)
       return
     }
 
     setMapModule(prev => {
       const next = prev.clone()
-      if (isDashboardModule(self.name))
+      if (isMenuKey(self.name))
         next.setModule(self.name)
       return next
     })
