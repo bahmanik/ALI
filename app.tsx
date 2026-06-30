@@ -133,31 +133,32 @@ lifecycle
   // priority: 80,
   // mount: () => app.get_monitors().forEach(m => AppLauncherWindow(m)),
   // })
-  .registerWidget({
-    id: "calendar",
-    priority: 90,
-    mount: () => app.get_monitors().forEach(m => CalendarWindow(m)),
-  })
-  .registerWidget({
-    id: "countdown-ui",
-    priority: 100,
-    mount: () => app.get_monitors().forEach(m => CountdownWindow(m)),
-  })
+  // .registerWidget({
+  //   id: "calendar",
+  //   priority: 90,
+  //   mount: () => app.get_monitors().forEach(m => CalendarWindow(m)),
+  // })
+  // .registerWidget({
+  //   id: "countdown-ui",
+  //   priority: 100,
+  //   mount: () => app.get_monitors().forEach(m => CountdownWindow(m)),
+  // })
   .registerWidget({
     id: "power",
     priority: 110,
     mount: () => app.get_monitors().forEach(m => PowerWindow(m)),
   })
-  .registerWidget({
-    id: "settings",
-    priority: 120,
-    mount: () => app.get_monitors().forEach(() => SettingWindow()),
-  })
+  // .registerWidget({
+  //   id: "settings",
+  //   priority: 120,
+  //   mount: () => app.get_monitors().forEach(() => SettingWindow()),
+  // })
 // .registerWidget({
 //   id: "test",
 //   priority: 1000,
 //   mount: () => app.get_monitors().forEach(m => TestWindow(m)),
-// });
+// })
+
 
 // ─────────────────────────────────────────────────────────────────
 // Ready listener

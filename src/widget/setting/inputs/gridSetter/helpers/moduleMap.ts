@@ -1,12 +1,13 @@
-import options from "src/configuration";
-import { GridChild, ModuleMapArray } from "src/configuration/types";
-import { DashboardModules } from "src/widget/dashboard/_component";
+import options from "src/configuration"
+import type { GridChild, ModuleMapArray } from "src/configuration/types"
+import type { MenuKey } from "src/widget/shared/menus/menuKeys"
+import { generateMenuNodeId } from "src/widget/shared/menus/menuKeys"
 
 type Coordinate = { x: number | null; y: number | null }
 
 export class ModuleMap {
-  private selectedModule: DashboardModules | null = null
-  private firstCorner: Coordinate = { x: null, y: null }
+  private selectedModule: MenuKey | null = null
+  private firstCorner: Coordinate  = { x: null, y: null }
   private secondCorner: Coordinate = { x: null, y: null }
   private modules: ModuleMapArray
 
@@ -17,12 +18,12 @@ export class ModuleMap {
   clone(): ModuleMap {
     const m = new ModuleMap(this.getModules())
     m.selectedModule = this.selectedModule
-    m.firstCorner = { ...this.firstCorner }
-    m.secondCorner = { ...this.secondCorner }
+    m.firstCorner    = { ...this.firstCorner }
+    m.secondCorner   = { ...this.secondCorner }
     return m
   }
 
-  setModule(module: DashboardModules): void {
+  setModule(module: MenuKey): void {
     this.selectedModule = module
   }
 
@@ -47,31 +48,21 @@ export class ModuleMap {
   }
 
   private _normalizeCorners(): void {
-    if (this.isFirstCornerNull() || this.isSecondCornerNull()) {
-      return
-    }
+    if (this.isFirstCornerNull() || this.isSecondCornerNull()) return
 
     const fx = this.firstCorner.x!
     const fy = this.firstCorner.y!
     const sx = this.secondCorner.x!
     const sy = this.secondCorner.y!
 
-    // Top left corner coordinates
-    const tlX = Math.min(fx, sx)
-    const tlY = Math.min(fy, sy)
-
-    // Bottom right corner coordinates
-    const brX = Math.max(fx, sx)
-    const brY = Math.max(fy, sy)
-
-    this.setFirstCorner(tlX, tlY)
-    this.setSecondCorner(brX, brY)
+    this.setFirstCorner(Math.min(fx, sx), Math.min(fy, sy))
+    this.setSecondCorner(Math.max(fx, sx), Math.max(fy, sy))
   }
 
   reset(): void {
     this.selectedModule = null
-    this.firstCorner = { x: null, y: null }
-    this.secondCorner = { x: null, y: null }
+    this.firstCorner    = { x: null, y: null }
+    this.secondCorner   = { x: null, y: null }
   }
 
   addModule(): boolean {
@@ -79,7 +70,6 @@ export class ModuleMap {
       console.error("Module isn't set")
       return false
     }
-
     if (this.isFirstCornerNull() || this.isSecondCornerNull()) {
       console.error("A corner isn't set")
       return false
@@ -91,18 +81,18 @@ export class ModuleMap {
     const deltaY = this.secondCorner.y! - this.firstCorner.y!
 
     const newModule: GridChild = {
+      id:     generateMenuNodeId(),
       module: this.selectedModule!,
       column: this.firstCorner.y!,
-      row: this.firstCorner.x!,
-      width: deltaX + 1,
-      height: deltaY + 1
+      row:    this.firstCorner.x!,
+      width:  deltaX + 1,
+      height: deltaY + 1,
     }
 
     this.modules.push(newModule)
 
     //WARNING: remove this in the future
     const db = options.dashboard.grid.modulesList
-
     console.log("Added db:", db.set([newModule]))
     this.reset()
     return true

@@ -1,12 +1,12 @@
 import { Opt } from "src/lib/options";
 import { BarTriggerKey } from "src/widget/bar/triggers";
-import type { MenuKey } from "src/widget/shared/menus";
+import type { MenuKey, NodeId } from "src/widget/shared/menus";
 
 export type {
-    AssetTransformation,
-    ImageTechnique,
-    VisualAsset,
-    ResolvedAsset,
+  AssetTransformation,
+  ImageTechnique,
+  VisualAsset,
+  ResolvedAsset,
 } from "src/services/assets/types"
 
 export type HexColor = `#${string}`;
@@ -57,6 +57,15 @@ export type BarLayouts = {
 
 export type GridChild = {
     /**
+     * Stable per-cell node identifier used for per-instance menu config
+     * lookup via getMenuOpt(). Generated once at creation time by
+     * generateMenuNodeId() in the settings UI.
+     *
+     * Cells written before this field was added will have id === undefined
+     * at runtime; consumers should fall back to `child.module` in that case.
+     */
+    id: NodeId;
+    /**
      * Dashboard menu key — a key of `menuMap` in `src/widget/shared/menus`.
      * Typed as `MenuKey` for full compile-time safety; runtime safety is also
      * enforced by `isMenuKey()` in the renderer.
@@ -65,7 +74,7 @@ export type GridChild = {
     column: number;
     row: number;
     width: number;
-    height: number
+    height: number;
 }
 
 export type ModuleMapArray = Array<GridChild>

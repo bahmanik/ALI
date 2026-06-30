@@ -47,7 +47,6 @@ export function PrimaryBar(monitor: Gdk.Monitor) {
       gdkmonitor={monitor}
       option={options.bar}
       namespace="bar"
-      kind="primary"
       layout={layout}
     />
   );

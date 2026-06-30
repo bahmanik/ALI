@@ -7,7 +7,7 @@ import { MkOptionsResult, OptionsObject, OptProps } from './types';
 
 const CONFIG_PATH = CONFIG_FILE;
 
-const configManager = new ConfigManager(CONFIG_PATH);
+export const configManager = new ConfigManager(CONFIG_PATH);
 
 /**
  * Creates an option with the specified initial value

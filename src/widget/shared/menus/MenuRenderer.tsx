@@ -8,12 +8,8 @@ import type { MenuNode } from "./types"
  * Renders a `MenuNode[]` tree into a GTK box. Works in any context — bar
  * trigger popovers, dashboard grid cells, or any future widget.
  *
- * Previously `MenuNodeRenderer` lived in `src/widget/bar/renderers/` and was
- * bar-only. Elevated here so any widget can `import { MenuRenderer }` and
- * render a tree without coupling to the bar.
- *
- * The renderer is intentionally free of bar concerns (`vertical`, triggers,
- * etc.) — it only knows about menu content.
+ * Each MenuWidgetNode's `id` (its NodeId) is passed to the menu component
+ * so it can look up its own per-instance config via getMenuOpt().
  */
 export function MenuRenderer({
   nodes,
@@ -43,9 +39,10 @@ export function MenuRenderer({
 export function renderMenuNode(node: MenuNode): JSX.Element {
   switch (node.kind) {
     case "menu-widget": {
-      const Menu = menuMap[node.widget]
-      if (!Menu) return <box />
-      return <Menu />
+      const entry = menuMap[node.widget]
+      if (!entry) return <box />
+      const Menu = entry.component
+      return <Menu nodeId={node.id} />
     }
 
     case "menu-container": {

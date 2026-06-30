@@ -1,8 +1,10 @@
 import HyprsunsetService from "src/services/hyprsunset"
 import { createBinding } from "gnim"
 import { Gtk } from "ags/gtk4"
+import type { NodeId } from "./types"
 
 type HyprsunsetMenuProps = {
+  nodeId: NodeId
   /**
    * Temperature (in Kelvin) to use when enabling hyprsunset for the first time.
    * Defaults to 3000 K. The slider always reflects and writes the service's
@@ -17,7 +19,7 @@ type HyprsunsetMenuProps = {
  * No `<menubutton>`, no `<popover>` wrapper — drop this inside any container.
  * The caller (trigger) is responsible for wrapping it in a popover.
  */
-export function HyprsunsetMenu({ defaultTemperature = 3000 }: HyprsunsetMenuProps = {}) {
+export function HyprsunsetMenu({ nodeId, defaultTemperature = 3000 }: HyprsunsetMenuProps) {
   const sunset = HyprsunsetService.get_default()
   const enabled = createBinding(sunset, "enabled")
 

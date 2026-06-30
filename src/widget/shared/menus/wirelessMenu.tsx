@@ -2,6 +2,7 @@ import AstalNetwork from "gi://AstalNetwork"
 import { Gtk } from "ags/gtk4"
 import { For, createBinding } from "ags"
 import { execAsync } from "ags/process"
+import type { NodeId } from "./types"
 
 async function connect(ap: AstalNetwork.AccessPoint) {
   try {
@@ -20,10 +21,9 @@ function sortedPoints(arr: AstalNetwork.AccessPoint[]) {
 /**
  * Pure UI content for the Wireless popover.
  *
- * Requires a connected `AstalNetwork.Wifi` instance to be passed in.
  * No `<menubutton>`, no `<popover>` wrapper.
  */
-export function WirelessMenu() {
+export function WirelessMenu({ nodeId }: { nodeId: NodeId }) {
   const network = AstalNetwork.get_default()
   const wifi = createBinding(network, "wifi")
 

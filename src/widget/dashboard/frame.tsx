@@ -11,6 +11,11 @@ import type { ModuleMapArray } from "src/configuration/types"
  * and rendered via the shared `MenuRenderer`. The same renderer the bar uses
  * inside trigger popovers, just attached to a grid cell instead.
  *
+ * `GridChild.id` is passed as the NodeId so each cell has its own independent
+ * per-instance config via getMenuOpt(). Cells written before `id` was added
+ * to the schema fall back to `child.module` as the NodeId — they share config
+ * with any other cell using the same MenuKey, which is acceptable for old data.
+ *
  * `Gtk.Grid.attach()` is imperative so we build inside a `$` callback.
  * `With` above re-mounts this component whenever the stored layout changes,
  * giving full reactivity without manual diffing.
@@ -25,11 +30,12 @@ function DashboardGrid({ modules }: { modules: ModuleMapArray }) {
             continue
           }
 
-          // Render as a single-node MenuNode tree so the same shared renderer
-          // handles both simple cells (one widget) and future composite cells
-          // (MenuContainerNode trees).
+          // child.id may be absent on data written before this schema change.
+          // Fall back to child.module so old cells still render correctly.
+          const nodeId = child.id ?? child.module
+
           const widget = <MenuRenderer
-            nodes={[{ kind: "menu-widget", id: child.module, widget: child.module }]}
+            nodes={[{ kind: "menu-widget", id: nodeId, widget: child.module }]}
           /> as Gtk.Widget
 
           self.attach(widget, child.column, child.row, child.width, child.height)

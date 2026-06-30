@@ -1,12 +1,13 @@
 import { Gtk } from "ags/gtk4"
 import AstalPowerProfiles from "gi://AstalPowerProfiles"
+import type { NodeId } from "./types"
 
 /**
  * Pure UI content for the Battery / Power Profiles popover.
  *
  * No `<menubutton>`, no `<popover>` wrapper — drop this inside any container.
  */
-export function BatteryMenu() {
+export function BatteryMenu({ nodeId }: { nodeId: NodeId }) {
   const powerprofiles = AstalPowerProfiles.get_default()
 
   const setProfile = (profile: string) => {

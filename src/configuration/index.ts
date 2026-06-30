@@ -6,11 +6,13 @@ import {
     dashboard,
     launcher,
     osd,
+    menuDefaultsOptions,
+    menuInstancesOptions,
 } from "./widgets";
-import global from "./global";
-import display from "./display";
-import colors from "./colors";
-import hyprland from "./hyprland";
+import global    from "./global";
+import display   from "./display";
+import colors    from "./colors";
+import hyprland  from "./hyprland";
 
 const options = mkOptions({
     global,
@@ -23,6 +25,8 @@ const options = mkOptions({
     calendar,
     hyprland,
     dashboard,
+    menuDefaults:  menuDefaultsOptions,
+    menuInstances: menuInstancesOptions,
 });
 
 export default options;

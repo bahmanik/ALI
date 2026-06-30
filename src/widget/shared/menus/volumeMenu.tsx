@@ -7,6 +7,7 @@ import app from "ags/gtk4/app"
 import { createBinding, For } from "ags"
 import { Gtk } from "ags/gtk4"
 import { MicrophoneIcon, SpeackerIcon } from "./volume/_components"
+import type { NodeId } from "./types"
 
 const wp = AstalWp.get_default()!
 
@@ -191,7 +192,7 @@ function VolumeHeader({ showArrow = false }: { showArrow?: boolean }) {
  *
  * No `<menubutton>`, no `<popover>` wrapper — drop this inside any container.
  */
-export function VolumeMenu({ showArrow = false }: { showArrow?: boolean } = {}) {
+export function VolumeMenu({ nodeId, showArrow = false }: { nodeId: NodeId; showArrow?: boolean }) {
   return (
     <box
       class={"volume"}

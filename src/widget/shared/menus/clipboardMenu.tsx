@@ -6,6 +6,7 @@ import { createComputed, createState, For, onCleanup } from "ags"
 import { ClipImage, ClipColor, ClipText } from "./clipboard"
 import { options } from "src/services/cliphist/options"
 import { isColor } from "src/lib/valisation/colors"
+import type { NodeId } from "./types"
 
 const clipboard = Cliphist.get_default()
 const launcherWidth = 400
@@ -124,7 +125,7 @@ function NotFound() {
  *
  * No `<menubutton>`, no `<popover>` wrapper — drop this inside any container.
  */
-export function ClipboardMenu() {
+export function ClipboardMenu({ nodeId }: { nodeId: NodeId }) {
   return (
     <box
       widthRequest={launcherWidth - windowPadding * 2}

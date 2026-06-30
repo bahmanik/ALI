@@ -2,6 +2,7 @@ import AstalMpris from "gi://AstalMpris"
 import AstalApps from "gi://AstalApps"
 import { Gtk } from "ags/gtk4"
 import { For, createBinding } from "ags"
+import type { NodeId } from "./types"
 
 const mpris = AstalMpris.get_default()
 const apps = new AstalApps.Apps()
@@ -11,7 +12,7 @@ const apps = new AstalApps.Apps()
  *
  * No `<menubutton>`, no `<popover>` wrapper — drop this inside any container.
  */
-export function MediaMenu() {
+export function MediaMenu({ nodeId }: { nodeId: NodeId }) {
   const players = createBinding(mpris, "players")
 
   return (
