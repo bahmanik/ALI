@@ -1,121 +1,139 @@
-@use "sass:string";
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  notification.scss                                                         ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
 
-.shuffle-rect {
-  border-radius: 12px;
-  font-weight: 800;
-}
-window.PopupWindow {
-}
+// Notification variables have no dedicated option block — all styling is
+// derived from the global palette ($c-*) defined in _tokens.scss.
 
-window.PopupWindow .main {
-  /* your actual popup surface */
-  background: rgba(20, 20, 20, 0.95);  // example
-}
+// ─── Popup host window ───────────────────────────────────────────────────────
 
-@function gtkalpha($c, $a) {
-  @return string.unquote("alpha(#{$c},#{$a})");
+.NotificationPopups {
+  @extend %window-transparent;
 }
 
-$fg-color: #{"@theme_fg_color"};
-$bg-color: #{"@theme_bg_color"};
-$error: red;
 
-window.NotificationPopups {
-  all: unset;
+// ─── Card base ───────────────────────────────────────────────────────────────
+
+// Shared structure extended by all urgency variants below.
+%notification-base {
+  background-color: $c-surface;
+  color:            $c-fg;
+  border-radius:    14px;
+  padding:          12px;
+  border:           1px solid rgba($c-border, 0.25);
+  box-shadow:       0 4px 16px 0 rgba(#000, 0.35);
+  min-width:        320px;
 }
 
-.Notification {
-  border-radius: 13px;
-  background-color: $bg-color;
-  margin: 0.5rem 1rem 0.5rem 1rem;
-  box-shadow: 2px 3px 8px 0 gtkalpha(black, 0.4);
-  border: 1pt solid gtkalpha($fg-color, 0.03);
+// Adw.Clamp wraps the card; passthrough so its child shows through.
+clamp {
+  background-color: transparent;
+}
 
-  &.critical {
-    border: 1pt solid gtkalpha($error, 0.4);
 
-    .header {
-      .app-name {
-        color: gtkalpha($error, 0.8);
-      }
+// ─── Urgency variants ─────────────────────────────────────────────────────────
+// Loop over urgency levels. Each inherits the base and adds a left accent strip.
 
-      .app-icon {
-        color: gtkalpha($error, 0.6);
-      }
+$_urgencies: (
+  (name: low,      accent: rgba($c-border,  0.6), opacity: 0.75),
+  (name: normal,   accent: rgba($c-border,  0.0), opacity: 1.00),
+  (name: critical, accent: rgba($c-danger,  0.9), opacity: 1.00),
+);
+
+@each $u in $_urgencies {
+  $name:    map-get($u, name);
+  $accent:  map-get($u, accent);
+  $opacity: map-get($u, opacity);
+
+  .Notification.#{$name} {
+    @extend %notification-base;
+    opacity: $opacity;
+
+    @if $name == critical {
+      border-color: rgba($c-danger, 0.5);
+      box-shadow:   0 4px 20px 0 rgba($c-danger, 0.25);
+    }
+
+    @if $name == low {
+      border-color: rgba($c-border, 0.15);
     }
   }
+}
 
-  .header {
-    padding: 0.5rem;
-    color: gtkalpha($fg-color, 0.5);
 
-    .app-icon {
-      margin: 0 0.4rem;
-    }
+// ─── Header (app icon + name + timestamp) ────────────────────────────────────
 
-    .app-name {
-      margin-right: 0.3rem;
-      font-weight: bold;
+.Notification .header {
+  margin-bottom: 8px;
+}
 
-      &:first-child {
-        margin-left: 0.4rem;
-      }
-    }
+.Notification .app-icon {
+  @include icon-size(18);
+  opacity: 0.8;
+  margin-right: 6px;
+}
 
-    .time {
-      margin: 0 0.4rem;
-    }
+.Notification .app-name {
+  @include text(12, bold);
+  opacity: 0.75;
+}
 
-    button {
-      padding: 0.2rem;
-      min-width: 0;
-      min-height: 0;
-    }
-  }
+.Notification .time {
+  @extend %label-xs;
+  margin-left: 4px;
+}
 
-  separator {
-    margin: 0 0.4rem;
-    background-color: gtkalpha($fg-color, 0.1);
-  }
 
-  .content {
-    margin: 1rem;
-    margin-top: 0.5rem;
+// ─── Content (image / icon + summary + body) ─────────────────────────────────
 
-    .summary {
-      font-size: 1.2em;
-      color: $fg-color;
-    }
+.Notification .content {
+  margin-bottom: 8px;
+}
 
-    .body {
-      color: gtkalpha($fg-color, 0.8);
-    }
+// Inline image attached to the notification
+.Notification .image {
+  border-radius: 8px;
+  min-width:     48px;
+  min-height:    48px;
+  margin-right:  10px;
+}
 
-    .image {
-      border: 1px solid gtkalpha($fg-color, 0.02);
-      margin-right: 0.5rem;
-      border-radius: 9px;
-      min-width: 100px;
-      min-height: 100px;
-      background-size: cover;
-      background-position: center;
-    }
-  }
+// App-icon fallback used when there is no inline image
+.Notification .icon-image {
+  @include icon-size(48);
+  border-radius: 10px;
+  margin-right:  10px;
+}
 
-  .actions {
-    margin: 1rem;
-    margin-top: 0;
+// Notification title / summary
+.Notification .summary {
+  @include text(14, bold);
+}
 
-    button {
-      margin: 0 0.3rem;
+// Body text — allow wrapping
+.Notification .body {
+  @include text(13);
+  opacity: 0.75;
+  margin-top: 2px;
+}
 
-      &:first-child {
-        margin-left: 0;
-      }
 
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-  }
+// ─── Action buttons ───────────────────────────────────────────────────────────
+
+.Notification .actions {
+  margin-top: 8px;
+  // JS sets spacing; just style the individual buttons.
+}
+
+.Notification .actions button {
+  @extend %reset-button;
+  border-radius: 8px;
+  padding:       6px 12px;
+  @include text(13);
+  background-color: rgba($c-border, 0.12);
+  color:            $c-fg;
+  transition:       background-color 120ms ease;
+
+  &:hover  { background-color: rgba($c-border, 0.22); }
+  &:active { background-color: rgba($c-accent, 0.25); }
 }

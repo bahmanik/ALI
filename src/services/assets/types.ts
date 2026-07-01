@@ -1,3 +1,5 @@
+import { HexColor } from "src/configuration/types";
+
 export type ImageTechnique = "none" | "negative" | "grayscale" | "sepia"
 
 export type AssetTransformation =
@@ -10,7 +12,7 @@ export type AssetTransformation =
 
 export type SolidAsset = {
   kind: "solid"
-  color: string
+  color: HexColor
   opacity?: number
 }
 

@@ -1,115 +1,138 @@
-window.CalendarPopup {
-  background: transparent;
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  calendar.scss                                                             ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
 
-  .calendar-surface {
-    background: transparent;
-  }
+// ─── Surface ─────────────────────────────────────────────────────────────────
 
-  .calendar-panel {
-    padding: #{$calendar-style-padding}px;
-    border-radius: #{$calendar-style-radius}px;
-    background: rgba(
-      red($calendar-style-bg),
-      green($calendar-style-bg),
-      blue($calendar-style-bg),
-      $calendar-style-bgOpacity / 100
-    );
+.CalendarPopup {
+  @extend %window-transparent;
+}
 
-    @if $calendar-style-borderEnable {
-      border: #{$calendar-style-borderWidth}px solid $calendar-style-borderColor;
-    }
+.calendar-surface {
+  @include surface($cfg-calendar);
+}
 
-    @if $calendar-style-shadowEnable {
-      box-shadow: #{$calendar-style-shadowX}px #{$calendar-style-shadowY}px #{$calendar-style-shadowBlur}px
-        #{$calendar-style-shadowSpread}px $calendar-style-shadowColor;
-    }
-  }
+// Main vertical layout box
+.calendar-panel {
+  @include surface($cfg-calendar);
+  min-width: 280px;
+}
 
-  .calendar-header {
-    margin-bottom: #{$calendar-grid-cellGap}px;
-    // spacing: #{$calendar-grid-cellGap}px;
-    // align-items: center;
 
-    .calendar-title {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: $colors-fg;
-    }
-  }
+// ─── Header (month title + prev / next buttons) ──────────────────────────────
 
-  .calendar-nav-btn {
-    min-width: #{$calendar-header-navButtonSize}px;
-    min-height: #{$calendar-header-navButtonSize}px;
-    border-radius: #{$calendar-header-navButtonRadius}px;
-    background: rgba(255, 255, 255, 0.04);
-    color: $colors-fg;
+.calendar-header {
+  margin-bottom: 4px;
+}
 
-    &:hover {
-      background: $calendar-grid-hoverBg;
-    }
-  }
+.calendar-title {
+  @include text(15, bold);
+}
 
-  .calendar-weekdays {
-    // spacing: #{$calendar-grid-cellGap}px;
-    margin-bottom: #{$calendar-grid-cellGap}px;
-  }
+.calendar-nav-btn {
+  @extend %reset-button;
+  background-color: transparent;
+  border-radius:    u($calendar-header-navButtonRadius);
+  min-width:        u($calendar-header-navButtonSize);
+  min-height:       u($calendar-header-navButtonSize);
+  padding:          4px;
+  transition:       background-color 120ms ease;
 
-  .calendar-weekday {
-    opacity: $calendar-grid-weekdayOpacity;
-    font-size: 0.9rem;
-    color: $colors-fg;
-  }
+  &:hover  { background-color: rgba(255, 255, 255, 0.1);  }
+  &:active { background-color: rgba(255, 255, 255, 0.18); }
+}
 
-  .calendar-grid {
-    // spacing: #{$calendar-grid-cellGap}px;
-  }
 
-  .calendar-row {
-    // spacing: #{$calendar-grid-cellGap}px;
-  }
+// ─── Weekday header row ───────────────────────────────────────────────────────
 
-  .calendar-cell {
-    border-radius: #{$calendar-grid-cellRadius}px;
-    padding: #{$calendar-grid-cellPadding}px;
-    background: rgba(255, 255, 255, 0.03);
-    color: $colors-fg;
+.calendar-weekdays {
+  margin-bottom: 2px;
+}
 
-    &:hover {
-      background: $calendar-grid-hoverBg;
-    }
+.calendar-weekday {
+  @include text(11, bold);
+  opacity:    $calendar-grid-weekdayOpacity;
+  min-height: 24px;
+}
 
-    &.outside {
-      opacity: $calendar-grid-outsideOpacity;
-    }
 
-    &.weekend {
-      opacity: $calendar-grid-weekendOpacity;
-    }
+// ─── Grid ─────────────────────────────────────────────────────────────────────
 
-    &.today {
-      background: $calendar-grid-todayBg;
-    }
+.calendar-grid {
+  // Vertical spacing between week rows — set by cellGap.
+  // (JS uses spacing prop; CSS gap here is a visual complement.)
+}
 
-    &.selected {
-      background: $calendar-grid-selectedBg;
-    }
+.calendar-row {
+  // Horizontal spacing between cells in a row — also cellGap.
+}
 
-    &.empty {
-      background: transparent;
-      box-shadow: none;
-    }
-  }
 
+// ─── Day cells ────────────────────────────────────────────────────────────────
+
+// Base cell: all cells share this treatment.
+.calendar-cell {
+  border-radius:    u($calendar-grid-cellRadius);
+  padding:          u($calendar-grid-cellPadding) * 0.5;
+  min-width:        32px;
+  min-height:       32px;
+  background-color: transparent;
+  border:           none;
+  transition:       background-color 100ms ease;
+
+  // Inner container for day number + secondary date.
   .calendar-cell-inner {
-    // spacing: 2px;
+    // Vertical layout via JS.
   }
 
   .calendar-day {
-    font-weight: 600;
+    @include text(13);
   }
 
   .calendar-day-secondary {
-    font-size: 0.75rem;
-    opacity: 0.6;
+    @extend %label-xs;
+    margin-top: 1px;
+  }
+
+  // ── Cell state modifiers ─────────────────────────────────────────────────
+  // States are applied by calendarCellClass() in the widget and are looped
+  // here to make the source explicit and easy to extend.
+
+  // Today highlight: subtle background wash
+  &.today {
+    background-color: ac($calendar-grid-todayBg-color, $calendar-grid-todayBg-alpha);
+    .calendar-day { @include text(13, bold); }
+  }
+
+  // Selected: accent-tinted background + bold number
+  &.selected {
+    background-color: ac($calendar-grid-selectedBg-color, $calendar-grid-selectedBg-alpha);
+    color: $c-accent;
+    .calendar-day { font-weight: bold; }
+  }
+
+  // Outside current month: dimmed
+  &.outside {
+    opacity: $calendar-grid-outsideOpacity;
+  }
+
+  // Weekend days: slightly dimmed
+  &.weekend {
+    opacity: $calendar-grid-weekendOpacity;
+  }
+
+  // Empty placeholder cell (padding cell to align grid)
+  &.empty {
+    @extend %cell-empty;
+  }
+
+  // Hover feedback — only on cells that are not empty
+  &:not(.empty):hover {
+    background-color: ac($calendar-grid-hoverBg-color, $calendar-grid-hoverBg-alpha);
+  }
+
+  // Combine today + selected so the accent bg wins
+  &.today.selected {
+    background-color: ac($calendar-grid-selectedBg-color, $calendar-grid-selectedBg-alpha);
   }
 }

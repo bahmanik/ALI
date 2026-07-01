@@ -1,0 +1,87 @@
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  _placeholders.scss — Shared silent selectors (@extend targets)           ║
+// ║                                                                           ║
+// ║  Use @extend to pull these into selectors rather than duplicating rules. ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+
+// ─── Window roots ────────────────────────────────────────────────────────────
+
+/// Any window that must be click-through transparent.
+%window-transparent {
+  background-color: transparent;
+}
+
+/// Window that fills the screen as a full-screen overlay host.
+%window-overlay {
+  @extend %window-transparent;
+}
+
+
+// ─── GTK resets ──────────────────────────────────────────────────────────────
+
+/// Strip all GTK default chrome from a widget.
+%unset {
+  all: unset;
+}
+
+/// Strip button chrome while keeping it keyboard-focusable.
+%reset-button {
+  background: none;
+  border:     none;
+  box-shadow: none;
+  outline:    none;
+  padding:    0;
+}
+
+
+// ─── Typography helpers ──────────────────────────────────────────────────────
+
+/// Muted secondary label — description text, timestamps, hints.
+%label-muted {
+  opacity:   0.55;
+  font-size: 12px;
+}
+
+/// Extra-small label — keyboard shortcuts, tags.
+%label-xs {
+  font-size: 11px;
+  opacity:   0.65;
+}
+
+/// Monospaced inline token.
+%label-mono {
+  font-family: monospace;
+  font-size:   12px;
+}
+
+
+// ─── Interactive states ──────────────────────────────────────────────────────
+
+/// Accent-coloured selected/active indicator.
+%state-accent {
+  color:      $c-accent;
+  font-weight: bold;
+}
+
+/// Danger-coloured overflow / warning indicator.
+%state-danger {
+  color: $c-danger;
+}
+
+
+// ─── Surface snippets ────────────────────────────────────────────────────────
+
+/// Thin separator line using the border token color.
+%separator {
+  background-color: rgba($c-border, 0.25);
+  min-height:       1px;
+}
+
+/// Invisible spacer cell (calendar / grid empties).
+%cell-empty {
+  opacity:          0;
+  background-color: transparent;
+  box-shadow:       none;
+  border:           none;
+}

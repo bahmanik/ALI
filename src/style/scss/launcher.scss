@@ -1,187 +1,150 @@
-$fg: $colors-fg;
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  launcher.scss                                                             ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
 
-// --- Panel background ---
-$panel-opacity-ratio: $launcher-style-bgOpacity * 0.01;
-$panel-transparency: 1 - $panel-opacity-ratio;
-$panel-bg: transparentize($launcher-style-bg, $panel-transparency);
+// ─── Surface ─────────────────────────────────────────────────────────────────
 
-// --- Entry background ---
-$entry-opacity-ratio: $launcher-entry-bgOpacity * 0.01;
-$entry-transparency: 1 - $entry-opacity-ratio;
-$entry-bg: transparentize($launcher-entry-bg, $entry-transparency);
+// The Popup wrapper window itself is transparent; only the inner panel has a bg.
+.Launcher {
+  @extend %window-transparent;
+}
 
-// --- Item backgrounds ---
-$item-opacity-ratio: $launcher-list-itemBgOpacity * 0.01;
-$item-transparency: 1 - $item-opacity-ratio;
-$item-bg: transparentize($launcher-list-itemBg, $item-transparency);
+.launcher-surface {
+  @include surface($cfg-launcher);
+}
 
-$item-hover-opacity-ratio: $launcher-list-itemHoverOpacity * 0.01;
-$item-hover-transparency: 1 - $item-hover-opacity-ratio;
-$item-bg-hover: transparentize($launcher-list-itemBg, $item-hover-transparency);
+// The vertical panel (search + favourites + list).
+.launcher-panel {
+  @include surface($cfg-launcher);
+  // min-width keeps the panel from collapsing while results load.
+  min-width: 420px;
+}
 
-$item-active-opacity-ratio: $launcher-list-itemActiveOpacity * 0.01;
-$item-active-transparency: 1 - $item-active-opacity-ratio;
-$item-bg-active: transparentize($launcher-list-itemBg, $item-active-transparency);
 
-// --- Favorites backgrounds ---
-$fav-opacity-ratio: $launcher-favoritesUI-bgOpacity * 0.01;
-$fav-transparency: 1 - $fav-opacity-ratio;
-$fav-bg: transparentize($launcher-favoritesUI-bg, $fav-transparency);
+// ─── Search row (prefix button + text entry) ─────────────────────────────────
 
-$fav-hover-opacity-ratio: $launcher-favoritesUI-hoverOpacity * 0.01;
-$fav-hover-transparency: 1 - $fav-hover-opacity-ratio;
-$fav-bg-hover: transparentize($launcher-favoritesUI-bg, $fav-hover-transparency);
+.launcher-entry-row {
+  // Layout is driven by JS spacing; just add vertical breathing room.
+  margin-bottom: 6px;
+}
 
-// --- Shadows ---
-$panel-shadow: $launcher-style-shadowX * 1px $launcher-style-shadowY * 1px $launcher-style-shadowBlur * 1px
-  $launcher-style-shadowSpread * 1px $launcher-style-shadowColor;
+// Text input field
+.launcher-entry {
+  $h:  map-get($cfg-launcher-entry, height);
+  $r:  map-get($cfg-launcher-entry, radius);
+  $p:  map-get($cfg-launcher-entry, padding);
+  $bg: map-get($cfg-launcher-entry, bg);
 
-window.AppLauncher {
-  background: transparent;
-  color: $fg;
+  min-height:       $h;
+  border-radius:    $r;
+  padding:          0 $p;
+  background-color: $bg;
+  color:            $c-fg;
+  border:           1px solid rgba($c-border, 0.3);
+  box-shadow:       none;
+  caret-color:      $c-accent;
+  @include text(14);
+  transition:       border-color 150ms ease, box-shadow 150ms ease;
 
-  // The Popup wrapper adds a `.main` container around your children.
-  .main {
-    background: transparent;
+  &:focus {
+    @include focus-ring($c-accent);
   }
 
-  .launcher-panel {
-    background: $panel-bg;
-    border-radius: $launcher-style-radius * 1px;
-    padding: $launcher-style-padding * 1px;
-
-
-    border: if(
-      $launcher-style-borderEnable and $launcher-style-borderLocation == "full",
-      $launcher-style-borderWidth * 1px solid $launcher-style-borderColor,
-      none
-    );
-  }
-
-  // --- Search entry ---
-  entry.launcher-entry {
-    min-height: $launcher-entry-height * 1px;
-    border-radius: $launcher-entry-radius * 1px;
-    padding: $launcher-entry-paddingY * 1px $launcher-entry-paddingX * 1px;
-    background: $entry-bg;
-    color: $fg;
-
-    border: if(
-      $launcher-entry-borderEnable,
-      $launcher-entry-borderWidth * 1px solid $launcher-entry-borderColor,
-      none
-    );
-  }
-
-  // --- Favorites row ---
-  .launcher-favorites {
-    margin-top: 8px;
-    margin-bottom: 6px;
-  }
-
-  button.launcher-favorite {
-    background: $fav-bg;
-    border-radius: $launcher-favoritesUI-radius * 1px;
-    padding: 8px;
-  }
-
-  button.launcher-favorite:hover {
-    background: $fav-bg-hover;
-  }
-
-  // --- Result list ---
-  .launcher-list {
-    margin-top: 6px;
-  }
-
-  button.launcher-item {
-    background: $item-bg;
-    border-radius: $launcher-list-itemRadius * 1px;
-    padding: $launcher-list-itemPaddingY * 1px $launcher-list-itemPaddingX * 1px;
-  }
-
-  button.launcher-item:hover {
-    background: $item-bg-hover;
-  }
-
-  button.launcher-item:active {
-    background: $item-bg-active;
-  }
-
-  .launcher-item-inner {
-    // the gap is handled in TS via `spacing`, but keep this as a hook
-  }
-
-  label.title {
-    font-weight: 600;
-  }
-
-  label.description {
-    font-size: 0.9em;
-    opacity: 0.85;
+  // GTK placeholder node
+  placeholder {
+    color: rgba($c-fg, 0.35);
   }
 }
 
-  // ─── Prefix selector ─────────────────────────────────────────────────────
+// Prefix mode picker (icon button that opens a popover)
+.launcher-prefix-btn {
+  @include interactive($cfg-launcher-entry);
+  border-radius: map-get($cfg-launcher-entry, radius);
+  padding:       0 map-get($cfg-launcher-entry, padding);
 
-  .launcher-entry-row {
-    // wraps the prefix button + search entry
-  }
+  image { @include icon-size(18); }
+}
 
-  button.launcher-prefix-btn {
-    background: $entry-bg;
-    border-radius: $launcher-entry-radius * 1px;
-    padding: 6px 8px;
-    min-width: 36px;
+// Popover list for picking search modes
+.launcher-prefix-popover {
+  padding: 4px;
+}
 
-    border: if(
-      $launcher-entry-borderEnable,
-      $launcher-entry-borderWidth * 1px solid $launcher-entry-borderColor,
-      none
-    );
+.launcher-prefix-item {
+  @include interactive($cfg-launcher-item);
+  border-radius: 10px;
 
-    &:hover {
-      background: $item-bg-hover;
-    }
-  }
+  &:hover { }  // handled by interactive mixin
+}
 
-  .launcher-prefix-popover {
-    padding: 6px;
-    min-width: 260px;
-  }
+.launcher-prefix-item-inner {
+  image { @include icon-size(16); }
+}
 
-  button.launcher-prefix-item {
-    border-radius: 6px;
-    padding: 6px 10px;
+.launcher-prefix-label {
+  @include text(13, bold);
+}
 
-    &:hover {
-      background: $item-bg-hover;
-    }
-  }
+.launcher-prefix-desc {
+  @extend %label-muted;
+}
 
-  .launcher-prefix-item-inner {
-    // spacing handled in TS
-  }
+.launcher-prefix-key {
+  @extend %label-xs;
+  @extend %label-mono;
+}
 
-  label.launcher-prefix-label {
-    font-weight: 600;
-    font-size: 0.9em;
-  }
 
-  label.launcher-prefix-desc {
-    font-size: 0.78em;
-    opacity: 0.7;
-  }
+// ─── Favourites row ──────────────────────────────────────────────────────────
 
-  label.launcher-prefix-key {
-    font-size: 0.75em;
-    opacity: 0.5;
-    font-family: monospace;
-  }
+.launcher-favorites {
+  margin-bottom: 4px;
+  padding:       2px 0;
+}
 
-  label.launcher-loading,
-  label.launcher-empty {
-    margin: 12px;
-    opacity: 0.5;
-    font-size: 0.85em;
-  }
+.launcher-favorite {
+  @include interactive($cfg-launcher-fav);
+  border-radius: map-get($cfg-launcher-fav, radius);
+
+  image { @include icon-size($launcher-icons-favorite); }
+}
+
+
+// ─── Result list ─────────────────────────────────────────────────────────────
+
+.launcher-list {
+  // Vertical spacing between items is set in JS; just ensure scroll clip.
+  min-height: 0;
+}
+
+// Individual result row button
+.launcher-item {
+  @include interactive($cfg-launcher-item);
+  border-radius: map-get($cfg-launcher-item, radius);
+
+  &:focus { @include focus-ring($c-accent, 1px); }
+}
+
+.launcher-item-inner {
+  // Horizontal layout is driven by JS spacing prop.
+  image { @include icon-size($launcher-icons-app); }
+}
+
+// App name label inside a result row
+.launcher-item .title {
+  @include text(14);
+}
+
+// App description label inside a result row
+.launcher-item .description {
+  @extend %label-muted;
+}
+
+
+// ─── State labels (loading / empty) ─────────────────────────────────────────
+
+.launcher-loading,
+.launcher-empty {
+  @extend %label-muted;
+  padding: 16px;
+}

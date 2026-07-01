@@ -1,22 +1,17 @@
-$fg: $colors-fg;
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  popup.scss — Generic popup window surface                                 ║
+// ║                                                                           ║
+// ║  .window-content is the shared inner container added by the Popup         ║
+// ║  wrapper component.  Component-specific panels (e.g. .launcher-panel)    ║
+// ║  sit inside it and add their own surface treatment.                       ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
 
-// Epik-inspired generic popup surface.
-$window-opacity-ratio: $launcher-style-bgOpacity * 0.01;
-$window-transparency: 1 - $window-opacity-ratio;
-$window-bg: transparentize($launcher-style-bg, $window-transparency);
-
-$window-shadow: $launcher-style-shadowX * 1px $launcher-style-shadowY * 1px $launcher-style-shadowBlur * 1px
-  $launcher-style-shadowSpread * 1px $launcher-style-shadowColor;
+// Use the launcher surface config as the canonical popup style — it carries
+// bg, fg, radius, padding, border, and shadow that apply to all popups.
+// Individual popup types can override specific properties on their own panel.
 
 .window-content {
-  all: unset;
-  background-color: $window-bg;
-  border-radius: $launcher-style-radius * 1px;
-  color: $fg;
-
-  border: if(
-    $launcher-style-borderEnable and $launcher-style-borderLocation == "full",
-    $launcher-style-borderWidth * 1px solid $launcher-style-borderColor,
-    none
-  );
+  all: unset; // strip GTK chrome
+  @include surface($cfg-launcher);
+  color: $c-fg;
 }

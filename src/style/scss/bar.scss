@@ -1,140 +1,111 @@
-$fg: $colors-fg;
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  bar.scss                                                                  ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
 
-// --- Panel background ---
-$bar-opacity-ratio: $bar-style-bg-alpha * 0.01;
-$bar-transparency: 1 - $bar-opacity-ratio;
-$bar-panel-bg: if(sass($bar-style-transparent): transparent; else: transparentize($bar-style-bg-color, $bar-transparency));
+// ─── Bar variant registry ─────────────────────────────────────────────────────
+// Drive primary and secondary bar from one loop to eliminate duplication.
+// Each entry: (GTK-namespace, surface-cfg, button-cfg, icon-scale-px)
 
-// --- Geometry ---
-$shadow-margin: if($bar-style-shadowEnable, $bar-style-shadowMargin, 0);
-$panel-margin-top: ($bar-style-marginTop + $shadow-margin) * 1px;
-$panel-margin-bottom: ($bar-style-marginBottom + $shadow-margin) * 1px;
-$panel-margin-sides: ($bar-style-marginSides + $shadow-margin) * 1px;
+$_bar-variants: (
+  (
+    ns:      "Bar",
+    surface: $cfg-bar,
+    btn:     $cfg-bar-btn,
+    scale:   $bar-scale,
+  ),
+  (
+    ns:      "SecondaryBar",
+    surface: $cfg-bar-secondary,
+    btn:     $cfg-bar-secondary-btn,
+    scale:   $bar-secondaryBar-scale,
+  ),
+);
 
-$panel-radius: $bar-style-radius * 1px;
-$panel-height: $bar-style-height * 1px;
-$panel-pad-y: $bar-style-padding * 1px;
-$panel-pad-x: $bar-style-padding * 1px;
+// ─── Generate styles for every bar variant ───────────────────────────────────
 
-// --- Shadow ---
-$panel-shadow: $bar-style-shadowX * 1px $bar-style-shadowY * 1px $bar-style-shadowBlur * 1px
-  $bar-style-shadowSpread * 1px $bar-style-shadowColor-color;
+@each $v in $_bar-variants {
+  $ns:    map-get($v, ns);
+  $scfg:  map-get($v, surface);
+  $bcfg:  map-get($v, btn);
+  $scale: map-get($v, scale);
 
-// --- Buttons ---
-$btn-opacity-ratio: $bar-buttons-bg-alpha * 0.01;
-$btn-transparency: 1 - $btn-opacity-ratio;
-$btn-bg: transparentize($bar-buttons-bg-color, $btn-transparency);
+  // The layer-shell window itself is always transparent.
+  .bar.#{$ns} {
+    @extend %window-transparent;
 
-$btn-hover-opacity-ratio: $bar-buttons-bgHoverOpacity * 0.01;
-$btn-hover-transparency: 1 - $btn-hover-opacity-ratio;
-$btn-bg-hover: transparentize($bar-buttons-bg-alpha, $btn-hover-transparency);
+    // ── Panel (the visible strip) ─────────────────────────────────────────
+    .bar-panel {
+      @include bar-surface($scfg);
+    }
 
-$btn-radius: $bar-buttons-radius * 1px;
-$btn-spacing: $bar-buttons-spacing * 1px;
-$btn-pad-y: $bar-buttons-paddingY * 1px;
-$btn-pad-x: $bar-buttons-paddingX * 1px;
+    // ── Button groups (one per trigger/module) ────────────────────────────
+    // Each group acts as a single interactive unit on the panel.
+    .bar-group {
+      @include interactive($bcfg);
+    }
 
-window.bar {
-  background: transparent;
-  color: $fg;
+    // Icon images inside groups pick up the configured icon scale.
+    .bar-group image {
+      @include icon-size($scale);
+    }
 
-  // keep the bar feeling "light" instead of shouty-bold by default
-  font-weight: 500;
-
-  .bar-panel {
-    min-height: $panel-height;
-
-    // "floating" means the panel is a pill inside a transparent window
-    margin: if(
-      $bar-style-floating,
-      $panel-margin-top $panel-margin-sides $panel-margin-bottom $panel-margin-sides,
-      0px
-    );
-
-    padding: $panel-pad-y $panel-pad-x;
-    border-radius: if($bar-style-floating, $panel-radius, 0px);
-
-    // shadow + border are optional, but together they give the HyprPanel vibe
-    box-shadow: if($bar-style-shadowEnable, $panel-shadow, none);
-
-    border-top: if(
-      $bar-style-borderEnable and (
-        $bar-style-borderLocation == "top" or
-        $bar-style-borderLocation == "horizontal" or
-        $bar-style-borderLocation == "full"
-      ),
-      $bar-style-borderWidth * 1px solid,
-      none
-    );
-
-    border-bottom: if(
-      $bar-style-borderEnable and (
-        $bar-style-borderLocation == "bottom" or
-        $bar-style-borderLocation == "horizontal" or
-        $bar-style-borderLocation == "full"
-      ),
-      $bar-style-borderWidth * 1px solid,
-      none
-    );
-
-    border-left: if(
-      $bar-style-borderEnable and (
-        $bar-style-borderLocation == "left" or
-        $bar-style-borderLocation == "vertical" or
-        $bar-style-borderLocation == "full"
-      ),
-      $bar-style-borderWidth * 1px solid,
-      none
-    );
-
-    border-right: if(
-      $bar-style-borderEnable and (
-        $bar-style-borderLocation == "right" or
-        $bar-style-borderLocation == "vertical" or
-        $bar-style-borderLocation == "full"
-      ),
-      $bar-style-borderWidth * 1px solid,
-      none
-    );
-
-    border-color: $bar-style-borderColor;
-
-    .workspace-container{
-      background-color: grey;
-      .workspace-button{
-        background-color: blue;
+    // ── Window title ──────────────────────────────────────────────────────
+    @if $bar-modules-windowTitle-enable {
+      .bar-button-icon.windowtitle {
+        @include icon-size(16);
+        margin-right: u($bar-modules-windowTitle-gap);
       }
-      .workspace-button:hover{
-        background-color: white;
-      }
-      .active{
-        background-color: tomato;
-      }
-      .occupied{
-        background-color: black;
+
+      .bar-button-label.windowtitle {
+        @include text(13);
+
+        // No icon visible — push label to the leading edge.
+        &.no-icon { margin-left: 0; }
       }
     }
 
-    // Target GTK4 MenuButtons too (they are not always styled via `menubutton` directly)
-    button,
-    menubutton,
-    menubutton > button {
-      border-radius: $btn-radius;
-      min-height: 0;
-      padding: $btn-pad-y $btn-pad-x;
-      margin-left: $btn-spacing;
-      margin-right: $btn-spacing;
+    // ── Workspaces ────────────────────────────────────────────────────────
+    .workspace-container {
+      // Container itself is a plain transparent box; buttons are interactive.
+      background-color: transparent;
+      border:           none;
     }
 
-    button,
-    menubutton > button {
-      background-color: $btn-bg;
+    .workspace-button {
+      @include interactive($bcfg);
+      // Pill shape for individual workspace indicators.
+      border-radius: 999px;
+      min-width:     u($scale) * 0.6;
+      min-height:    u($scale) * 0.6;
+      @include text(12, bold);
+
+      // Highlight the active workspace with the accent colour.
+      &:checked,
+      &.active {
+        background-color: $c-accent;
+        color:            $c-fg;
+      }
     }
 
-    button:hover,
-    menubutton:hover > button,
-    menubutton > button:hover {
-      background-color: $btn-bg-hover;
+    // ── CPU / resource modules ────────────────────────────────────────────
+    .cpu-module {
+      // Layout spacing handled by JS; just typeset the label.
+      @include text(12);
+    }
+
+    .cpu-icon {
+      @include icon-size(14);
+      opacity: 0.75;
+    }
+
+    // ── Generic icon / label pair inside a group ──────────────────────────
+    // Used by triggers that render an icon + text label side by side.
+    .bar-button-icon {
+      @include icon-size($scale * 0.5);
+    }
+
+    .bar-button-label {
+      @include text(13);
     }
   }
 }

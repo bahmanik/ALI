@@ -25,14 +25,10 @@ export const barDefaultLayout: BarSlotLayout = {
     },
     {
       kind: "trigger", id: "n_net", triggerWidget: "Wireless",
-      children: [{
-        kind: "menu-container", id: "n_net_co", direction: "horizontal", spacing: 16, minimumWidth: 16,
-        children: [
+      children: [
           { kind: "menu-widget", id: "n_net_m", widget: "Wireless" },
-          { kind: "menu-widget", id: "n_net_m2", widget: "Wireless" },
-        ],
-      }],
-      menuMinimumWidth: 410,
+      ],
+      menuMinimumWidth: 0,
     },
     {
       kind: "trigger", id: "n_bat", triggerWidget: "Battery",

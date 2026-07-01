@@ -12,11 +12,9 @@ const corner: BarCornerOptions = {
     widgetId: "bar.corner",
     defaultUseLocal: true,
     defaultLocal: {
-      kind: "pattern",
-      path: "/home/ali/.config/ALI/patter.jpg",
-      size: 80,
+      kind: "solid",
+      color: "#010101",
       opacity: 100,
-      technique: "none",
     },
   }),
 }

@@ -1,63 +1,92 @@
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  countdown.scss                                                            ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+// ─── Surface ─────────────────────────────────────────────────────────────────
+
 .CountdownPopup {
-  .countdown-surface {
-    background: $countdown-style-bg;
-    color: $countdown-style-fg;
-    border-radius: $countdown-style-radius + px;
-    padding: $countdown-style-padding + px;
-    min-width: 360px;
+  @extend %window-transparent;
+}
+
+.countdown-surface {
+  @include surface($cfg-countdown);
+  min-width: u($countdown-style-imageMinSize);
+}
+
+
+// ─── Slide (image fill + overlay) ────────────────────────────────────────────
+
+// The slide fills the available space and clips its child overlay.
+.countdown-slide {
+  border-radius: u($countdown-style-imageRadius);
+  min-width:     u($countdown-style-imageMinSize);
+  min-height:    u($countdown-style-imageMinSize);
+}
+
+// The image layer (inline CSS bg is set by JS; border-radius clips it).
+.countdown-image {
+  border-radius: u($countdown-style-imageRadius);
+}
+
+// Semi-transparent overlay sitting on top of the image.
+.countdown-overlay {
+  border-radius:    u($countdown-style-imageRadius);
+  padding:          u($countdown-style-gap);
+  background-color: ac($countdown-style-overlayBg-color, $countdown-style-overlayBg-alpha);
+  color:            $countdown-style-overlayFg;
+}
+
+
+// ─── Typography ──────────────────────────────────────────────────────────────
+
+.countdown-title {
+  @include text($countdown-style-titleSize, bold);
+  color: $countdown-style-overlayFg;
+}
+
+.countdown-description {
+  @include text($countdown-style-descriptionSize);
+  color:   rgba($countdown-style-overlayFg, 0.8);
+  margin-top: 4px;
+}
+
+.countdown-timer {
+  @include text($countdown-style-timerSize, bold);
+  @extend %label-mono;
+  color:      $c-accent;
+  margin-top: 8px;
+  letter-spacing: 0.04em;
+}
+
+
+// ─── Navigation (prev/next + dot indicators) ─────────────────────────────────
+
+.countdown-nav {
+  margin-top: u($countdown-style-gap);
+}
+
+// Prev / next arrow buttons and dot indicator buttons all share this base.
+.countdown-nav-btn {
+  @extend %reset-button;
+  border-radius: 999px;
+  padding:       4px 8px;
+  @include text($countdown-style-navSize);
+  color:       rgba($countdown-style-overlayFg, 0.7);
+  transition:  color 120ms ease, background-color 120ms ease;
+
+  &:hover {
+    color:            $countdown-style-overlayFg;
+    background-color: rgba(255, 255, 255, 0.12);
   }
 
-  .countdown-root {
-    // spacing: $countdown-style-gap + px;
-  }
-
-  .countdown-nav {
-    // spacing: 8px;
-  }
-
-  .countdown-nav-btn {
-    padding: 6px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  .countdown-nav-label {
-    font-size: $countdown-style-navSize + px;
-  }
-
-  .countdown-slide {
-    border-radius: $countdown-style-imageRadius + px;
-    min-height: $countdown-style-imageMinSize + px;
-    min-width: $countdown-style-imageMinSize + px;
-    background: rgba(255, 255, 255, 0.04);
-    // overflow: hidden;
-  }
-
-  .countdown-image {
-    background-size: cover;
-    background-position: center;
-  }
-
-  .countdown-overlay {
-    background: $countdown-style-overlayBg;
+  // Active dot indicator
+  &.active {
     color: $countdown-style-overlayFg;
-    border-radius: 12px;
-    padding: 10px 12px;
-    margin: 12px;
+    font-weight: bold;
   }
+}
 
-  .countdown-title {
-    font-weight: 700;
-    font-size: $countdown-style-titleSize + px;
-  }
-
-  .countdown-description {
-    font-size: $countdown-style-descriptionSize + px;
-    opacity: 0.92;
-  }
-
-  .countdown-timer {
-    font-size: $countdown-style-timerSize + px;
-    opacity: 0.9;
-  }
+.countdown-nav-label {
+  // The ● / ○ glyph — just ensure it scales with nav font size.
+  @include text($countdown-style-navSize);
 }

@@ -30,7 +30,7 @@ export function overrideContainer(params: {
     fg: colorWithAlpha({ exports: e, ...defaultFg }),
     radius: opt<number>(defaultRadius, e),
     padding: opt<number>(defaultPadding, e),
-    margin: opt<number[]>(defaultMargin, e),
+    margin: opt<number[]>(defaultMargin),
     ...overrideBorder({ exports: e, ...b }),
     ...overrideShadow({ exports: e, ...s }),
   }

@@ -1,0 +1,34 @@
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  dashboard.scss                                                            ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+// The dashboard window is a fullscreen transparent canvas.
+// Individual menu widgets placed in grid cells use their own component SCSS.
+
+// ─── Window ──────────────────────────────────────────────────────────────────
+
+.dashboard {
+  @extend %window-overlay;
+}
+
+
+// ─── Grid cells ──────────────────────────────────────────────────────────────
+// Cells are generic Gtk.Widget containers; give them a subtle card appearance.
+
+.dashboard grid > * {
+  @include surface($cfg-dashboard);
+  // Gutter between cells is defined by the grid layout in JS.
+}
+
+
+// ─── Menu widgets inside cells ───────────────────────────────────────────────
+// Widgets rendered by MenuRenderer inherit $cfg-dashboard colours from the
+// cascade; the rules below ensure any direct text inside a cell is legible.
+
+.dashboard {
+  color:     map-get($cfg-dashboard, fg);
+
+  label {
+    color: map-get($cfg-dashboard, fg);
+  }
+}

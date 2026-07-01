@@ -1,0 +1,212 @@
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  _tokens.scss — Derived design tokens                                     ║
+// ║                                                                           ║
+// ║  All $prefix-* SCSS variables are injected at build time by index.ts.    ║
+// ║  This file wraps them into typed map configs the mixin layer consumes.   ║
+// ║  No raw injected vars should ever leak into component files directly.    ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+
+// ─── Low-level helpers ───────────────────────────────────────────────────────
+
+/// Convert a unitless number to a px length.
+@function u($n) { @return $n * 1px; }
+
+/// Merge a hex color and a 0–1 alpha float into rgba().
+@function ac($color, $alpha) { @return rgba($color, $alpha); }
+
+
+// ─── Semantic palette ────────────────────────────────────────────────────────
+// Expose injected colors under concise semantic aliases used across components.
+
+$c-bg:      $colors-bg;
+$c-fg:      $colors-fg;
+$c-accent:  $colors-accent;
+$c-danger:  $colors-danger;
+$c-surface: $colors-surface;
+$c-border:  $colors-border;
+
+
+// ─── Surface config maps ─────────────────────────────────────────────────────
+// Keys shared across all surface configs:
+//   bg, fg, radius, padding
+//   border-enable, border-loc, border-width, border-color
+//   shadow-enable, shadow-x, shadow-y, shadow-blur, shadow-spread, shadow-color
+//
+// Some maps carry extra widget-specific keys (height, floating, transparent).
+
+$cfg-bar: (
+  bg:            ac($bar-style-bg-color,          $bar-style-bg-alpha),
+  fg:            ac($bar-style-fg-color,          $bar-style-fg-alpha),
+  height:        u($bar-style-height),
+  radius:        u($bar-style-radius),
+  padding:       u($bar-style-padding),
+  floating:      $bar-style-floating,
+  transparent:   $bar-style-transparent,
+  border-enable: $bar-style-borderEnable,
+  border-loc:    $bar-style-borderLocation,
+  border-width:  u($bar-style-borderWidth),
+  border-color:  ac($bar-style-borderColor-color, $bar-style-borderColor-alpha),
+  shadow-enable: $bar-style-shadowEnable,
+  shadow-x:      u($bar-style-shadowX),
+  shadow-y:      u($bar-style-shadowY),
+  shadow-blur:   u($bar-style-shadowBlur),
+  shadow-spread: u($bar-style-shadowSpread),
+  shadow-color:  ac($bar-style-shadowColor-color, $bar-style-shadowColor-alpha),
+);
+
+// Button/interactive-surface config keys:
+//   bg, fg, hover, active, radius, padding, spacing
+$cfg-bar-btn: (
+  bg:      ac($bar-buttons-bg-color,  $bar-buttons-bg-alpha),
+  fg:      ac($bar-buttons-fg-color,  $bar-buttons-fg-alpha),
+  hover:   $bar-buttons-hoverOpacity,
+  active:  $bar-buttons-activeOpacity,
+  radius:  u($bar-buttons-radius),
+  padding: u($bar-buttons-padding),
+  spacing: u($bar-buttons-spacing),
+);
+
+$cfg-bar-secondary: (
+  bg:            ac($bar-secondaryBar-style-bg-color,          $bar-secondaryBar-style-bg-alpha),
+  fg:            ac($bar-secondaryBar-style-fg-color,          $bar-secondaryBar-style-fg-alpha),
+  height:        u($bar-secondaryBar-style-height),
+  radius:        u($bar-secondaryBar-style-radius),
+  padding:       u($bar-secondaryBar-style-padding),
+  floating:      $bar-secondaryBar-style-floating,
+  transparent:   $bar-secondaryBar-style-transparent,
+  border-enable: $bar-secondaryBar-style-borderEnable,
+  border-loc:    $bar-secondaryBar-style-borderLocation,
+  border-width:  u($bar-secondaryBar-style-borderWidth),
+  border-color:  ac($bar-secondaryBar-style-borderColor-color, $bar-secondaryBar-style-borderColor-alpha),
+  shadow-enable: $bar-secondaryBar-style-shadowEnable,
+  shadow-x:      u($bar-secondaryBar-style-shadowX),
+  shadow-y:      u($bar-secondaryBar-style-shadowY),
+  shadow-blur:   u($bar-secondaryBar-style-shadowBlur),
+  shadow-spread: u($bar-secondaryBar-style-shadowSpread),
+  shadow-color:  ac($bar-secondaryBar-style-shadowColor-color, $bar-secondaryBar-style-shadowColor-alpha),
+);
+
+$cfg-bar-secondary-btn: (
+  bg:      ac($bar-secondaryBar-buttons-bg-color,  $bar-secondaryBar-buttons-bg-alpha),
+  fg:      ac($bar-secondaryBar-buttons-fg-color,  $bar-secondaryBar-buttons-fg-alpha),
+  hover:   $bar-secondaryBar-buttons-hoverOpacity,
+  active:  $bar-secondaryBar-buttons-activeOpacity,
+  radius:  u($bar-secondaryBar-buttons-radius),
+  padding: u($bar-secondaryBar-buttons-padding),
+  spacing: u($bar-secondaryBar-buttons-spacing),
+);
+
+$cfg-launcher: (
+  bg:            ac($launcher-style-bg-color,          $launcher-style-bg-alpha),
+  fg:            ac($launcher-style-fg-color,          $launcher-style-fg-alpha),
+  radius:        u($launcher-style-radius),
+  padding:       u($launcher-style-padding),
+  border-enable: $launcher-style-borderEnable,
+  border-loc:    $launcher-style-borderLocation,
+  border-width:  u($launcher-style-borderWidth),
+  border-color:  ac($launcher-style-borderColor-color, $launcher-style-borderColor-alpha),
+  shadow-enable: $launcher-style-shadowEnable,
+  shadow-x:      u($launcher-style-shadowX),
+  shadow-y:      u($launcher-style-shadowY),
+  shadow-blur:   u($launcher-style-shadowBlur),
+  shadow-spread: u($launcher-style-shadowSpread),
+  shadow-color:  ac($launcher-style-shadowColor-color, $launcher-style-shadowColor-alpha),
+);
+
+$cfg-launcher-entry: (
+  bg:      ac($launcher-entry-bg-color, $launcher-entry-bg-alpha),
+  fg:      ac($launcher-entry-fg-color, $launcher-entry-fg-alpha),
+  hover:   $launcher-entry-hoverOpacity,
+  active:  $launcher-entry-activeOpacity,
+  radius:  u($launcher-entry-radius),
+  padding: u($launcher-entry-padding),
+  height:  u($launcher-entry-height),
+);
+
+$cfg-launcher-item: (
+  bg:      ac($launcher-list-bg-color, $launcher-list-bg-alpha),
+  fg:      ac($launcher-list-fg-color, $launcher-list-fg-alpha),
+  hover:   $launcher-list-hoverOpacity,
+  active:  $launcher-list-activeOpacity,
+  radius:  u($launcher-list-radius),
+  padding: u($launcher-list-padding),
+  gap:     u($launcher-list-itemGap),
+);
+
+$cfg-launcher-fav: (
+  bg:      ac($launcher-favoritesUI-bg-color, $launcher-favoritesUI-bg-alpha),
+  fg:      ac($launcher-favoritesUI-fg-color, $launcher-favoritesUI-fg-alpha),
+  hover:   $launcher-favoritesUI-hoverOpacity,
+  active:  $launcher-favoritesUI-activeOpacity,
+  radius:  u($launcher-favoritesUI-radius),
+  padding: u($launcher-favoritesUI-padding),
+);
+
+$cfg-calendar: (
+  bg:            ac($calendar-style-bg-color,          $calendar-style-bg-alpha),
+  fg:            ac($calendar-style-fg-color,          $calendar-style-fg-alpha),
+  radius:        u($calendar-style-radius),
+  padding:       u($calendar-style-padding),
+  border-enable: $calendar-style-borderEnable,
+  border-loc:    $calendar-style-borderLocation,
+  border-width:  u($calendar-style-borderWidth),
+  border-color:  ac($calendar-style-borderColor-color, $calendar-style-borderColor-alpha),
+  shadow-enable: $calendar-style-shadowEnable,
+  shadow-x:      u($calendar-style-shadowX),
+  shadow-y:      u($calendar-style-shadowY),
+  shadow-blur:   u($calendar-style-shadowBlur),
+  shadow-spread: u($calendar-style-shadowSpread),
+  shadow-color:  ac($calendar-style-shadowColor-color, $calendar-style-shadowColor-alpha),
+);
+
+$cfg-osd: (
+  bg:            ac($osd-style-bg-color,          $osd-style-bg-alpha),
+  fg:            ac($osd-style-fg-color,          $osd-style-fg-alpha),
+  radius:        u($osd-style-radius),
+  padding:       u($osd-style-padding),
+  border-enable: $osd-style-borderEnable,
+  border-loc:    $osd-style-borderLocation,
+  border-width:  u($osd-style-borderWidth),
+  border-color:  ac($osd-style-borderColor-color, $osd-style-borderColor-alpha),
+  shadow-enable: $osd-style-shadowEnable,
+  shadow-x:      u($osd-style-shadowX),
+  shadow-y:      u($osd-style-shadowY),
+  shadow-blur:   u($osd-style-shadowBlur),
+  shadow-spread: u($osd-style-shadowSpread),
+  shadow-color:  ac($osd-style-shadowColor-color, $osd-style-shadowColor-alpha),
+);
+
+$cfg-countdown: (
+  bg:            ac($countdown-style-bg-color,          $countdown-style-bg-alpha),
+  fg:            ac($countdown-style-fg-color,          $countdown-style-fg-alpha),
+  radius:        u($countdown-style-radius),
+  padding:       u($countdown-style-padding),
+  border-enable: $countdown-style-borderEnable,
+  border-loc:    $countdown-style-borderLocation,
+  border-width:  u($countdown-style-borderWidth),
+  border-color:  ac($countdown-style-borderColor-color, $countdown-style-borderColor-alpha),
+  shadow-enable: $countdown-style-shadowEnable,
+  shadow-x:      u($countdown-style-shadowX),
+  shadow-y:      u($countdown-style-shadowY),
+  shadow-blur:   u($countdown-style-shadowBlur),
+  shadow-spread: u($countdown-style-shadowSpread),
+  shadow-color:  ac($countdown-style-shadowColor-color, $countdown-style-shadowColor-alpha),
+);
+
+$cfg-dashboard: (
+  bg:            ac($dashboard-style-bg-color,          $dashboard-style-bg-alpha),
+  fg:            ac($dashboard-style-fg-color,          $dashboard-style-fg-alpha),
+  radius:        u($dashboard-style-radius),
+  padding:       u($dashboard-style-padding),
+  border-enable: $dashboard-style-borderEnable,
+  border-loc:    $dashboard-style-borderLocation,
+  border-width:  u($dashboard-style-borderWidth),
+  border-color:  ac($dashboard-style-borderColor-color, $dashboard-style-borderColor-alpha),
+  shadow-enable: $dashboard-style-shadowEnable,
+  shadow-x:      u($dashboard-style-shadowX),
+  shadow-y:      u($dashboard-style-shadowY),
+  shadow-blur:   u($dashboard-style-shadowBlur),
+  shadow-spread: u($dashboard-style-shadowSpread),
+  shadow-color:  ac($dashboard-style-shadowColor-color, $dashboard-style-shadowColor-alpha),
+);

@@ -1,13 +1,32 @@
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  main.scss — Entry point                                                   ║
+// ║                                                                           ║
+// ║  Import order matters:                                                    ║
+// ║    1. _tokens       — derives config maps from injected $vars             ║
+// ║    2. _mixins       — mixins that consume those maps                      ║
+// ║    3. _placeholders — %silent selectors that use both                     ║
+// ║    4. components    — one file per widget                                 ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+// ─── Shared layer ────────────────────────────────────────────────────────────
+@import "scss/tokens";
+@import "scss/mixins";
+@import "scss/placeholders";
+
+// ─── Global base ─────────────────────────────────────────────────────────────
 window {
-  background-color: $colors-surface;
-  color: $colors-fg;
+  background-color: $c-surface;
+  color:            $c-fg;
 }
+
+// ─── Components ──────────────────────────────────────────────────────────────
 @import "scss/bar";
 @import "scss/launcher";
-@import "scss/countdown";
+@import "scss/calendar";
 @import "scss/osd";
 @import "scss/notification";
+@import "scss/countdown";
 @import "scss/popup";
-@import "scss/calendar";
+@import "scss/dashboard";
 @import "scss/setting";
 @import "scss/test";

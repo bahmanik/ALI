@@ -1,17 +1,88 @@
-.cell{
-  background-color: red;
-  padding: 5px;
-  margin: 5px;
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  setting.scss                                                              ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+// ─── Page frame ──────────────────────────────────────────────────────────────
+
+// The outer wrapper that holds all setting rows.
+.frame {
+  background-color: $c-bg;
+  border-radius:    12px;
+  padding:          4px;
+}
+
+
+// ─── Setting row cell ─────────────────────────────────────────────────────────
+
+// Each option row in the settings panel.
+.cell {
+  background-color: transparent;
+  border-radius:    10px;
+  padding:          10px 12px;
+  color:            $c-fg;
+  @include text(13);
+  transition:       background-color 120ms ease;
 
   &:hover {
-    background-color: violet;
+    background-color: rgba($c-border, 0.14);
   }
 }
 
-.clicked{
-  background-color: yellow;
+// A cell that has been activated / toggled on.
+.clicked {
+  background-color: rgba($c-accent, 0.18);
+  color:            $c-accent;
+  font-weight:      bold;
 }
 
-.frame{
-  background-color: black;
+
+// ─── Section headings ─────────────────────────────────────────────────────────
+
+.setting-section-title {
+  @include text(11, bold);
+  opacity:        0.5;
+  padding:        8px 12px 4px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+
+// ─── Setting control widgets ─────────────────────────────────────────────────
+
+// Toggle switch inside a cell
+.cell switch {
+  min-width:  36px;
+  min-height: 20px;
+
+  slider {
+    min-width:    20px;
+    min-height:   20px;
+    border-radius: 50%;
+    background-color: $c-fg;
+  }
+
+  &:checked {
+    background-color: $c-accent;
+  }
+}
+
+// Inline text input inside a cell
+.cell entry {
+  background-color: rgba($c-border, 0.1);
+  border:           1px solid rgba($c-border, 0.25);
+  border-radius:    8px;
+  padding:          4px 8px;
+  color:            $c-fg;
+  @include text(13);
+
+  &:focus { @include focus-ring($c-accent); }
+}
+
+// Inline dropdown / combo inside a cell
+.cell combobox button {
+  background-color: rgba($c-border, 0.1);
+  border:           1px solid rgba($c-border, 0.25);
+  border-radius:    8px;
+  padding:          4px 8px;
+  color:            $c-fg;
 }

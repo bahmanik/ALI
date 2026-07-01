@@ -23,7 +23,6 @@ class ThemeStyleManager {
 
     try {
       const variables = await this._generateThemeVariables();
-      console.log(variables)
 
       await this._compileSass(variables);
 

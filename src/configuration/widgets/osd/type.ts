@@ -12,7 +12,6 @@ import { RevealTransitionWithAuto } from "src/configuration/enums";
 export interface OsdStyleOptions extends ContainerStyleOptions {
   fg: ColorWithAlpha;
   gap: Opt<number>;
-  margin: Opt<number>;
   iconSize: Opt<number>;
   iconPadding: Opt<number>;
   iconBgOpacity: Opt<number>;

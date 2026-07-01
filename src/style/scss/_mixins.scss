@@ -1,0 +1,153 @@
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  _mixins.scss — All reusable SCSS mixins                                  ║
+// ║                                                                           ║
+// ║  Mixins here accept config maps from _tokens.scss.  Component files      ║
+// ║  call mixins — they never read raw injected vars directly.               ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+
+// ─── Border ──────────────────────────────────────────────────────────────────
+// Supported locations: "full" | "top" | "bottom" | "left" | "right"
+
+@mixin apply-border($cfg) {
+  $enable: map-get($cfg, border-enable);
+  $loc:    map-get($cfg, border-loc);
+  $width:  map-get($cfg, border-width);
+  $color:  map-get($cfg, border-color);
+
+  @if $enable {
+    border: none; // reset all sides before applying a specific one
+
+    @if      $loc == "full"   { border:        $width solid $color; }
+    @else if $loc == "top"    { border-top:    $width solid $color; }
+    @else if $loc == "bottom" { border-bottom: $width solid $color; }
+    @else if $loc == "left"   { border-left:   $width solid $color; }
+    @else if $loc == "right"  { border-right:  $width solid $color; }
+  } @else {
+    border: none;
+  }
+}
+
+
+// ─── Shadow ──────────────────────────────────────────────────────────────────
+
+@mixin apply-shadow($cfg) {
+  @if map-get($cfg, shadow-enable) {
+    box-shadow:
+      map-get($cfg, shadow-x)
+      map-get($cfg, shadow-y)
+      map-get($cfg, shadow-blur)
+      map-get($cfg, shadow-spread)
+      map-get($cfg, shadow-color);
+  } @else {
+    box-shadow: none;
+  }
+}
+
+
+// ─── Surface ─────────────────────────────────────────────────────────────────
+/// Full surface treatment for popup windows / panels.
+/// Applies: bg, fg, radius, padding, conditional border, conditional shadow.
+
+@mixin surface($cfg) {
+  background-color: map-get($cfg, bg);
+  color:            map-get($cfg, fg);
+  border-radius:    map-get($cfg, radius);
+  padding:          map-get($cfg, padding);
+  @include apply-border($cfg);
+  @include apply-shadow($cfg);
+}
+
+
+// ─── Bar surface ─────────────────────────────────────────────────────────────
+/// Like surface(), but respects the floating and transparent flags carried
+/// in bar config maps, and applies height as min-height.
+
+@mixin bar-surface($cfg) {
+  $floating:    map-get($cfg, floating);
+  $transparent: map-get($cfg, transparent);
+
+  min-height: map-get($cfg, height);
+  color:      map-get($cfg, fg);
+
+  @if $transparent {
+    background-color: transparent;
+  } @else {
+    background-color: map-get($cfg, bg);
+  }
+
+  @if $floating {
+    border-radius: map-get($cfg, radius);
+    padding:       map-get($cfg, padding);
+    @include apply-border($cfg);
+    @include apply-shadow($cfg);
+  } @else {
+    padding: 0 map-get($cfg, padding);
+    border:     none;
+    box-shadow: none;
+  }
+}
+
+
+// ─── Interactive surface (buttons / clickable groups) ────────────────────────
+/// Transparent base with white-tinted hover / active layers.
+/// When fg alpha == 0 the color is intentionally not set — inherits from
+/// the parent surface (the bar's fg cascades down naturally).
+
+@mixin interactive($cfg) {
+  $bg:      map-get($cfg, bg);
+  $fg:      map-get($cfg, fg);
+  $hover:   map-get($cfg, hover);
+  $active:  map-get($cfg, active);
+  $radius:  map-get($cfg, radius);
+  $padding: map-get($cfg, padding);
+
+  background-color: $bg;
+  border-radius:    $radius;
+  padding:          $padding;
+  border:           none;
+  transition:       background-color 120ms ease;
+
+  // Only set explicit color if the alpha is non-zero; otherwise inherit.
+  @if alpha($fg) > 0 { color: $fg; }
+
+  &:hover            { background-color: rgba(255, 255, 255, $hover);  }
+  &:active,
+  &:checked          { background-color: rgba(255, 255, 255, $active); }
+  &:disabled         { opacity: 0.38; }
+}
+
+
+// ─── Icon size ───────────────────────────────────────────────────────────────
+
+@mixin icon-size($px) {
+  -gtk-icon-size: $px * 1px;
+  min-width:      $px * 1px;
+  min-height:     $px * 1px;
+}
+
+
+// ─── Typography ──────────────────────────────────────────────────────────────
+
+@mixin text($size, $weight: normal) {
+  font-size:   $size * 1px;
+  font-weight: $weight;
+}
+
+
+// ─── Accent focus ring ───────────────────────────────────────────────────────
+
+@mixin focus-ring($color: $c-accent, $width: 2px) {
+  outline:        none;
+  box-shadow:     0 0 0 $width rgba($color, 0.35);
+  border-color:   $color;
+}
+
+
+// ─── Rounded progress track ──────────────────────────────────────────────────
+/// Shared track/fill radius based on a height value.
+
+@mixin progress-track($height) {
+  border-radius: $height / 2;
+  min-height:    $height;
+}
